@@ -732,6 +732,8 @@ class Order extends MY_Controller {
 				$period_begin = $this -> input -> post("period_start");
 				$period_end = $this -> input -> post("period_end");
 				$comments = $this -> input -> post("comments");
+				//trim comments tabs
+				$comments = preg_replace('/[ ]{2,}|[\t]/', ' ', trim($comments));
 				$services = $this -> input -> post("type_of_service");
 				$sponsors = $this -> input -> post("sponsor");
 				$none_arv = $this -> input -> post("non_arv");
@@ -750,7 +752,6 @@ class Order extends MY_Controller {
 				$expiry_date = $this -> input -> post('expire_period');
 				$out_of_stock = $this -> input -> post('out_of_stock');
 				$resupply = $this -> input -> post('resupply');
-				$comments = $this -> input -> post('comments');
 				if ($code == "D-CDRR") {
 					$aggr_consumed = $this -> input -> post('aggregated_qty');
 					$aggr_on_hand = $this -> input -> post('aggregated_physical_qty');
@@ -885,6 +886,9 @@ class Order extends MY_Controller {
 				$new_oc = $this -> input -> post("new_oc");
 				$revisit_oc = $this -> input -> post("revisit_oc");
 				$comments = $this -> input -> post("other_regimen");
+				//trim comments tabs
+				$comments = preg_replace('/[ ]{2,}|[\t]/', ' ', trim($comments));
+
 				$report_id = $this -> input -> post("report_id");
 				$facility_id = $this -> input -> post("facility_id");
 				$regimens = $this -> input -> post('patient_regimens');
@@ -975,6 +979,11 @@ class Order extends MY_Controller {
         if ($status == "prepared") {
             //format to json
 			$json_data = json_encode($main_array, JSON_PRETTY_PRINT);
+
+			echo "<pre>";
+			echo $json_data;
+			echo "</pre>";
+			die();
 			//get supplier
 			$facility_code = $this -> session -> userdata("facility");
 			$supplier = $this -> get_supplier($facility_code);

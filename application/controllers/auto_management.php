@@ -30,7 +30,7 @@ class auto_management extends MY_Controller {
 			$message .= $this->updateIssuedTo();
 			//function to update source_destination column in drug_stock_movement table where it is zero
 			$message .= $this->updateSourceDestination();
-			//function to update ccc_store_sp column in drug_stock_movement table for pahrmacy transactions
+			//function to update ccc_store_sp column in drug_stock_movement table for pharmacy transactions
 			$message .= $this->updateCCC_Store();
 			//function to update patients without current_regimen with last regimen dispensed
 			$message .= $this->update_current_regimen(); 
@@ -46,6 +46,10 @@ class auto_management extends MY_Controller {
 			$message .= $this->updateFacilties();
 			//function to create new tables into adt
 			$message .= $this->update_database_tables();
+			//function to create new columns into table
+			$message .= $this->update_database_columns();
+			//function to update hash value of system to nascop
+			$message .= $this->update_system_version();
 	        //finally update the log file for auto_update 
 	        if ($this -> session -> userdata("curl_error") != 1) {
 	        	$sql="UPDATE migration_log SET last_index='$today' WHERE source='auto_update'";
@@ -766,6 +770,45 @@ class auto_management extends MY_Controller {
  			$message="(".$count.") tables created!<br/>";
         }
         return $message;
+	}
+
+	public function update_database_columns(){
+		$message='';
+		$statements['isoniazid_start_date']='ALTER TABLE patient ADD isoniazid_start_date varchar(20)';
+		$statements['isoniazid_end_date']='ALTER TABLE patient ADD isoniazid_end_date varchar(20)';
+		if ($statements) {
+			foreach ($statements as $column => $statement) {
+				if ($statement != null) {
+				    $db_debug = $this->db->db_debug;
+					$this->db->db_debug = false;
+					$this -> db -> query($statement);
+					$this->db->db_debug = $db_debug;
+				}
+			}
+		}
+		return $message;
+	}
+	public function update_system_version(){
+		$url = $this -> nascop_url . "sync/gitlog";
+		$facility_code = $this -> session -> userdata("facility");
+		$hash=Git_Log::getLatestHash();
+		$results = array("facility" => $facility_code, "hash_value" => $hash);
+		$json_data = json_encode($results, JSON_PRETTY_PRINT);
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, array('json_data' => $json_data));
+		$json_data = curl_exec($ch);
+		if (empty($json_data)) {
+			$message = "cURL Error: " . curl_error($ch);
+		} else {
+			$messages = json_decode($json_data, TRUE);
+			$message = $messages[0];
+		}
+		curl_close($ch);
+		return $message;
 	}
 }
 ?>

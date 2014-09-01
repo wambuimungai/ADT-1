@@ -479,19 +479,19 @@ class report_management extends MY_Controller {
 			$stages = Patient::getStages($period_start, $period_end, $patient);
 			foreach ($stages as $stage) {
 				if (stripos($stage['stage_name'], "stage 1") !== FALSE) {
-					$family['stage_1'] = $source['total'];
+					$family['stage_1'] = $stage['total'];
 					$counter = 1;
 				}
 				if (stripos($stage['stage_name'], "stage 2") !== FALSE) {
-					$family['stage_2'] = $source['total'];
+					$family['stage_2'] = $stage['total'];
 					$counter = 1;
 				}
 				if (stripos($stage['stage_name'], "stage 3") !== FALSE) {
-					$family['stage_3'] = $source['total'];
+					$family['stage_3'] = $stage['total'];
 					$counter = 1;
 				}
 				if (stripos($stage['stage_name'], "stage 4") !== FALSE) {
-					$family['stage_4'] = $source['total'];
+					$family['stage_4'] = $stage['total'];
 					$counter = 1;
 				}
 				$main[$patient] = $family;
