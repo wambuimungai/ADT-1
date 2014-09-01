@@ -1,6 +1,5 @@
 Version 2.13 -28/08/2014
 ==============================================
-
 -Fixed: Reports: Patient Missing appointment accuracy
 -Fixed: Reports: Visiting patients - List of patients started on a certain period
 -Changed: Auto logout feature disabled 
@@ -9,33 +8,19 @@ Version 2.13 -28/08/2014
 
 Version 2.12 -25/08/2014
 ==============================================
-
 - Fixed: Regimen Drugs Search filter
-
 - Fixed: CM to be picked from other illnesses in FMAPS
-
 - Fixed: Bug in Dispensing. Dose when choosing routine refill
-
 - Fixed: Routine refill for patients
-
 - Fixed: Inventory Selectt box width
-
 - Fixed: Aggregate downloads in xlsx format
-
 - Fixed: adr,other_drugs and other_illnesses tabs bug
-
 - Fixed: Orders log names replaced with ecsm/nascop users.
-
 - Added: Ordering directly to escm/nascop
-
 - Added: Ordering deletion is a soft action
-
 - Added: Fmaps, Total ART patient numbers to change on change of total patients under regimens
-
 - Added: Generate PDF for drugs issued transactions
-
 - Added: Non mapped regimens to be listed in other regimens list on Fmaps
-
 
 
 Version 2.11 -04/08/2014
@@ -57,7 +42,6 @@ Version 2.11 -04/08/2014
 
 Version 2.1 - 23/07/2014
 ==============================================
-
 - Fixed: Merging drugs,regimens on diffferent pages.
 - Added: New Ctrl+F Search for Patients and Commodities
 
