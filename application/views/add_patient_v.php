@@ -230,7 +230,7 @@
 		   $(".tb").change(function() {
 		   	    var tb = $(this).val();
 		   	     if(tb == 1) {
-				    $("#tbphase_view").show();
+				    //$("#tbphase_view").show();
 				    $("#tbcategory_view").show();
 				 } 
 				 else {
@@ -243,7 +243,12 @@
 		   	        $("#tophase").attr("value",'');
 			     }
 		   });
-		   
+		     $("#tbcategory").change(function(){
+              $("#tbphase_view").show();
+               $("#fromphase").attr("value",'');
+		   	    $("#tophase").attr("value",'');
+
+			});
 		   //Function to display tbphase dates
 		   $(".tbphase").change(function() {
 		   	    var tbpase = $(this).val();
@@ -294,13 +299,25 @@
 				  var from_date=$(this).val();
 				  var new_date=new Date(from_date);
 				  var to_date=new Date();
+				  var category=$("#tbcategory").val();
 				  var tbphase=$(".tbphase").val();
+				  if(category==1){
 				  if(tbphase==1){
 				  	//Intensive
-				  	 var numberOfDaysToAdd=56;
+				  	 var numberOfDaysToAdd=90;
 				  }else if(tbphase==2){
 				  	//Continuation
 				  	 var numberOfDaysToAdd=112;
+				  }}
+				  else if(category==2){
+				  	 if(tbphase==1){
+				  	//Intensive
+				  	 var numberOfDaysToAdd=90;
+				  }else if(tbphase==2){
+				  	//Continuation
+				  	 var numberOfDaysToAdd=150;
+				  }
+
 				  }
 				  to_date.setDate(new_date.getDate() + numberOfDaysToAdd);
 				  $("#tophase").datepicker('setDate', new Date(to_date));
@@ -728,10 +745,10 @@
 						<div class="max-row">
 							<div class="mid-row" id="tbcategory_view">
 					        <label> Select TB category</label>
-					<select name="tb" id="tbcategory" class="tbcategory">
+					<select name="tbcategory" id="tbcategory" class="tbcategory">
 						<option value="0" selected="selected">--Select One--</option>
 						<option value="1">Category 1</option>
-						<option value="1">Category 2</option>
+						<option value="2">Category 2</option>
 					</select>
 				</div>
 							
