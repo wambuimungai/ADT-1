@@ -498,15 +498,18 @@ foreach($results as $result){
 				
 		   //Function to display Regimens in this line
 		   $("#service").change(function() {
-		   	$("#regimen option").remove();
+		   	
 		   	$("#current_regimen option").remove();
                           var service_line = $(this).val();
                           if($("#service option[value='"+service_line+"']").text()==="ART" || $("#service option[value='"+service_line+"']").text()==="PMTCT"){
                                $("#servicestartedcontent").show();
                                $("#service_started").val("<?php echo $result['start_regimen_date'] ?>");
+                               $("#regimen").val("<?php echo $result['start_regimen'] ?>");
+                               
                           }else{
                           $("#service_started").val("<?php echo date('Y-m-d');?>");
 		   	  $("#servicestartedcontent").show();  
+                          $("#regimen option").remove();
                       }
 		   	  if($("#service option[value='"+service_line+"']").text()==="PEP"){
 		   	  	$("#pep_reason_listing").show();
