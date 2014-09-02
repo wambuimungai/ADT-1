@@ -394,7 +394,9 @@ if ($facility_object -> service_pep == "1") {
 				if($is_view==1 || $is_update==1){
 				?>
 			    <table style="width:100%;" class="table table-bordered">
-			    	<?php foreach($logs as $log){?>
+			    	<?php 
+			    	    error_reporting(0); 
+			    	    foreach($logs as $log){?>
 					<tr>
 						<td><b>Report <?php echo $log->description;?> by:</b>
 							<input type="hidden" name="log_id[]" id="log_id_<?php echo $log -> id;?>" value="<?php echo $log -> id;?>"/>

@@ -181,7 +181,7 @@
 											"bInfo" : true,
 										});
 										
-						oTable1.fnSort([[0, 'desc']]);
+						oTable1.fnSort([[1, 'desc']]);
 				    }
 				});	
 			});
@@ -212,7 +212,7 @@
 											"bInfo" : true,
 										});
 										
-						oTable2.fnSort([[0, 'desc']]);
+						oTable2.fnSort([[1, 'desc']]);
 				    }
 				});	
 			});
@@ -249,7 +249,7 @@
 				"bStateSave" : true,
 
 			});
-			oTable1.fnSort([[0, 'desc']]);
+			oTable1.fnSort([[1, 'desc']]);
 			//maps table
 			var oTable2 = $('#order_listing_maps').dataTable({
 				"bJQueryUI" : true,
@@ -262,7 +262,7 @@
 				"bInfo" : true,
 				"bStateSave" : true,
 			});
-			oTable2.fnSort([[0, 'desc']]);
+			oTable2.fnSort([[1, 'desc']]);
 			
           //aggregate table
           	var oTable3 = $('#order_listing_aggregate').dataTable({
@@ -276,7 +276,7 @@
 				"bInfo" : true,
 				"bStateSave" : true,
 			});
-			oTable3.fnSort([[0, 'desc']]);
+			oTable3.fnSort([[1, 'desc']]);
 		});
 
 	</script>

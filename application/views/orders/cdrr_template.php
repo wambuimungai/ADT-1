@@ -433,18 +433,20 @@
 				 }if($options=="view" || $options=="update"){
 		    ?>
 		    <table style="width:100%;" class="table table-bordered">
-		    	<?php foreach($logs as $log){?>
+		    	<?php 
+					error_reporting(0); 
+		    	    foreach($logs as $log){?>
 				<tr>
 					<td><b>Report <?php echo $log->description;?> by:</b> 
 					<input type="hidden" name="log_id[]" id="log_id_<?php echo $log -> id;?>" value="<?php echo $log -> id;?>"/>	
 					</td>
-					<td><?php echo $log->user->Name; ?></td>
+					<td><?php echo $log->s_user->name; ?></td>
 					<td><b>Designation:</b></td>
-					<td><?php echo $log->user->Access->Level_Name; ?></td>
+					<td><?php echo $log->s_user->role; ?></td>
 				</tr>
 				<tr>
 					<td><b>Contact Telephone:</b></td>
-					<td><?php echo $log->user->Phone_Number; ?></td>
+					<td>N/A</td>
 					<td><b>Date:</b></td>
 					<td><?php echo $log->created; ?></td>
 				</tr>
