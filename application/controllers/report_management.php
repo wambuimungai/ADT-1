@@ -403,13 +403,13 @@ class report_management extends MY_Controller {
 		$results = $query -> result_array();
 		if ($results) {
 			foreach ($results as $result) {
-				if (strtolower($result['gender']) == "female" && $result['age'] >= (360 * 15)) {
+				if (strtolower($result['gender']) == "female" && $result['age'] >= (365 * 15)) {
 					$female_above_fifteen_years++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (360 * 15) && strtolower($result['service']) != "pmtct") {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (365 * 15) && strtolower($result['service']) != "pmtct") {
 					$male_above_fifteen_years++;
-				} else if (strtolower($result['gender']) == "female" && $result['age'] < (360 * 15) && strtolower($result['service']) != "pmtct") {
+				} else if (strtolower($result['gender']) == "female" && $result['age'] < (365 * 15) && strtolower($result['service']) != "pmtct") {
 					$female_below_fifteen_years++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] < (360 * 15) && strtolower($result['service']) != "pmtct") {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] < (365 * 15) && strtolower($result['service']) != "pmtct") {
 					$male_below_fifteen_years++;
 				}
 			}
@@ -443,13 +443,13 @@ class report_management extends MY_Controller {
 		$results = $query -> result_array();
 		if ($results) {
 			foreach ($results as $result) {
-				if (strtolower($result['gender']) == "female" && $result['age'] >= (360 * 15)) {
+				if (strtolower($result['gender']) == "female" && $result['age'] >= (365 * 15)) {
 					$female_above_fifteen_years++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (360 * 15)) {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (365 * 15)) {
 					$male_above_fifteen_years++;
-				} else if (strtolower($result['gender']) == "female" && $result['age'] < (360 * 15)) {
+				} else if (strtolower($result['gender']) == "female" && $result['age'] < (365 * 15)) {
 					$female_below_fifteen_years++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] < (360 * 15)) {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] < (365 * 15)) {
 					$male_below_fifteen_years++;
 				}
 			}
@@ -547,13 +547,13 @@ class report_management extends MY_Controller {
 		$results = $query -> result_array();
 		if ($results) {
 			foreach ($results as $result) {
-				if (strtolower($result['gender']) == "female" && $result['age'] >= (360 * 15)) {
+				if (strtolower($result['gender']) == "female" && $result['age'] >= (365 * 15)) {
 					$female_adult++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (360 * 15)) {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (365 * 15)) {
 					$male_adult++;
-				} else if (strtolower($result['gender']) == "female" && $result['age'] < (360 * 15)) {
+				} else if (strtolower($result['gender']) == "female" && $result['age'] < (365 * 15)) {
 					$female_child++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] < (360 * 15)) {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] < (365 * 15)) {
 					$male_child++;
 				}
 			}
@@ -631,13 +631,13 @@ class report_management extends MY_Controller {
 		$results = $query -> result_array();
 		if ($results) {
 			foreach ($results as $result) {
-				if (strtolower($result['gender']) == "female" && $result['age'] >= (360 * 15)) {
+				if (strtolower($result['gender']) == "female" && $result['age'] >= (365 * 15)) {
 					$female_adult++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (360 * 15)) {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (365 * 15)) {
 					$male_adult++;
-				} else if (strtolower($result['gender']) == "female" && $result['age'] < (360 * 15)) {
+				} else if (strtolower($result['gender']) == "female" && $result['age'] < (365 * 15)) {
 					$female_child++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] < (360 * 15)) {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] < (365 * 15)) {
 					$male_child++;
 				}
 			}
@@ -683,7 +683,7 @@ class report_management extends MY_Controller {
 		$results = $query -> result_array();
 		if ($results) {
 			foreach ($results as $result) {
-				if ($result['age'] >= (360 * 15)) {
+				if ($result['age'] >= (365 * 15)) {
 					if ($result['name'] == "Occupational" && strtolower($result['gender']) == "female") {
 						$occassional_female++;
 					} else if ($result['name'] == "Sexual assault" && strtolower($result['gender']) == "female") {
@@ -756,13 +756,13 @@ class report_management extends MY_Controller {
 		$results = $query -> result_array();
 		if ($results) {
 			foreach ($results as $result) {
-				if (strtolower($result['gender']) == "female" && $result['age'] >= (360 * 15)) {
+				if (strtolower($result['gender']) == "female" && $result['age'] >= (365 * 15)) {
 					$female_adult++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (360 * 15)) {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (365 * 15)) {
 					$male_adult++;
-				} else if (strtolower($result['gender']) == "female" && $result['age'] < (360 * 15)) {
+				} else if (strtolower($result['gender']) == "female" && $result['age'] < (365 * 15)) {
 					$female_child++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] < (360 * 15)) {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] < (365 * 15)) {
 					$male_child++;
 				}
 			}
@@ -793,13 +793,13 @@ class report_management extends MY_Controller {
 		$results = $query -> result_array();
 		if ($results) {
 			foreach ($results as $result) {
-				if (strtolower($result['gender']) == "female" && $result['age'] >= (360 * 15)) {
+				if (strtolower($result['gender']) == "female" && $result['age'] >= (365 * 15)) {
 					$female_adult++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (360 * 15)) {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (365 * 15)) {
 					$male_adult++;
-				} else if (strtolower($result['gender']) == "female" && $result['age'] < (360 * 15)) {
+				} else if (strtolower($result['gender']) == "female" && $result['age'] < (365 * 15)) {
 					$female_child++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] < (360 * 15)) {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] < (365 * 15)) {
 					$male_child++;
 				}
 			}
@@ -895,8 +895,8 @@ class report_management extends MY_Controller {
 		        LEFT JOIN patient_status ps ON ps.id=p.current_status
 		        WHERE(rst.name LIKE '%art%' OR rst.name LIKE '%oi%')
 		        AND dp.name LIKE '%cotri%'
-		        AND DATEDIFF('$period_end',p.dob) >=360
-		        AND DATEDIFF('$period_end',p.dob) <(360*15)
+		        AND DATEDIFF('$period_end',p.dob) >=365
+		        AND DATEDIFF('$period_end',p.dob) <(365*15)
 				AND p.active='1'
 				AND ps.Name LIkE '%active%'
 		        GROUP BY g.name";
@@ -921,7 +921,7 @@ class report_management extends MY_Controller {
 		        LEFT JOIN patient_status ps ON ps.id=p.current_status
 		        WHERE(rst.name LIKE '%art%' OR rst.name LIKE '%pmtct%' OR rst.name LIKE '%oi%')
 		        AND dp.name LIKE '%cotri%'
-		        AND DATEDIFF('$period_end',p.dob) >=(360*15)
+		        AND DATEDIFF('$period_end',p.dob) >=(365*15)
 				AND p.active='1'
 				AND ps.Name LIkE '%active%'
 		        GROUP BY g.name";
@@ -965,7 +965,7 @@ class report_management extends MY_Controller {
 		        FROM patient 
 		        WHERE MONTH(date_enrolled)='$month' 
 		        AND YEAR(date_enrolled)='$year' 
-		        AND DATEDIFF('$today',dob)<360 
+		        AND DATEDIFF('$today',dob)<365 
 		        AND active='1'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
@@ -978,8 +978,8 @@ class report_management extends MY_Controller {
 		        FROM patient 
 		        WHERE MONTH(date_enrolled)='$month' 
 		        AND YEAR(date_enrolled)='$year' 
-		        AND DATEDIFF('$today',dob)>=360 
-		        AND DATEDIFF('$today',dob)<(360*15) 
+		        AND DATEDIFF('$today',dob)>=365 
+		        AND DATEDIFF('$today',dob)<(365*15) 
 		        AND active='1' group by gender";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
@@ -998,7 +998,7 @@ class report_management extends MY_Controller {
 		        FROM patient 
 		        WHERE MONTH(date_enrolled)='$month' 
 		        AND YEAR(date_enrolled)='$year' 
-		        AND DATEDIFF('$today',dob)>=(360*15) 
+		        AND DATEDIFF('$today',dob)>=(365*15) 
 		        AND active='1'  
 		        GROUP BY gender";
 		$query = $this -> db -> query($sql);
@@ -1056,19 +1056,19 @@ class report_management extends MY_Controller {
 		if ($results) {
 			foreach ($results as $result) {
 				if (strtolower($result['gender']) == "female") {
-					if ($result['age'] < 360 && strtolower($result['service'] != "pmtct")) {
+					if ($result['age'] < 365 && strtolower($result['service'] != "pmtct")) {
 						$below_one_year++;
-					} else if ($result['age'] > 360 && $result['age'] < (360 * 15) && strtolower($result['service'] != "pmtct")) {
+					} else if ($result['age'] > 365 && $result['age'] < (365 * 15) && strtolower($result['service'] != "pmtct")) {
 						$female_below_fifteen_years++;
-					} else if ($result['age'] >= (360 * 15)) {
+					} else if ($result['age'] >= (365 * 15)) {
 						$female_above_fifteen_years++;
 					}
 				} else if (strtolower($result['gender']) == "male") {
-					if ($result['age'] < 360 && strtolower($result['service'] != "pmtct")) {
+					if ($result['age'] < 365 && strtolower($result['service'] != "pmtct")) {
 						$below_one_year++;
-					} else if ($result['age'] > 360 && $result['age'] < (360 * 15) && strtolower($result['service'] != "pmtct")) {
+					} else if ($result['age'] > 365 && $result['age'] < (365 * 15) && strtolower($result['service'] != "pmtct")) {
 						$male_below_fifteen_years++;
-					} else if ($result['age'] >= (360 * 15) && strtolower($result['service'] != "pmtct")) {
+					} else if ($result['age'] >= (365 * 15) && strtolower($result['service'] != "pmtct")) {
 						$male_above_fifteen_years++;
 					}
 				}
@@ -1106,7 +1106,7 @@ class report_management extends MY_Controller {
 		        WHERE p.start_regimen_date 
 		        BETWEEN '$from' 
 		        AND '$to' 
-		        AND DATEDIFF('$today',p.dob)<360 
+		        AND DATEDIFF('$today',p.dob)<365 
 		        AND rst.name LIKE '%art%'
 		        AND p.active='1'";
 		$query = $this -> db -> query($sql);
@@ -1122,8 +1122,8 @@ class report_management extends MY_Controller {
 		        WHERE p.start_regimen_date 
 		        BETWEEN '$from' 
 		        AND '$to' 
-		        AND DATEDIFF('$today',p.dob)>=360 
-		        AND DATEDIFF('$today',dob)<(360*15) 
+		        AND DATEDIFF('$today',p.dob)>=365 
+		        AND DATEDIFF('$today',dob)<(365*15) 
 		        AND rst.name LIKE '%art%' 
 		        AND p.active='1'
 		        GROUP BY p.gender";
@@ -1146,7 +1146,7 @@ class report_management extends MY_Controller {
 		        WHERE p.start_regimen_date 
 		        BETWEEN '$from' 
 		        AND '$to' 
-		        AND DATEDIFF('$today',p.dob)>=(360*15) 
+		        AND DATEDIFF('$today',p.dob)>=(365*15) 
 		        AND rst.name LIKE '%art%' 
 		        AND p.active='1' 
 		        GROUP BY p.gender";
@@ -1234,19 +1234,19 @@ class report_management extends MY_Controller {
 				//check if service is art
 				if(strtolower($result['service']) == "art"){
 					if (strtolower($result['gender']) == "female") {
-						if ($result['age'] < 360) {
+						if ($result['age'] < 365) {
 							$below_one_year++;
-						} else if ($result['age'] > 360 && $result['age'] < (360 * 15)) {
+						} else if ($result['age'] > 365 && $result['age'] < (365 * 15)) {
 							$female_below_fifteen_years++;
-						} else if ($result['age'] >= (360 * 15)) {
+						} else if ($result['age'] >= (365 * 15)) {
 							$female_above_fifteen_years++;
 						}
 					} else if (strtolower($result['gender']) == "male") {
-						if ($result['age'] < 360) {
+						if ($result['age'] < 365) {
 							$below_one_year++;
-						} else if ($result['age'] > 360 && $result['age'] < (360 * 15)) {
+						} else if ($result['age'] > 365 && $result['age'] < (365 * 15)) {
 							$male_below_fifteen_years++;
-						} else if ($result['age'] >= (360 * 15)) {
+						} else if ($result['age'] >= (365 * 15)) {
 							$male_above_fifteen_years++;
 						}
 					}
@@ -1292,13 +1292,13 @@ class report_management extends MY_Controller {
 		$results = $query -> result_array();
 		if ($results) {
 			foreach ($results as $result) {
-				if (strtolower($result['gender']) == "female" && $result['age'] >= (360 * 15)) {
+				if (strtolower($result['gender']) == "female" && $result['age'] >= (365 * 15)) {
 					$female_above_fifteen_years++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (360 * 15)) {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (365 * 15)) {
 					$male_above_fifteen_years++;
-				} else if (strtolower($result['gender']) == "female" && $result['age'] < (360 * 15)) {
+				} else if (strtolower($result['gender']) == "female" && $result['age'] < (365 * 15)) {
 					$female_below_fifteen_years++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] < (360 * 15)) {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] < (365 * 15)) {
 					$male_below_fifteen_years++;
 				}
 			}
@@ -1436,13 +1436,13 @@ class report_management extends MY_Controller {
 		$results = $query -> result_array();
 		if ($results) {
 			foreach ($results as $result) {
-				if (strtolower($result['gender']) == "female" && $result['age'] >= (360 * 15)) {
+				if (strtolower($result['gender']) == "female" && $result['age'] >= (365 * 15)) {
 					$female_above_fifteen_years++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (360 * 15)) {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] >= (365 * 15)) {
 					$male_above_fifteen_years++;
-				} else if (strtolower($result['gender']) == "female" && $result['age'] < (360 * 15)) {
+				} else if (strtolower($result['gender']) == "female" && $result['age'] < (365 * 15)) {
 					$female_below_fifteen_years++;
-				} else if (strtolower($result['gender']) == "male" && $result['age'] < (360 * 15)) {
+				} else if (strtolower($result['gender']) == "male" && $result['age'] < (365 * 15)) {
 					$male_below_fifteen_years++;
 				}
 			}
@@ -1990,7 +1990,7 @@ class report_management extends MY_Controller {
 				$source_total_percentage = number_format(($source_total / $total) * 100, 1);
 				$dyn_table .= "<tr><td><b>$source_name</b></td><td>$source_total</td><td>$source_total_percentage</td>";
 				//SQL for Adult Male Source
-				$sql = "SELECT count(*) AS total_adult_male,p.source,ps.name,p.service,rst.name as service_name FROM patient p LEFT JOIN patient_source ps ON ps.id= p.source LEFT JOIN regimen_service_type rst ON rst.id = p.service  WHERE date_enrolled BETWEEN '$from' AND '$to' $supported_query AND facility_code = '$facility_code' AND source !='' AND p.gender=1 AND round(datediff('$from',p.dob)/360)>15 AND  p.source='$source_code' GROUP BY p.source,p.service";
+				$sql = "SELECT count(*) AS total_adult_male,p.source,ps.name,p.service,rst.name as service_name FROM patient p LEFT JOIN patient_source ps ON ps.id= p.source LEFT JOIN regimen_service_type rst ON rst.id = p.service  WHERE date_enrolled BETWEEN '$from' AND '$to' $supported_query AND facility_code = '$facility_code' AND source !='' AND p.gender=1 AND FLOOR(datediff('$from',p.dob)/365)>15 AND  p.source='$source_code' GROUP BY p.source,p.service";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				$total_adult_male_art = "-";
@@ -2028,7 +2028,7 @@ class report_management extends MY_Controller {
 				//SQL for Adult Female Source
 				$sql = "SELECT count(*) AS total_adult_female,p.source,ps.name,p.service,rst.name as service_name 
 						FROM patient p LEFT JOIN patient_source ps ON ps.id = p.source LEFT JOIN regimen_service_type rst ON rst.id = p.service 
-						WHERE date_enrolled BETWEEN '$from' AND '$to' $supported_query AND facility_code = '$facility_code' AND source !='' AND p.gender=2 AND round(datediff('$from',p.dob)/360)>15 AND  p.source='$source_code' AND p.active=1 GROUP BY p.source,p.service";
+						WHERE date_enrolled BETWEEN '$from' AND '$to' $supported_query AND facility_code = '$facility_code' AND source !='' AND p.gender=2 AND FLOOR(datediff('$from',p.dob)/365)>15 AND  p.source='$source_code' AND p.active=1 GROUP BY p.source,p.service";
 				//die();
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
@@ -2069,7 +2069,7 @@ class report_management extends MY_Controller {
 					$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
 				}
 				//SQL for Child Male Source
-				$sql = "SELECT count(*) AS total_child_male,p.source,ps.name,p.service,rst.name as service_name FROM patient p LEFT JOIN patient_source ps ON ps.id = p.source LEFT JOIN regimen_service_type rst ON rst.id = p.service WHERE date_enrolled BETWEEN '$from' AND '$to' $supported_query AND facility_code = '$facility_code' AND source !='' AND p.gender=1 AND round(datediff('$from',p.dob)/360)<=15 AND  p.source='$source_code' GROUP BY p.source,p.service";
+				$sql = "SELECT count(*) AS total_child_male,p.source,ps.name,p.service,rst.name as service_name FROM patient p LEFT JOIN patient_source ps ON ps.id = p.source LEFT JOIN regimen_service_type rst ON rst.id = p.service WHERE date_enrolled BETWEEN '$from' AND '$to' $supported_query AND facility_code = '$facility_code' AND source !='' AND p.gender=1 AND FLOOR(datediff('$from',p.dob)/365)<=15 AND  p.source='$source_code' GROUP BY p.source,p.service";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				$total_child_male_art = "-";
@@ -2109,7 +2109,7 @@ class report_management extends MY_Controller {
 					$dyn_table .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
 				}
 				//SQL for Child Female Source
-				$sql = "SELECT count(*) AS total_child_female,p.source,ps.name,p.service,rst.name as service_name FROM patient p LEFT JOIN patient_source ps ON ps.id = p.source LEFT JOIN regimen_service_type rst ON rst.id = p.service WHERE date_enrolled BETWEEN '$from' AND '$to' $supported_query AND facility_code = '$facility_code' AND source !='' AND p.gender=2 AND round(datediff('$from',p.dob)/360) < 15 AND  p.source='$source_code' GROUP BY p.source,p.service";
+				$sql = "SELECT count(*) AS total_child_female,p.source,ps.name,p.service,rst.name as service_name FROM patient p LEFT JOIN patient_source ps ON ps.id = p.source LEFT JOIN regimen_service_type rst ON rst.id = p.service WHERE date_enrolled BETWEEN '$from' AND '$to' $supported_query AND facility_code = '$facility_code' AND source !='' AND p.gender=2 AND FLOOR(datediff('$from',p.dob)/365) < 15 AND  p.source='$source_code' GROUP BY p.source,p.service";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				$total_child_female_art = "-";
@@ -2254,7 +2254,7 @@ class report_management extends MY_Controller {
 						$status = "<span style='color:red;'>Not Visited</span>";
 					}
 				}
-				$sql = "select patient_number_ccc as art_no,UPPER(first_name)as first_name,UPPER(other_name)as other_name,UPPER(last_name)as last_name, IF(gender=1,'Male','Female')as gender,UPPER(physical) as physical,phone,alternate,ROUND(DATEDIFF('$today',dob)/360) as age,r.regimen_desc as last_regimen from patient,regimen r where patient_number_ccc='$patient' and current_regimen=r.id and facility_code='$facility_code'";
+				$sql = "select patient_number_ccc as art_no,UPPER(first_name)as first_name,UPPER(other_name)as other_name,UPPER(last_name)as last_name, IF(gender=1,'Male','Female')as gender,UPPER(physical) as physical,phone,alternate,FLOOR(DATEDIFF('$today',dob)/365) as age,r.regimen_desc as last_regimen from patient,regimen r where patient_number_ccc='$patient' and current_regimen=r.id and facility_code='$facility_code'";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				if ($results) {
@@ -2351,7 +2351,7 @@ class report_management extends MY_Controller {
 					               UPPER(first_name)as first_name,
 					               UPPER(other_name)as other_name,
 					               UPPER(last_name)as last_name,
-                                                       ROUND(DATEDIFF('$today',dob)/360) as age,
+                                                       FLOOR(DATEDIFF('$today',dob)/365) as age,
 					               IF(gender=1,'Male','Female')as gender,
 					               UPPER(physical) as physical,
 					               DATEDIFF('$today',nextappointment) as days_late, 
@@ -2411,7 +2411,7 @@ class report_management extends MY_Controller {
 		$from = date('Y-m-d', strtotime($from));
 		$to = date('Y-m-d', strtotime($to));
 
-		$sql = "SELECT p.patient_number_ccc as art_no,UPPER(p.first_name) as first_name,UPPER(p.last_name) as last_name,UPPER(p.other_name)as other_name,ROUND(DATEDIFF('$today',p.dob)/365) as age, p.dob, IF(p.gender=1,'Male','Female') as gender, p.weight, r.regimen_desc,r.regimen_code,p.start_regimen_date, t.name AS service_type, s.name AS supported_by 
+		$sql = "SELECT p.patient_number_ccc as art_no,UPPER(p.first_name) as first_name,UPPER(p.last_name) as last_name,UPPER(p.other_name)as other_name,FLOOR(DATEDIFF('$today',p.dob)/365) as age, p.dob, IF(p.gender=1,'Male','Female') as gender, p.weight, r.regimen_desc,r.regimen_code,p.start_regimen_date, t.name AS service_type, s.name AS supported_by 
 				from patient p 
 				LEFT JOIN regimen r ON p.start_regimen =r.id
 				LEFT JOIN regimen_service_type t ON t.id = p.service
@@ -2479,7 +2479,7 @@ class report_management extends MY_Controller {
 		$from = date('Y-m-d', strtotime($from));
 		$to = date('Y-m-d', strtotime($to));
 
-		$sql = "SELECT pv.patient_id as art_no,pv.dispensing_date, t.name AS service_type, s.name AS supported_by,UPPER(p.first_name) as first_name ,UPPER(p.other_name) as other_name ,UPPER(p.last_name)as last_name,ROUND(DATEDIFF('$today',p.dob)/360) as age, pv.current_weight as weight, IF(p.gender=1,'Male','Female')as gender, r.regimen_desc,r.regimen_code,AVG(pv.adherence) as avg_adherence from patient_visit pv LEFT JOIN  visit_purpose v on v.id=pv.visit_purpose,patient p,supporter s,regimen_service_type t,regimen r where pv.dispensing_date between '$from' and '$to' and pv.patient_id=p.patient_number_ccc and s.id = p.supported_by and t.id = p.service and r.id = pv.regimen and v.name like '%routine%'  and p.current_status =  '1' and pv.facility =  '$facility_code' and p.facility_code = pv.facility group by pv.patient_id,pv.dispensing_date";
+		$sql = "SELECT pv.patient_id as art_no,pv.dispensing_date, t.name AS service_type, s.name AS supported_by,UPPER(p.first_name) as first_name ,UPPER(p.other_name) as other_name ,UPPER(p.last_name)as last_name,FLOOR(DATEDIFF('$today',p.dob)/365) as age, pv.current_weight as weight, IF(p.gender=1,'Male','Female')as gender, r.regimen_desc,r.regimen_code,AVG(pv.adherence) as avg_adherence from patient_visit pv LEFT JOIN  visit_purpose v on v.id=pv.visit_purpose,patient p,supporter s,regimen_service_type t,regimen r where pv.dispensing_date between '$from' and '$to' and pv.patient_id=p.patient_number_ccc and s.id = p.supported_by and t.id = p.service and r.id = pv.regimen and v.name like '%routine%'  and p.current_status =  '1' and pv.facility =  '$facility_code' and p.facility_code = pv.facility group by pv.patient_id,pv.dispensing_date";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		$row_string = "<table border='1'   class='dataTables'>
@@ -2674,7 +2674,7 @@ class report_management extends MY_Controller {
 				$regimen_total_percentage = number_format(($regimen_total / $source_total) * 100, 1);
 				$row_string .= "<tr><td><b>$regimen_code</b> | $regimen_name</td><td>$regimen_total</td><td>$regimen_total_percentage</td>";
 				//SQL for Adult Male Regimens
-				$sql = "select count(*) as total_adult_male, r.regimen_desc,r.regimen_code,p.start_regimen,p.service,rs.name as service_name from patient p,gender g,regimen_service_type rs,regimen r where start_regimen_date between '$from' and '$to' and p.gender=g.id and p.service=rs.id and p.start_regimen=r.id and round(datediff('$to',p.dob)/360)>15 and p.gender='1' and start_regimen='$start_regimen' and p.service='1' and p.facility_code='$facility_code' group by p.start_regimen,p.service";
+				$sql = "select count(*) as total_adult_male, r.regimen_desc,r.regimen_code,p.start_regimen,p.service,rs.name as service_name from patient p,gender g,regimen_service_type rs,regimen r where start_regimen_date between '$from' and '$to' and p.gender=g.id and p.service=rs.id and p.start_regimen=r.id and FLOOR(datediff('$to',p.dob)/365)>15 and p.gender='1' and start_regimen='$start_regimen' and p.service='1' and p.facility_code='$facility_code' group by p.start_regimen,p.service";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				$total_adult_male_art = "-";
@@ -2713,7 +2713,7 @@ class report_management extends MY_Controller {
 				}
 
 				//SQL for Adult Female Regimens
-				$sql = "select count(*) as total_adult_female, r.regimen_desc,r.regimen_code,p.start_regimen,p.service,rs.name as service_name from patient p,gender g,regimen_service_type rs,regimen r where start_regimen_date between '$from' and '$to' and p.gender=g.id and p.service=rs.id and p.start_regimen=r.id and round(datediff('$to',p.dob)/360)>15 and p.gender='2' and p.service='1' and start_regimen='$start_regimen' and p.facility_code='$facility_code' group by p.start_regimen,p.service";
+				$sql = "select count(*) as total_adult_female, r.regimen_desc,r.regimen_code,p.start_regimen,p.service,rs.name as service_name from patient p,gender g,regimen_service_type rs,regimen r where start_regimen_date between '$from' and '$to' and p.gender=g.id and p.service=rs.id and p.start_regimen=r.id and FLOOR(datediff('$to',p.dob)/365)>15 and p.gender='2' and p.service='1' and start_regimen='$start_regimen' and p.facility_code='$facility_code' group by p.start_regimen,p.service";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				$total_adult_female_art = "-";
@@ -2755,7 +2755,7 @@ class report_management extends MY_Controller {
 					$row_string .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
 				}
 				//SQL for Child Male Regimens
-				$sql = "select count(*) as total_child_male, r.regimen_desc,r.regimen_code,p.start_regimen,p.service,rs.name as service_name from patient p,gender g,regimen_service_type rs,regimen r where start_regimen_date between '$from' and '$to' and p.gender=g.id and p.service=rs.id and p.start_regimen=r.id and round(datediff('$to',p.dob)/360)<=15 and p.gender='1' and p.service='1' and start_regimen='$start_regimen' and p.facility_code='$facility_code' group by p.start_regimen,p.service";
+				$sql = "select count(*) as total_child_male, r.regimen_desc,r.regimen_code,p.start_regimen,p.service,rs.name as service_name from patient p,gender g,regimen_service_type rs,regimen r where start_regimen_date between '$from' and '$to' and p.gender=g.id and p.service=rs.id and p.start_regimen=r.id and FLOOR(datediff('$to',p.dob)/365)<=15 and p.gender='1' and p.service='1' and start_regimen='$start_regimen' and p.facility_code='$facility_code' group by p.start_regimen,p.service";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				$total_child_male_art = "-";
@@ -2796,7 +2796,7 @@ class report_management extends MY_Controller {
 					$row_string .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
 				}
 				//SQL for Child Female Regimens
-				$sql = "select count(*) as total_child_female, r.regimen_desc,r.regimen_code,p.start_regimen,p.service,rs.name as service_name from patient p,gender g,regimen_service_type rs,regimen r where start_regimen_date between '$from' and '$to' and p.gender=g.id and p.service=rs.id and p.start_regimen=r.id and round(datediff('$to',p.dob)/360)<=15 and p.gender='2' and p.service='1' and start_regimen='$start_regimen' and p.facility_code='$facility_code' group by p.start_regimen,p.service";
+				$sql = "select count(*) as total_child_female, r.regimen_desc,r.regimen_code,p.start_regimen,p.service,rs.name as service_name from patient p,gender g,regimen_service_type rs,regimen r where start_regimen_date between '$from' and '$to' and p.gender=g.id and p.service=rs.id and p.start_regimen=r.id and FLOOR(datediff('$to',p.dob)/365)<=15 and p.gender='2' and p.service='1' and start_regimen='$start_regimen' and p.facility_code='$facility_code' group by p.start_regimen,p.service";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				$total_child_female_art = "-";
@@ -2940,7 +2940,7 @@ class report_management extends MY_Controller {
 				$regimen_total_percentage = number_format(($regimen_total / $patient_total) * 100, 1);
 				$row_string .= "<tr><td><b>$regimen_code</b> | $regimen_name</td><td>$regimen_total</td><td>$regimen_total_percentage</td>";
 				//SQL for Adult Male Regimens
-				$sql = "SELECT count(*) as total_adult_male, r.regimen_desc,p.current_regimen as regimen_id FROM patient p,regimen r WHERE p.date_enrolled<='$from' AND p.current_status=1 AND r.id=p.current_regimen AND p.facility_code='$facility_code' AND p.gender=1 AND p.current_regimen='$current_regimen' AND round(datediff('$from',p.dob)/360)>15  and p.active='1' GROUP BY p.current_regimen";
+				$sql = "SELECT count(*) as total_adult_male, r.regimen_desc,p.current_regimen as regimen_id FROM patient p,regimen r WHERE p.date_enrolled<='$from' AND p.current_status=1 AND r.id=p.current_regimen AND p.facility_code='$facility_code' AND p.gender=1 AND p.current_regimen='$current_regimen' AND FLOOR(datediff('$from',p.dob)/365)>15  and p.active='1' GROUP BY p.current_regimen";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				if ($results) {
@@ -2956,7 +2956,7 @@ class report_management extends MY_Controller {
 					$row_string .= "<td>-</td><td>-</td>";
 				}
 				//SQL for Adult Female Regimens
-				$sql = "SELECT count(*) as total_adult_female, r.regimen_desc,p.current_regimen as regimen_id FROM patient p,regimen r WHERE p.date_enrolled<='$from' AND p.current_status=1 AND r.id=p.current_regimen AND p.facility_code='$facility_code' AND p.gender=2 AND p.current_regimen='$current_regimen' AND round(datediff('$from',p.dob)/360)>15 and p.active='1' GROUP BY p.current_regimen";
+				$sql = "SELECT count(*) as total_adult_female, r.regimen_desc,p.current_regimen as regimen_id FROM patient p,regimen r WHERE p.date_enrolled<='$from' AND p.current_status=1 AND r.id=p.current_regimen AND p.facility_code='$facility_code' AND p.gender=2 AND p.current_regimen='$current_regimen' AND FLOOR(datediff('$from',p.dob)/365)>15 and p.active='1' GROUP BY p.current_regimen";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				if ($results) {
@@ -2972,7 +2972,7 @@ class report_management extends MY_Controller {
 					$row_string .= "<td>-</td><td>-</td>";
 				}
 				//SQL for Child Male Regimens
-				$sql = "SELECT count(*) as total_child_male, r.regimen_desc,p.current_regimen as regimen_id FROM patient p,regimen r WHERE p.date_enrolled<='$from' AND p.current_status=1 AND r.id=p.current_regimen AND p.facility_code='$facility_code' AND p.gender=1 AND p.current_regimen='$current_regimen' AND round(datediff('$from',p.dob)/360)<=15 and p.active='1' GROUP BY p.current_regimen";
+				$sql = "SELECT count(*) as total_child_male, r.regimen_desc,p.current_regimen as regimen_id FROM patient p,regimen r WHERE p.date_enrolled<='$from' AND p.current_status=1 AND r.id=p.current_regimen AND p.facility_code='$facility_code' AND p.gender=1 AND p.current_regimen='$current_regimen' AND FLOOR(datediff('$from',p.dob)/365)<=15 and p.active='1' GROUP BY p.current_regimen";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				if ($results) {
@@ -2988,7 +2988,7 @@ class report_management extends MY_Controller {
 					$row_string .= "<td>-</td><td>-</td>";
 				}
 				//SQL for Child Female Regimens
-				$sql = "SELECT count(*) as total_child_female, r.regimen_desc,p.current_regimen as regimen_id FROM patient p,regimen r WHERE p.date_enrolled<='$from' AND p.current_status=1 AND r.id=p.current_regimen AND p.facility_code='$facility_code' AND p.gender=2 AND p.current_regimen='$current_regimen' AND round(datediff('$from',p.dob)/360)<=15 and p.active='1' GROUP BY p.current_regimen";
+				$sql = "SELECT count(*) as total_child_female, r.regimen_desc,p.current_regimen as regimen_id FROM patient p,regimen r WHERE p.date_enrolled<='$from' AND p.current_status=1 AND r.id=p.current_regimen AND p.facility_code='$facility_code' AND p.gender=2 AND p.current_regimen='$current_regimen' AND FLOOR(datediff('$from',p.dob)/365)<=15 and p.active='1' GROUP BY p.current_regimen";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				if ($results) {
@@ -3102,7 +3102,7 @@ class report_management extends MY_Controller {
 				$row_string .= "<tr><td>$status_name</td><td>$status_totals[$current_status]</td><td>$patient_percentage</td>";
 				//SQL for Adult Male Status
 				$service_list = array('ART', 'PEP', 'OI Only');
-				$sql = "SELECT count(*) as total_adult_male, ps.Name,ps.id as current_status,r.name AS Service FROM patient p,patient_status ps,regimen_service_type r WHERE  p.current_status=ps.id AND p.service=r.id AND p.current_status='$current_status' AND p.facility_code='$facility_code' AND p.gender=1 AND p.service !=3 AND round(datediff('$from',p.dob)/360)>15 and p.active='1' GROUP BY service";
+				$sql = "SELECT count(*) as total_adult_male, ps.Name,ps.id as current_status,r.name AS Service FROM patient p,patient_status ps,regimen_service_type r WHERE  p.current_status=ps.id AND p.service=r.id AND p.current_status='$current_status' AND p.facility_code='$facility_code' AND p.gender=1 AND p.service !=3 AND FLOOR(datediff('$from',p.dob)/365)>15 and p.active='1' GROUP BY service";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				$i = 0;
@@ -3133,7 +3133,7 @@ class report_management extends MY_Controller {
 				}
 				//SQL for Adult Female Status
 				$service_list = array('ART', 'PEP', 'PMTCT', 'OI Only');
-				$sql = "SELECT count(*) as total_adult_female, ps.Name,ps.id as current_status,r.name AS Service FROM patient p,patient_status ps,regimen_service_type r WHERE  p.current_status=ps.id AND p.service=r.id AND p.current_status='$current_status' AND p.facility_code='$facility_code' AND p.gender=2  AND round(datediff('$from',p.dob)/360)>15 and p.active='1' GROUP BY service";
+				$sql = "SELECT count(*) as total_adult_female, ps.Name,ps.id as current_status,r.name AS Service FROM patient p,patient_status ps,regimen_service_type r WHERE  p.current_status=ps.id AND p.service=r.id AND p.current_status='$current_status' AND p.facility_code='$facility_code' AND p.gender=2  AND FLOOR(datediff('$from',p.dob)/365)>15 and p.active='1' GROUP BY service";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				$i = 0;
@@ -3165,7 +3165,7 @@ class report_management extends MY_Controller {
 				}
 				//SQL for Child Male Status
 				$service_list = array('ART', 'PEP', 'PMTCT', 'OI Only');
-				$sql = "SELECT count(*) as total_child_male, ps.Name,ps.id as current_status,r.name AS Service FROM patient p,patient_status ps,regimen_service_type r WHERE  p.current_status=ps.id AND p.service=r.id AND p.current_status='$current_status' AND p.facility_code='$facility_code' AND p.gender=1  AND round(datediff('$from',p.dob)/360)<=15 and p.active='1' GROUP BY service";
+				$sql = "SELECT count(*) as total_child_male, ps.Name,ps.id as current_status,r.name AS Service FROM patient p,patient_status ps,regimen_service_type r WHERE  p.current_status=ps.id AND p.service=r.id AND p.current_status='$current_status' AND p.facility_code='$facility_code' AND p.gender=1  AND FLOOR(datediff('$from',p.dob)/365)<=15 and p.active='1' GROUP BY service";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				$i = 0;
@@ -3197,7 +3197,7 @@ class report_management extends MY_Controller {
 				}
 				//SQL for Child Female Status
 				$service_list = array('ART', 'PEP', 'PMTCT', 'OI Only');
-				$sql = "SELECT count(*) as total_child_female, ps.Name,ps.id as current_status,r.name AS Service FROM patient p,patient_status ps,regimen_service_type r WHERE  p.current_status=ps.id AND p.service=r.id AND p.current_status='$current_status' AND p.facility_code='$facility_code' AND p.gender=2  AND round(datediff('$from',p.dob)/360)<=15 and p.active='1' GROUP BY service";
+				$sql = "SELECT count(*) as total_child_female, ps.Name,ps.id as current_status,r.name AS Service FROM patient p,patient_status ps,regimen_service_type r WHERE  p.current_status=ps.id AND p.service=r.id AND p.current_status='$current_status' AND p.facility_code='$facility_code' AND p.gender=2  AND FLOOR(datediff('$from',p.dob)/365)<=15 and p.active='1' GROUP BY service";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				$i = 0;
@@ -4294,7 +4294,7 @@ class report_management extends MY_Controller {
 				(CASE WHEN pv.age<=15 THEN 'Child'
 				      WHEN pv.age>15 THEN 'Adult'
 				      ELSE '' END) as age FROM non_adherence_reasons na LEFT JOIN
-				(SELECT p_v.id,p_v.patient_id,p_v.dispensing_date,p_v.non_adherence_reason,p.gender,ROUND( DATEDIFF( curdate( ) , p.dob ) /360 ) AS age FROM `patient_visit` p_v 
+				(SELECT p_v.id,p_v.patient_id,p_v.dispensing_date,p_v.non_adherence_reason,p.gender,FLOOR( DATEDIFF( curdate( ) , p.dob ) /365 ) AS age FROM `patient_visit` p_v 
 				LEFT JOIN patient p ON p.patient_number_ccc=p_v.patient_id
 				WHERE p_v.dispensing_date BETWEEN '$start_date' AND '$end_date' AND p_v.active='1') as pv
 				ON pv.non_adherence_reason=na.id ORDER BY na.id DESC  ";
@@ -4586,7 +4586,7 @@ class report_management extends MY_Controller {
 
 		$sql = "update patient set tbphase='0' where tbphase='un' or tbphase=''";
 		$query = $this -> db -> query($sql);
-		$sql = "select gender,ROUND(DATEDIFF(curdate(),dob)/360) as age,tbphase from patient LEFT JOIN patient_status ps ON ps.id=current_status where date_enrolled between '$start_date' and '$end_date' AND ps.Name like '%active%' and facility_code='$facility_code' and gender !='' and tb='1' and tbphase !='0'";
+		$sql = "select gender,FLOOR(DATEDIFF(curdate(),dob)/365) as age,tbphase from patient LEFT JOIN patient_status ps ON ps.id=current_status where date_enrolled between '$start_date' and '$end_date' AND ps.Name like '%active%' and facility_code='$facility_code' and gender !='' and tb='1' and tbphase !='0'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		$strXML = array();
@@ -4666,7 +4666,7 @@ class report_management extends MY_Controller {
 		$facility_code = $this -> session -> userdata('facility');
 		$arr = array();
 		$total = 0;
-		$sql = "select fplan from patient LEFT JOIN patient_status ps ON ps.id=current_status where date_enrolled <= '$start_date' AND ps.Name like '%active%' and gender='2' and gender !='' and facility_code='$facility_code' AND fplan != '' AND fplan != 'null' AND ROUND(DATEDIFF(curdate(),dob)/360)>15 AND ROUND(DATEDIFF(curdate(),dob)/360)<=49";
+		$sql = "select fplan from patient LEFT JOIN patient_status ps ON ps.id=current_status where date_enrolled <= '$start_date' AND ps.Name like '%active%' and gender='2' and gender !='' and facility_code='$facility_code' AND fplan != '' AND fplan != 'null' AND FLOOR(DATEDIFF(curdate(),dob)/365)>15 AND FLOOR(DATEDIFF(curdate(),dob)/365)<=49";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 
@@ -4724,7 +4724,7 @@ class report_management extends MY_Controller {
 		$start_date = date('Y-m-d', strtotime($start_date));
 		$end_date = date('Y-m-d', strtotime($end_date));
 		$facility_code = $this -> session -> userdata('facility');
-		$sql = "select CONCAT_WS(' | ',oi.indication,oi.name) as indication_name,IF(ROUND(DATEDIFF(curdate(),p.dob)/360)>15 and p.gender='1',count(*),'0') as adult_male,IF(ROUND(DATEDIFF(curdate(),p.dob)/360)>15 and p.gender='2',count(*),'0') as adult_female,IF(ROUND(DATEDIFF(curdate(),p.dob)/360)<=15 ,count(*),'0') as child from (select patient_id,indication from patient_visit where dispensing_date between '$start_date' and '$end_date' and facility='$facility_code' and indication !='0')as pv left join patient p on p.patient_number_ccc=pv.patient_id,opportunistic_infection oi where (oi.id=pv.indication or oi.indication=pv.indication) group by indication_name";
+		$sql = "select CONCAT_WS(' | ',oi.indication,oi.name) as indication_name,IF(FLOOR(DATEDIFF(curdate(),p.dob)/365)>15 and p.gender='1',count(*),'0') as adult_male,IF(FLOOR(DATEDIFF(curdate(),p.dob)/365)>15 and p.gender='2',count(*),'0') as adult_female,IF(FLOOR(DATEDIFF(curdate(),p.dob)/365)<=15 ,count(*),'0') as child from (select patient_id,indication from patient_visit where dispensing_date between '$start_date' and '$end_date' and facility='$facility_code' and indication !='0')as pv left join patient p on p.patient_number_ccc=pv.patient_id,opportunistic_infection oi where (oi.id=pv.indication or oi.indication=pv.indication) group by indication_name";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		$total = 0;
@@ -4778,7 +4778,7 @@ class report_management extends MY_Controller {
 		$adult_male = array();
 		$adult_female = array();
 		$child = array();
-		$sql = "SELECT other_illnesses, ROUND( DATEDIFF( curdate( ) , dob ) /360 ) AS age,gender FROM patient LEFT JOIN patient_status ps ON ps.id=current_status WHERE date_enrolled <= '$start_date' AND ps.Name like '%active%' AND gender != '' AND facility_code = '$facility_code' AND other_illnesses != '' AND other_illnesses != ',' AND other_illnesses != 'null'";
+		$sql = "SELECT other_illnesses, FLOOR( DATEDIFF( curdate( ) , dob ) /365 ) AS age,gender FROM patient LEFT JOIN patient_status ps ON ps.id=current_status WHERE date_enrolled <= '$start_date' AND ps.Name like '%active%' AND gender != '' AND facility_code = '$facility_code' AND other_illnesses != '' AND other_illnesses != ',' AND other_illnesses != 'null'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -4878,7 +4878,7 @@ class report_management extends MY_Controller {
 			}
 		}
 		//Get TB Numbers
-		$sql = "select ROUND( DATEDIFF( curdate( ) , dob ) /360 ) AS age,gender from patient WHERE date_enrolled <= '$start_date'  AND gender != '' AND facility_code = '$facility_code' AND tb='1' AND dob !='' AND gender !=''";
+		$sql = "select FLOOR( DATEDIFF( curdate( ) , dob ) /365 ) AS age,gender from patient WHERE date_enrolled <= '$start_date'  AND gender != '' AND facility_code = '$facility_code' AND tb='1' AND dob !='' AND gender !=''";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -5296,7 +5296,7 @@ class report_management extends MY_Controller {
 		$facility_code = $this -> session -> userdata('facility');
 		$bmi_temp = array();
 
-		$sql = "SELECT gender,rst.Name,ROUND((((weight)*10000)/(height*height)),1) AS BMI 
+		$sql = "SELECT gender,rst.Name,FLOOR((((weight)*10000)/(height*height)),1) AS BMI 
 		        FROM patient p 
 		        LEFT JOIN gender g ON g.id=p.gender 
 		        LEFT JOIN regimen_service_type rst ON rst.id=p.service 
@@ -5797,7 +5797,7 @@ class report_management extends MY_Controller {
 						LEFT JOIN patient_status ps ON ps.id = p.current_status
 						WHERE p.date_enrolled <='$from' AND ps.name ='active' 
 						AND p.facility_code = '$facility_code' AND p.current_regimen != '' 
-						AND p.current_status != '' AND p.gender=1 AND p.current_regimen='$current_regimen' AND round(datediff('$from',p.dob)/360)>15 
+						AND p.current_status != '' AND p.gender=1 AND p.current_regimen='$current_regimen' AND FLOOR(datediff('$from',p.dob)/365)>15 
 						GROUP BY p.service ORDER BY rst.id ASC";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
@@ -5833,7 +5833,7 @@ class report_management extends MY_Controller {
 				}
 
 				//SQL for Adult Female Regimens
-				$sql = "SELECT count(*) as total,p.service as service_id,rst.name FROM patient p LEFT JOIN regimen r ON r.id = p.current_regimen LEFT JOIN regimen_service_type rst ON rst.id = p.service WHERE p.date_enrolled <='$from' AND p.current_status =1 AND p.facility_code = '$facility_code' AND p.current_regimen != '' AND p.current_status != '' AND p.gender=2 AND p.current_regimen='$current_regimen' AND round(datediff('$from',p.dob)/360)>15 GROUP BY p.service ORDER BY rst.id ASC";
+				$sql = "SELECT count(*) as total,p.service as service_id,rst.name FROM patient p LEFT JOIN regimen r ON r.id = p.current_regimen LEFT JOIN regimen_service_type rst ON rst.id = p.service WHERE p.date_enrolled <='$from' AND p.current_status =1 AND p.facility_code = '$facility_code' AND p.current_regimen != '' AND p.current_status != '' AND p.gender=2 AND p.current_regimen='$current_regimen' AND FLOOR(datediff('$from',p.dob)/365)>15 GROUP BY p.service ORDER BY rst.id ASC";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				$total_adult_female_art = "-";
@@ -5874,7 +5874,7 @@ class report_management extends MY_Controller {
 				}
 
 				//SQL for Child Male Regimens
-				$sql = "SELECT count(*) as total,p.service as service_id,rst.name FROM patient p LEFT JOIN regimen r ON r.id = p.current_regimen LEFT JOIN regimen_service_type rst ON rst.id = p.service WHERE p.date_enrolled <='$from' AND p.current_status =1 AND p.facility_code = '$facility_code' AND p.current_regimen != '' AND p.current_status != '' AND p.gender=1 AND p.current_regimen='$current_regimen' AND round(datediff('$from',p.dob)/360)<=15 GROUP BY p.service ORDER BY rst.id ASC";
+				$sql = "SELECT count(*) as total,p.service as service_id,rst.name FROM patient p LEFT JOIN regimen r ON r.id = p.current_regimen LEFT JOIN regimen_service_type rst ON rst.id = p.service WHERE p.date_enrolled <='$from' AND p.current_status =1 AND p.facility_code = '$facility_code' AND p.current_regimen != '' AND p.current_status != '' AND p.gender=1 AND p.current_regimen='$current_regimen' AND FLOOR(datediff('$from',p.dob)/365)<=15 GROUP BY p.service ORDER BY rst.id ASC";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				$total_child_male_art = "-";
@@ -5916,7 +5916,7 @@ class report_management extends MY_Controller {
 				}
 
 				//SQL for Child Female Regimens
-				$sql = "SELECT count(*) as total,p.service as service_id,rst.name FROM patient p LEFT JOIN regimen r ON r.id = p.current_regimen LEFT JOIN regimen_service_type rst ON rst.id = p.service WHERE p.date_enrolled <='$from' AND p.current_status =1 AND p.facility_code = '$facility_code' AND p.current_regimen != '' AND p.current_status != '' AND p.gender=2 AND p.current_regimen='$current_regimen' AND round(datediff('$from',p.dob)/360)<=15 GROUP BY p.service ORDER BY rst.id ASC";
+				$sql = "SELECT count(*) as total,p.service as service_id,rst.name FROM patient p LEFT JOIN regimen r ON r.id = p.current_regimen LEFT JOIN regimen_service_type rst ON rst.id = p.service WHERE p.date_enrolled <='$from' AND p.current_status =1 AND p.facility_code = '$facility_code' AND p.current_regimen != '' AND p.current_status != '' AND p.gender=2 AND p.current_regimen='$current_regimen' AND FLOOR(datediff('$from',p.dob)/365)<=15 GROUP BY p.service ORDER BY rst.id ASC";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				$total_child_female_art = "-";
