@@ -6003,6 +6003,7 @@ class report_management extends MY_Controller {
               LEFT JOIN regimen_service_type rst ON rst.id=r.type_of_service
               LEFT JOIN drugcode d ON d.id=rd.drugcode
               WHERE rst.name LIKE '%oi%'
+              AND d.drug NOT LIKE '%cot%'
               GROUP BY drugname";
         $query=$this->db->query($sql);
 	    $drugs=$query->result_array();
