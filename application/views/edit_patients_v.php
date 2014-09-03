@@ -330,6 +330,9 @@ foreach($results as $result){
 		   // function to display tb phase view
 		   $("#tbcategory").change(function(){
               $("#tbphase_view").show();
+               $("#fromphase").attr("value",'');
+		   	    $("#tophase").attr("value",'');
+
 			});
 		   
 		   //Function to display tbphase dates
@@ -505,10 +508,9 @@ foreach($results as $result){
                                $("#servicestartedcontent").show();
                                $("#service_started").val("<?php echo $result['start_regimen_date'] ?>");
                                $("#regimen").val("<?php echo $result['start_regimen'] ?>");
-                               
-                          }else{
+                            }else{
                           $("#service_started").val("<?php echo date('Y-m-d');?>");
-		   	  $("#servicestartedcontent").show();  
+		   	  $("#servicestartedcontent").show();
                           $("#regimen option").remove();
                       }
 		   	  if($("#service option[value='"+service_line+"']").text()==="PEP"){
@@ -980,10 +982,10 @@ foreach($results as $result){
 				
 				<div class="mid-row" id="tbcategory_view">
 					<label> Select TB category</label>
-					<select name="tb" id="tbcategory" class="tbcategory">
+					<select name="tbcategory" id="tbcategory" class="tbcategory">
 						<option value="0" selected="selected">--Select One--</option>
 						<option value="1">Category 1</option>
-						<option value="1">Category 2</option>
+						<option value="2">Category 2</option>
 					</select>
 				</div>
 

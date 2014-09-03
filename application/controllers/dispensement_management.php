@@ -19,7 +19,7 @@ class Dispensement_Management extends MY_Controller {
 		$data['appointments'] = "";
 		$dispensing_date = date('Y-m-d');
 
-		$sql = "select p.*,ps.name as patient_source,ROUND(DATEDIFF(CURDATE(),p.dob)/365) as age from patient p 
+		$sql = "select p.*,ps.name as patient_source,FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as age from patient p 
 				LEFT JOIN patient_source ps ON ps.id = p.source
 				where p.id='$record_no' and facility_code='$facility_code'
 				";
