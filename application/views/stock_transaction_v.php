@@ -20,7 +20,7 @@
 	}
 	#drugs_table input, #drugs_table select{
 		font-size:12px;
-		height:1.7em;
+		height:2.5em;
 		width: 4.2em;
 	}
 	#transaction_type_details{

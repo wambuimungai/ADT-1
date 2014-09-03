@@ -776,6 +776,7 @@ class auto_management extends MY_Controller {
 		$message='';
 		$statements['isoniazid_start_date']='ALTER TABLE patient ADD isoniazid_start_date varchar(20)';
 		$statements['isoniazid_end_date']='ALTER TABLE patient ADD isoniazid_end_date varchar(20)';
+		$statements['tb_category']='ALTER TABLE patient ADD tb_category varchar(2)';
 		if ($statements) {
 			foreach ($statements as $column => $statement) {
 				if ($statement != null) {
@@ -792,7 +793,7 @@ class auto_management extends MY_Controller {
 		$url = $this -> nascop_url . "sync/gitlog";
 		$facility_code = $this -> session -> userdata("facility");
 		$hash=Git_Log::getLatestHash();
-		$results = array("facility" => $facility_code, "hash_value" => $hash);
+		$results = array("facility_code" => $facility_code, "hash_value" => $hash);
 		$json_data = json_encode($results, JSON_PRETTY_PRINT);
 
 		$ch = curl_init();

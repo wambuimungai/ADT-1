@@ -5997,7 +5997,7 @@ class report_management extends MY_Controller {
 		$patients=array();
 		$oi_drugs=array();
         //get all regimen drugs from OI
-        $sql="SELECT IF(d.drug IS NULL,rd.drugcode,d.drug) as drugname,'0' as drugqty
+        $sql="SELECT IF(d.drug IS NULL,rd.drugcode,d.drug) as drugname,'' as drugqty
               FROM regimen_drug rd 
               LEFT JOIN regimen r ON r.id=rd.regimen
               LEFT JOIN regimen_service_type rst ON rst.id=r.type_of_service
@@ -6027,6 +6027,7 @@ class report_management extends MY_Controller {
 	    if($transactions){
 	    	foreach($transactions as $transaction){
 	          $oi=$oi_drugs;
+	          $is_oi=FALSE;
 	          //split comma seperated drugs to array
               $drugs=$transaction['ARVDrug'];
               $drugs=explode(",", $drugs);
@@ -6036,11 +6037,14 @@ class report_management extends MY_Controller {
               foreach($drugs as $index=>$drug){
               	//add drug qtys to oi
               	if(array_key_exists($drug,$oi)){
-              	 $oi[$drug]=$qtys[$index];
+              		$is_oi=TRUE;
+              	    $oi[$drug]=$qtys[$index];
               	}
               }
               //add drug consumption to patient
-              $patients[$transaction['patient_id']]=$oi;
+              if($is_oi==TRUE){
+              	$patients[$transaction['patient_id']]=$oi;
+              } 
 	    	}
 	    }
 

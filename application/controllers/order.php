@@ -979,11 +979,7 @@ class Order extends MY_Controller {
         if ($status == "prepared") {
             //format to json
 			$json_data = json_encode($main_array, JSON_PRETTY_PRINT);
-
-			echo "<pre>";
-			echo $json_data;
-			echo "</pre>";
-			die();
+			
 			//get supplier
 			$facility_code = $this -> session -> userdata("facility");
 			$supplier = $this -> get_supplier($facility_code);
