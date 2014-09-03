@@ -513,6 +513,7 @@ foreach($results as $result){
 		   	  $("#servicestartedcontent").show();
                           $("#regimen option").remove();
                       }
+
 		   	  if($("#service option[value='"+service_line+"']").text()==="PEP"){
 		   	  	$("#pep_reason_listing").show();
 		   	  	$("#who_listing").hide();
