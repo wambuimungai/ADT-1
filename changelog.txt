@@ -1,3 +1,7 @@
+03/09/2014
+==============================================
+- Added: When dispensing, if patient is no longer pregnant, change type of service to ART
+
 Version 2.13 -28/08/2014
 ==============================================
 -Fixed: Reports: Patient Missing appointment accuracy
