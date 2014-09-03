@@ -414,12 +414,12 @@ if ($facility_object -> service_pep == "1") {
 					<?php }?>
 				</table>
 				<?php if($is_update==1){?>
-				    <input type="submit" id="save_changes" class="btn btn-info actual" value="Submit Order">
+				    <input type="submit" id="save_changes" class="btn btn-info actual" value="Submit Report">
 				    <input type="hidden" value="Submit Order" name="save_maps">
 				<?php
 				}}else{
 				?>	
-					<input type="submit" id="save_changes" class="btn btn-info actual" value="Submit Order">
+					<input type="submit" id="save_changes" class="btn btn-info actual" value="Submit Report">
 					<input type="hidden" value="Submit Order" name="save_maps">
 				<?php	
 				}
