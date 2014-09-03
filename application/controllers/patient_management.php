@@ -1098,12 +1098,10 @@ class Patient_Management extends MY_Controller {
 
 	public function updatePregnancyStatus(){
 		$patient_ccc = $this -> input ->post("patient_ccc");
-		
-		
 		//Check if patient is on PMTCT and change them to ART
 		$sql = "SELECT rst.name FROM patient p
 				LEFT JOIN regimen_service_type rst ON p.service = rst.id
-				WHERE p.patient_number_ccc ='7415'";
+				WHERE p.patient_number_ccc ='$patient_ccc'";
 		$query = $this ->db ->query($sql);
 		$result = $query ->result_array();
 		$service = $result[0]['name'];
@@ -1115,7 +1113,7 @@ class Patient_Management extends MY_Controller {
 			$art_service_id = $result[0]['id'];
 			$extra = ", service = '$art_service_id' ";
 		}
-		$sql = "UPDATE patient SET pregnant = '0' $extra WHERE patient_number_ccc ='7415'";
+		$sql = "UPDATE patient SET pregnant = '0' $extra WHERE patient_number_ccc ='$patient_ccc'";
 		$this ->db ->query($sql);
 		$count = $this -> db -> affected_rows();
 		

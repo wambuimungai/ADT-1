@@ -2,6 +2,7 @@
 ==============================================
 - Added: When dispensing, if patient is no longer pregnant, change type of service to ART
 - Fixed: recheck how age is calculated, round is not working
+- Fixed: Total number of patients on ART only calculation
 
 Version 2.13 -28/08/2014
 ==============================================
