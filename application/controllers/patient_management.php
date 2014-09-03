@@ -566,7 +566,7 @@ class Patient_Management extends MY_Controller {
 		if (!$other_drugs) {
 			$other_drugs = "";
 		}
-
+		//echo $this -> input -> post('pregnant', TRUE);die();
 		$data = array(
 						'drug_prophylaxis' => $drug_prophylaxis, 
 						'isoniazid_start_date'=>$this->input->post('iso_start_date',TRUE),
@@ -582,7 +582,7 @@ class Patient_Management extends MY_Controller {
 						'Dob' => $this -> input -> post('dob', TRUE), 
 						'Pob' => $this -> input -> post('pob', TRUE), 
 						'Gender' => $this -> input -> post('gender', TRUE), 
-						'Pregnant' => $this -> input -> post('pregnant', TRUE), 
+						'pregnant' => $this -> input -> post('pregnant', TRUE), 
 						'Start_Weight' => $this -> input -> post('start_weight', TRUE), 
 						'Start_Height' => $this -> input -> post('start_height', TRUE), 
 						'Start_Bsa' => $this -> input -> post('start_bsa', TRUE), 
@@ -1096,9 +1096,27 @@ class Patient_Management extends MY_Controller {
 
 	public function updatePregnancyStatus(){
 		$patient_ccc = $this -> input ->post("patient_ccc");
-		$sql = "UPDATE patient SET pregnant = '0' WHERE patient_number_ccc ='$patient_ccc'";
+		
+		
+		//Check if patient is on PMTCT and change them to ART
+		$sql = "SELECT rst.name FROM patient p
+				LEFT JOIN regimen_service_type rst ON p.service = rst.id
+				WHERE p.patient_number_ccc ='7415'";
+		$query = $this ->db ->query($sql);
+		$result = $query ->result_array();
+		$service = $result[0]['name'];
+		$extra ='';
+		if (stripos($service, "pmtct")===0){
+			$sql_get_art = "SELECT id FROM regimen_service_type WHERE name LIKE '%art%'";
+			$query = $this ->db ->query($sql_get_art);
+			$result = $query ->result_array();
+			$art_service_id = $result[0]['id'];
+			$extra = ", service = '$art_service_id' ";
+		}
+		$sql = "UPDATE patient SET pregnant = '0' $extra WHERE patient_number_ccc ='7415'";
 		$this ->db ->query($sql);
 		$count = $this -> db -> affected_rows();
+		
 	}
         public function update_tb_status() {
                 $patient_ccc = $this -> input ->post("patient_ccc");
