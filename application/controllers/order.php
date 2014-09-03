@@ -2835,27 +2835,28 @@ class Order extends MY_Controller {
 			}else if($data_type=='new_patient'){
 				//Males,females, revisit and new
 				//New , only get ART
-				$sql_clients = 'SELECT COUNT(DISTINCT(p.id)) as total,IF(p.gender=1,"new_male","new_female") as gender FROM patient p
-								LEFT JOIN patient_status ps ON ps.id=p.current_status
-								LEFT JOIN regimen_service_type rs ON rs.id=p.service
-								LEFT JOIN regimen r ON r.id = p.current_regimen
-								LEFT JOIN regimen_category rc ON rc.id = r.category
-								WHERE p.date_enrolled BETWEEN "' . $start_date . '" AND "' . $end_date . '" AND ps.name LIKE "%active%" 
-								AND ( rs.name LIKE "%art%" )  
-								GROUP BY gender';
+				$sql_clients = 'SELECT COUNT(DISTINCT(pv.id)) as total,IF(pv.gender=1,"new_male","new_female") as gender 
+								FROM v_patient_visits pv
+								INNER JOIN patient_status ps ON ps.id=pv.current_status
+								WHERE pv.date_enrolled >= "' . $start_date . '" AND pv.date_enrolled <= "' . $end_date . '"  
+								AND pv.dispensing_date>= "' . $start_date . '"
+								AND pv.dispensing_date <= "' . $end_date . '"
+								AND ps.name LIKE "%active%"
+								GROUP BY pv.gender';
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
 				$data['new_patient'] = $results;
 			}else if($data_type=='revisit_patient'){
 				//revisit
-				$sql_clients = 'SELECT COUNT(DISTINCT(p.id)) as total,IF(p.gender=1,"revisit_male","revisit_female") as gender 
-								FROM patient p
-								LEFT JOIN patient_status ps ON ps.id=p.current_status
-								LEFT JOIN regimen_service_type rs ON rs.id=p.service
-								WHERE p.date_enrolled < STR_TO_DATE("' . $start_date . '", "%Y-%m-%d") 
-								AND ps.name LIKE "%active%"  
-								AND ( rs.name LIKE "%art%" ) 
-								GROUP BY gender';
+				$sql_clients = 'SELECT COUNT(DISTINCT(pv.id)) as total,IF(pv.gender=1,"revisit_male","revisit_female") as gender 
+								FROM v_patient_visits pv
+								INNER JOIN patient_status ps ON ps.id=pv.current_status
+								WHERE pv.date_enrolled < "' . $start_date . '" 
+								AND pv.dispensing_date>= "' . $start_date . '"
+								AND pv.dispensing_date <= "' . $end_date . '"
+								AND ps.name LIKE "%active%"
+								GROUP BY pv.gender
+								';
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
 				$data['revisit_patient'] = $results;
