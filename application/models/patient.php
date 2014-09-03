@@ -37,6 +37,7 @@ class Patient extends Doctrine_Record {
 		$this -> hasColumn('SMS_Consent', 'varchar', 2);
 		$this -> hasColumn('Partner_Status', 'varchar', 2);
 		$this -> hasColumn('Fplan', 'text');
+		$this -> hasColumn('tb_category', 'varchar', 2);
 		$this -> hasColumn('Tbphase', 'varchar', 2);
 		$this -> hasColumn('Startphase', 'varchar', 15);
 		$this -> hasColumn('Endphase', 'varchar', 15);

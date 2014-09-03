@@ -17,7 +17,7 @@ class Git_Log extends Doctrine_Record {
 	}
 
 	public function getLatestHash(){
-		$query = Doctrine_Query::create() -> select("*") -> from("git_log")->orderBy("id desc")->limit(1);
+		$query = Doctrine_Query::create() -> select("*") -> from("git_log")->where("hash_value !=''")->orderBy("id desc")->limit(1);
 		$git_log = $query -> execute();
 		return @$git_log[0]->hash_value;
 	}

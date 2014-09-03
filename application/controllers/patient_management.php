@@ -443,6 +443,7 @@ class Patient_Management extends MY_Controller {
 		$new_patient -> Smoke = $this -> input -> post('smoke', TRUE);
 		$new_patient -> Alcohol = $this -> input -> post('alcohol', TRUE);
 		$new_patient -> Tb = $this -> input -> post('tb', TRUE);
+		$new_patient -> tb_category = $this -> input -> post('tbcategory', TRUE);
 		$new_patient -> Tbphase = $this -> input -> post('tbphase', TRUE);
 		$new_patient -> Startphase = $this -> input -> post('fromphase', TRUE);
 		$new_patient -> Endphase = $this -> input -> post('tophase', TRUE);
@@ -602,6 +603,7 @@ class Patient_Management extends MY_Controller {
 						'Smoke' => $this -> input -> post('smoke', TRUE), 
 						'Alcohol' => $this -> input -> post('alcohol', TRUE), 
 						'Tb' => $this -> input -> post('tb', TRUE), 
+						'tb_category' => $this -> input -> post('tbcategory', TRUE), 
 						'Tbphase' => $this -> input -> post('tbphase', TRUE), 
 						'Startphase' => $this -> input -> post('fromphase', TRUE), 
 						'Endphase' => $this -> input -> post('tophase', TRUE), 
