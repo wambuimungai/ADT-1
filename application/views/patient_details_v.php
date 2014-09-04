@@ -562,12 +562,14 @@ if(isset($results)){
 				getRegimenChange();
 				getAppointmentHistory();
 				$("#patient_details").dialog("open");
+				//function to get last viral load for this patient
+				get_viral_result($("#patient_number").val())
 			});
 
 			$("#patient_details").dialog({
 	           width : 1200,
 	           modal : true,
-	           height: 'auto',
+	           height: 600,
 	           autoOpen : false,
 	           show: 'fold'
              });
@@ -584,8 +586,27 @@ if(isset($results)){
                 autoOpen: false,
                 show: 'fold',
              });
+
+			function get_viral_result(ccc_no){
+				data_source="<?php echo base_url().'assets/viral_load.json'; ?>";
+				$("#viral_load_date").text('N/A');
+				$("#viral_load_result").text('N/A');
+				$.get(data_source,function(data){
+					if(data.length !=0){
+						data_length=data[ccc_no].length 
+						if(data_length >0){
+	 						$.each(data[ccc_no],function(key,val) {
+	 						    if(key==(data_length-1)){  
+	 						    	$("#viral_load_date").text(val.date_tested);
+							        $("#viral_load_result").text(val.result)   
+							    }      
+							});	
+	 					}
+					}
+				});
+			}
              
-             function getDispensing(){
+            function getDispensing(){
              	 var patient_no=$("#patient_number").val();
              	 var link=base_url+"patient_management/getSixMonthsDispensing/"+patient_no;
 					$.ajax({
@@ -1260,6 +1281,8 @@ if(isset($results)){
 				<th>Age</th>
 				<th>Date Therapy Started</th>
 				<th>Current Status</th>
+				<th>Last Viral Load Date</th>
+				<th>Last Viral Load Result</th>
 			</tr>
 			<tr>
 				<td><?php echo $result['patient_number_ccc']; ?></td>
@@ -1269,6 +1292,8 @@ if(isset($results)){
 				<td id="info_age"></td>
 				<td><?php echo date('d-M-Y',strtotime($result['date_enrolled'])); ?></td>
 				<td id="info_status"></td>
+				<td id="viral_load_date"></td>
+				<td id="viral_load_result"></td>
 			</tr>
 		</table>
 		<h4 style="text-align: center">Patient Pill Count History (Last 12 Months)</h4>
