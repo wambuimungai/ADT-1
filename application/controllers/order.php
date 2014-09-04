@@ -710,7 +710,7 @@ class Order extends MY_Controller {
 		$main_array = array();
 		$updated = "";
 		$created = date('Y-m-d H:i:s'); 
-
+		
 		if ($id != "") {
 			$status = $this -> input -> post("status");
 			$created = $this -> input -> post("created");
@@ -721,7 +721,7 @@ class Order extends MY_Controller {
 				$status = $this -> input -> post("status_change");
 			}
 		}
-
+		
 		if ($type == "cdrr") {
 			$save = $this -> input -> post("save");
 			if ($save) {
@@ -854,6 +854,7 @@ class Order extends MY_Controller {
 
 			$save = $this -> input -> post("save_maps");
 			if ($save) {
+				
 				$code = $this -> input -> post("report_type");
 				$code = $this -> getActualCode($code, $type);
 				$reporting_period = $this -> input -> post('reporting_period');
@@ -931,9 +932,9 @@ class Order extends MY_Controller {
 				//Insert maps_item
 				$maps_item = array();
 				$regimen_counter = 0;
-
+				
 				if ($regimens != null) {
-
+				
 					foreach ($regimens as $regimen) {
 						//Check if any patient numbers have been reported for this regimen
 						if ($patient_numbers[$regimen_counter] > 0 && $regimens[$regimen_counter] != 0 && trim($regimens[$regimen_counter]) != '') {
@@ -948,6 +949,7 @@ class Order extends MY_Controller {
 						}
 						$regimen_counter++;
 					}
+					
 				}
 				$main_array['ownMaps_item'] = $maps_item;
 				//Insert Logs
