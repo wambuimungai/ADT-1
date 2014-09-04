@@ -372,31 +372,32 @@ foreach($results as $result){
 			
 			//Function to calculate date ranges for tb stages
 			$("#fromphase").change(function(){
-				  var from_date=$(this).val();
-				  var new_date=new Date(from_date);
-				  var to_date=new Date();
-				  var tbphase=$(".tbphase").val();
-				  var category=$("#tbcategory").val();
-				  if (category==1) {
-				  if(tbphase==1){
-				  	//Intensive
-				  	 var numberOfDaysToAdd=90;
-				  }else if(tbphase==2){
-				  	//Continuation
-				  	 var numberOfDaysToAdd=112;
-				  } }
-				  else if (category==2) {
-                   if(tbphase==1){
-				  	//Intensive
-				  	 var numberOfDaysToAdd=90;
-				  }else if(tbphase==2){
-				  	//Continuation
-				  	 var numberOfDaysToAdd=150;
-				  }
-
-				  }
-				  to_date.setDate(new_date.getDate() + numberOfDaysToAdd);
-				  $("#tophase").datepicker('setDate', new Date(to_date));
+				var from_date=$(this).val();
+				var new_date=new Date(from_date);
+				var to_date=new Date();
+				var category=$("#tbcategory").val();
+				var tbphase=$(".tbphase").val();
+			    if (category==1) {
+					if(tbphase==1){
+					  	//Intensive
+					  	var numberOfDaysToAdd=90;
+					}else if(tbphase==2){
+					  	//Continuation
+					  	var numberOfDaysToAdd=112;
+					} 
+			    }else if (category==2) {
+	                 if(tbphase==1){
+					  	//Intensive
+					  	var numberOfDaysToAdd=90;
+					}else if(tbphase==2){
+					  	//Continuation
+					  	var numberOfDaysToAdd=150;
+					}
+			    }
+                var start_date = new Date(new_date.getFullYear(), new_date.getMonth(), new_date.getDate());
+                var start_date_timestamp = start_date.getTime();
+                var end_date_timestamp = (1000 * 60 * 60 * 24 * numberOfDaysToAdd) + start_date_timestamp;
+			    $("#tophase").datepicker('setDate', new Date(end_date_timestamp));
 			});
 			
 			//Function to enable textareas for other chronic illnesses
