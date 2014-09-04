@@ -299,6 +299,7 @@ if ($facility_object -> service_pep == "1") {
 								?>
 							<tr>
 								<td style="border-right:2px solid #DDD;"><?php echo $regimen -> code;?>
+									<!--<input type="hidden" name="item_id[]" class="item_id" id="item_id_<?php echo $regimen -> id;?>" value=""/>-->
 								</td>
 								<td regimen_id="<?php echo $regimen -> id;?>" class="regimen_desc col_drug"><?php echo $regimen -> name;?></td>
 								<td regimen_id="<?php echo $regimen -> id;?>" class="regimen_numbers">
@@ -314,12 +315,14 @@ if ($facility_object -> service_pep == "1") {
 								?>
 							<tr>
 								<td style="border-right:2px solid #DDD;"><?php echo $regimen -> code;?>
-									<input type="hidden" name="item_id[]" id="item_id_<?php echo $regimen -> id;?>" value=""/>
+									<!--<input type="hidden" name="item_id[]" class="item_id" id="item_id_<?php echo $regimen -> id;?>" value=""/>-->
 								</td>
 								<td regimen_id="<?php echo $regimen -> id;?>" class="regimen_desc col_drug"><?php echo $regimen -> name;?></td>
 								<td regimen_id="<?php echo $regimen -> id;?>" class="regimen_numbers">
 								<input type="text" class="f_right patient_number" data-cat="<?php echo $cat; ?>" name="patient_numbers[]" id="patient_numbers_<?php echo $regimen -> id;?>" >
 								<input name="patient_regimens[]"class="regimen_list" value="<?php echo $regimen -> id;?>" type="hidden">
+								<input type="hidden" name="item_id[]" class="item_id"/>
+								
 								</td>
 							</tr>
 						<?php
