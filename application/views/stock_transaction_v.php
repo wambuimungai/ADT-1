@@ -200,16 +200,14 @@
 			selected_source=$("#select_source option:selected").text().toLowerCase().replace(/ /g,'');
 			var supplier_name='<?php echo $supplier_name ?>';
 			pipeline_name=supplier_name.toLowerCase().replace(/ /g,'');
-			
-			
-				//show email
-					optgrp=$("#select_source :selected").parent().attr('label');
-					//alert(optgrp);
+			//show email
+			optgrp=$("#select_source :selected").parent().attr('label');
+			var online = navigator.onLine;
+			  	if(online==true){
 					if(trans_type.indexOf('receivedfrom')!= -1 && optgrp.indexOf('Central Site')!= -1){
-					 $(".send_email").css("display","block");	
+						$(".send_email").css("display","block");	
 					} 
-			
-			
+			    }
 			//Get type of optgroup selected
 			optgroup =$('#select_source :selected').parent().attr('label');
 			
