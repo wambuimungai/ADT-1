@@ -4230,15 +4230,68 @@ class report_management extends MY_Controller {
 	}
 
 	public function graph_patients_enrolled_in_year($year = "") {
+		$main_array=array();
 		$facility_code = $this -> session -> userdata('facility');
-		$sql = "SELECT MONTH(p.date_enrolled) AS MONTH,rst.name AS Enrollment,COUNT(*) AS TOTAL FROM patient p 
-				LEFT JOIN regimen_service_type rst ON rst.id = p.service 
-				WHERE YEAR(p.date_enrolled)='$year' AND rst.active=1 
-				AND p.facility_code='$facility_code' 
-				GROUP BY MONTH(p.date_enrolled),rst.name";
-		$query = $this -> db -> query($sql);
-		$results = $query -> result_array();
-		$data['graphs'] = $results;
+		$months=array(
+			      '1'=>'Jan',
+			      '2'=>'Feb',
+			      '3'=>'Mar',
+			      '4'=>'Apr',
+			      '5'=>'May',
+			      '6'=>'Jun',
+			      '7'=>'Jul',
+			      '8'=>'Aug',
+			      '9'=>'Sep',
+			      '10'=>'Oct',
+			      '11'=>'Nov',
+			      '12'=>'Dec');
+
+		$services_data=Regimen_Service_Type::getHydratedAll();
+		foreach($services_data as $service){
+			$services[]=$service['Name'];
+		}
+
+		//Loop through all services
+		foreach($services as $service){
+			$service_array=array();
+			$month_data=array();
+			$service_array['name']=$service;
+			//Loop through all months
+			foreach($months as $month=>$month_name){
+				$sql = "SELECT COUNT(*) AS total
+					    FROM patient p 
+					    LEFT JOIN regimen_service_type rst ON p.service=rst.id
+					    WHERE YEAR(p.date_enrolled)='$year' 
+					    AND MONTH(p.date_enrolled)='$month'
+					    AND rst.name LIKE '%$service%'
+					    AND p.facility_code='$facility_code'";
+				$query = $this -> db -> query($sql);
+				$results = $query -> result_array();
+				if($results){
+                    $month_data[]=@(int)$results[0]['total'];
+				}else{
+					$month_data[]=0;
+				}
+		    }
+		    $service_array['data']=$month_data;
+		    //append service data to main array
+		    $main_array[]=$service_array;
+		}
+        //chart data
+		$resultArray = json_encode($main_array);
+		$categories = json_encode(array_values($months));
+		//chart settings
+		$data['resultArraySize'] =7;
+		$data['container'] = 'chart_sales';
+		$data['chartType'] = 'line';
+		$data['title'] = 'Chart';
+		$data['chartTitle'] = 'Listing of Patients Enrolled for the Year: '.$year;
+		$data['categories'] = $categories;
+		$data['xAxix'] = 'Months of the Year';
+		$data['suffix']= '';
+		$data['yAxix'] = 'Totals';
+		$data['resultArray'] = $resultArray;
+		$data['graphs'] = $this -> load -> view('graph_v', $data,TRUE);
 		$data['title'] = "webADT | Reports";
 		$data['hide_side_menu'] = 1;
 		$data['banner_text'] = "Facility Reports";
@@ -4246,7 +4299,6 @@ class report_management extends MY_Controller {
 		$data['selected_report_type'] = "Standard Reports";
 		$data['report_title'] = "Graph of Number of Patients Enrolled Per Month in a Given Year";
 		$data['facility_name'] = $this -> session -> userdata('facility_name');
-		$data['year'] = $year;
 		$data['content_view'] = 'reports/graphs_on_patients_v';
 		$this -> load -> view('template', $data);
 	}
