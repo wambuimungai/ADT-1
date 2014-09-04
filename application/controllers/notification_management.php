@@ -274,7 +274,7 @@ class notification_management extends MY_Controller {
 													GROUP BY p.patient_number_ccc;";
 
 		/*Patients without Service Line*/
-		$sql['Patients without Current Status'] = "SELECT p.patient_number_ccc,
+		$sql['Patients without Service Line'] = "SELECT p.patient_number_ccc,
 		                                                  p.service,
 		                                                  rst.name as status,
 		                                                  p.id
@@ -316,6 +316,7 @@ class notification_management extends MY_Controller {
 														WHERE char_length(p.status_change_date)<10
 														AND p.active='1'
 														AND rst.Name NOT LIKE '%pep%'
+														AND ps.Name NOT LIKE '%transit%' 
 														AND ps.Name NOT LIKE '%active%'
 														AND ( r.regimen_desc NOT LIKE '%pmtct%' OR ROUND( DATEDIFF( curdate( ) , p.dob ) /360 ) >2)
 														GROUP BY p.patient_number_ccc;";

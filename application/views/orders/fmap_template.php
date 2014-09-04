@@ -414,12 +414,12 @@ if ($facility_object -> service_pep == "1") {
 					<?php }?>
 				</table>
 				<?php if($is_update==1){?>
-				    <input type="submit" id="save_changes" class="btn btn-info actual" value="Submit Order">
+				    <input type="submit" id="save_changes" class="btn btn-info actual" value="Submit Report">
 				    <input type="hidden" value="Submit Order" name="save_maps">
 				<?php
 				}}else{
 				?>	
-					<input type="submit" id="save_changes" class="btn btn-info actual" value="Submit Order">
+					<input type="submit" id="save_changes" class="btn btn-info actual" value="Submit Report">
 					<input type="hidden" value="Submit Order" name="save_maps">
 				<?php	
 				}
@@ -467,7 +467,7 @@ if ($facility_object -> service_pep == "1") {
 			$.blockUI({ message: '<h3><img width="30" height="30" src="<?php echo asset_url().'images/loading_spin.gif' ?>" /> Generating...</h3>' }); 
             var period_start = '<?php echo date('Y-m-01',strtotime(date('Y-m-d').'-1 month')) ?>';
             var period_end = '<?php echo date('Y-m-t',strtotime(date('Y-m-d').'-1 month')) ?>';
-            var data_type = 'art';
+            var data_type = 'new_patient';
             $('#art_adult').val(0);
 			$('#art_child').val(0);
 			$('#new_male').val(0);
@@ -513,7 +513,10 @@ if ($facility_object -> service_pep == "1") {
 				new_value = 0;
 			}
 			var change = new_value - old_value;
-			if(reg_category.indexOf('paed')>-1 || reg_category.indexOf('ped')>-1 || reg_category.indexOf('child')>-1){//Check if regimen is adult or paed
+			if((reg_category.indexOf('pep')>-1 || reg_category.indexOf('pmtct')>-1)){
+				
+			}
+			else if((reg_category.indexOf('paed')>-1 || reg_category.indexOf('ped')>-1 || reg_category.indexOf('child')>-1)){//Check if regimen is adult or paed
 				var old_val = $("#art_child").val();
 				var new_val = parseInt(old_val)+(parseInt(change));
 				$("#art_child").val(new_val);
@@ -560,27 +563,7 @@ if ($facility_object -> service_pep == "1") {
 				dataType : 'json',
 				success : function(data) {
 					var x=0;
-					if('art' in data){//Total ART
-						
-						var l_art=data.art.length;
-						if(l_art==1){
-							if(data.art[0].age=='art_adult'){$('#art_adult').val(data.art[0].total);}
-							else{$('#art_child').val(data.art[0].total);}
-						}
-						else if(l_art==2){
-							if(data.art[0].age=='art_adult'){
-								$('#art_adult').val(data.art[0].total);
-								$('#art_child').val(data.art[1].total);
-							}
-							else if(data.art[0].age=='art_child'){
-								$('#art_adult').val(data.art[1].total);
-								$('#art_child').val(data.art[0].total);
-							}
-							
-						}
-						getCentralData(period_start,period_end,'new_patient');//Recursive function for the next data to be appended
-						
-					}else if('new_patient' in data){
+					if('new_patient' in data){
 						var l_new_patient=data.new_patient.length;
 						if(l_new_patient==1){//Check if you only have males or female patients
 							if(data.new_patient[0].gender=='new_male'){$('#new_male').val(data.new_patient[0].total);}
