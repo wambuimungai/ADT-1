@@ -1,35 +1,28 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		var results=<?php echo json_encode($results);?>;
-		var missed_pills_count_100 = 0;
 		var missed_pills_count_95 = 0;
 		var missed_pills_count_85 = 0;
 		var missed_pills_count_80 = 0;
 
-		var two_missed_pills_count_100 = 0;
 		var two_missed_pills_count_95 = 0;
 		var two_missed_pills_count_85 = 0;
 		var two_missed_pills_count_80 = 0;
 
-		var pills_count_100 = 0;
 		var pills_count_95 = 0;
 		var pills_count_85 = 0;
 		var pills_count_80 = 0;
 
-		var appoint_pills_count_100 = 0;
 		var appoint_pills_count_95 = 0;
 		var appoint_pills_count_85 = 0;
 		var appoint_pills_count_80 = 0;
 
-		var two_pills_count_100 = 0;
 		var two_pills_count_95 = 0;
 		var two_pills_count_85 = 0;
 		var two_pills_count_80 = 0;
 
 		//Appointment variables
 		//Count for ARVs/OI in all levels of appointments
-		var appointment_arv_100 = 0;
-		var appointment_oi_100 = 0;
 		var appointment_arv_95 = 0;
 		var appointment_oi_95 = 0;
 		var appointment_arv_85 = 0;
@@ -38,8 +31,6 @@
 		var appointment_oi_80 = 0;
 
 		//Variables to hold gender
-		var appointment_male_100 = 0;
-		var appointment_female_100 = 0;
 		var appointment_male_95 = 0;
 		var appointment_female_95 = 0;
 		var appointment_male_85 = 0;
@@ -48,11 +39,7 @@
 		var appointment_female_80 = 0;
 
 		//Variables for Age
-		var appointment_lt14_100 = 0;
-		var appointment_lt15_100 = 0;
-		var appointment_lt24_100 = 0;
-
-		var appointment_lt14_95 = 0;
+                var appointment_lt14_95 = 0;
 		var appointment_lt15_95 = 0;
 		var appointment_lt24_95 = 0;
 
@@ -66,18 +53,14 @@
 
 		//Missed doses
 		//Variables to hold total
-		var missed_total_100 = 0;
 		var missed_total_95 = 0;
 		var missed_total_85 = 0;
-		var missed_total_80 = 0;
-		var missed_2_total_100 = 0;
+		var missed_total_80 = 0;;
 		var missed_2_total_95 = 0;
 		var missed_2_total_85 = 0;
 		var missed_2_total_80 = 0;
 
 		//Variables to hold gender
-		var missed_1_male_100 = 0;
-		var missed_1_female_100 = 0;
 		var missed_1_male_95 = 0;
 		var missed_1_female_95 = 0;
 		var missed_1_male_85 = 0;
@@ -94,13 +77,6 @@
 		var missed_2_female_80 = 0;
 
 		//Variables for Age
-		var missed_1_lt14_100 = 0;
-		var missed_1_lt15_100 = 0;
-		var missed_1_lt24_100 = 0;
-		var missed_2_lt14_100 = 0;
-		var missed_2_lt15_100 = 0;
-		var missed_2_lt24_100 = 0;
-
 		var missed_1_lt14_95 = 0;
 		var missed_1_lt15_95 = 0;
 		var missed_1_lt24_95 = 0;
@@ -123,27 +99,20 @@
 		var missed_2_lt24_80 = 0;
 
 		//Pill Count
-		//Variables to hold total
-		var pill_total_100 = 0;
 		var pill_total_95 = 0;
 		var pill_total_85 = 0;
 		var pill_total_80 = 0;
-		var pill_2_total_100 = 0;
 		var pill_2_total_95 = 0;
 		var pill_2_total_85 = 0;
 		var pill_2_total_80 = 0;
 
 		//Variables to hold gender
-		var pill_1_male_100 = 0;
-		var pill_1_female_100 = 0;
 		var pill_1_male_95 = 0;
 		var pill_1_female_95 = 0;
 		var pill_1_male_85 = 0;
 		var pill_1_female_85 = 0;
 		var pill_1_male_80 = 0;
 		var pill_1_female_80 = 0;
-		var pill_2_male_100 = 0;
-		var pill_2_female_100 = 0;
 		var pill_2_male_95 = 0;
 		var pill_2_female_95 = 0;
 		var pill_2_male_85 = 0;
@@ -152,13 +121,6 @@
 		var pill_2_female_80 = 0;
 
 		//Variables for Age
-		var pill_1_lt14_100 = 0;
-		var pill_1_lt15_100 = 0;
-		var pill_1_lt24_100 = 0;
-		var pill_2_lt14_100 = 0;
-		var pill_2_lt15_100 = 0;
-		var pill_2_lt24_100 = 0;
-
 		var pill_1_lt14_95 = 0;
 		var pill_1_lt15_95 = 0;
 		var pill_1_lt24_95 = 0;
@@ -205,23 +167,7 @@
 			if(hey.length > 0) {
 				//calculate adherence by missed pills
 				if(dose_frequency == 1) {
-					if(missed_pills <= 0) {
-						missed_total_100++;
-						if(gender == 1) {
-							missed_1_male_100++;
-						} else if(gender == 2) {
-							missed_1_female_100++;
-						}
-						//Age
-						if(age < 15) {
-							missed_1_lt14_100++;
-						} else if(age > 24) {
-							missed_1_lt24_100++;
-						} else {
-							missed_1_lt15_100++;
-						}
-
-					} else if(missed_pills < 2 && missed_pills > 0) {
+					 if(missed_pills < 2 && missed_pills >= 0) {
 						missed_total_95++;
 						if(gender == 1) {
 							missed_1_male_95++;
@@ -273,23 +219,7 @@
 					}
 
 				} else if(dose_frequency == 2) {
-					if(missed_pills <= 0) {
-						missed_2_total_100++;
-						if(gender == 1) {
-							missed_2_male_100++;
-						} else if(gender == 2) {
-							missed_2_female_100++;
-						}
-
-						//Age
-						if(age < 15) {
-							missed_2_lt14_100++;
-						} else if(age > 24) {
-							missed_2_lt24_100++;
-						} else {
-							missed_2_lt15_100++;
-						}
-					} else if(missed_pills <= 3 && missed_pills > 0) {
+					 if(missed_pills <= 3 && missed_pills >= 0) {
 						missed_2_total_95++;
 						if(gender == 1) {
 							missed_2_male_95++;
@@ -342,23 +272,7 @@
 
 				//calculate adherence by pill count
 				if(dose_frequency == 1) {             
-					if(pill_count <= 0) {
-						pill_total_100++;
-						if(gender == 1) {
-							pill_1_male_100++;
-						} else if(gender == 2) {
-							pill_1_female_100++;
-						}
-						//Age
-						if(age < 15) {
-							pill_1_lt14_100++;
-						} else if(age > 24) {
-							pill_1_lt24_100++;
-						} else {
-							pill_1_lt15_100++;
-						}
-
-					} else if(pill_count < 2 && pill_count > 0) {
+					 if(pill_count < 2 && pill_count >= 0) {
 						pill_total_95++;
 						if(gender == 1) {
 							pill_1_male_95++;
@@ -410,23 +324,7 @@
 					}
 
 				} else if(dose_frequency == 2) {
-					if(pill_count <= 0) {
-						pill_2_total_100++;
-						if(gender == 1) {
-							pill_2_male_100++;
-						} else if(gender == 2) {
-							pill_2_female_100++;
-						}
-
-						//Age
-						if(age < 15) {
-							pill_2_lt14_100++;
-						} else if(age > 24) {
-							pill_2_lt24_100++;
-						} else {
-							pill_2_lt15_100++;
-						}
-					} else if(pill_count <= 3 && pill_count > 0) {
+					 if(pill_count <= 3 && pill_count >= 0) {
 						pill_2_total_95++;
 						if(gender == 1) {
 							pill_2_male_95++;
@@ -479,31 +377,8 @@
 
 				//calculate adherence by appointment
 				count++;
-				adherence_rate = parent_row['adherence'];
-				if(adherence_rate == "100%") {
-					appoint_pills_count_100++;
-
-					if(parent_row['service'] == 5) {
-						appointment_oi_100++;
-					} else {
-						appointment_arv_100++;
-					}
-					if(parent_row['gender'] == 1) {
-						appointment_male_100++;
-					} else if(parent_row['gender'] == 2) {
-						appointment_female_100++;
-					}
-					if(parent_row['age'] < 15) {
-						appointment_lt14_100++;
-					} else if(parent_row['age'] > 24) {
-						appointment_lt24_100++;
-					} else {
-						appointment_lt15_100++;
-					}
-
-					//Missed appointments
-
-				} else if(adherence_rate == ">=95%") {
+				adherence_rate = parent_row['adherence']; 
+				if(adherence_rate == ">=95%" || adherence_rate == "100%") {
 					appoint_pills_count_95++;
 					if(parent_row['service'] == 5) {
 						appointment_oi_95++;
@@ -578,28 +453,22 @@
 			}
 
 		}
-		$("#appointment_total_100").text(appoint_pills_count_100);
+                
 		$("#appointment_total_95").text(appoint_pills_count_95);
 		$("#appointment_total_85").text(appoint_pills_count_85);
 		$("#appointment_total_80").text(appoint_pills_count_80);
 
 		//Appointments ARVs/OI
-		$("#appointment_arv_100").text(appointment_arv_100);
 		$("#appointment_arv_95").text(appointment_arv_95);
 		$("#appointment_arv_85").text(appointment_arv_85);
 		$("#appointment_arv_80").text(appointment_arv_80);
 
 		//Appointments /OI
-		$("#appointment_oi_100").text(appointment_oi_100);
 		$("#appointment_oi_95").text(appointment_oi_95);
 		$("#appointment_oi_85").text(appointment_oi_85);
 		$("#appointment_oi_80").text(appointment_oi_80);
 
 		//Appointments for Age
-		$("#appointment_lt14_100").text(appointment_lt14_100);
-		$("#appointment_15-24_100").text(appointment_lt15_100);
-		$("#appointment_gt24_100").text(appointment_lt24_100);
-
 		$("#appointment_lt14_95").text(appointment_lt14_95);
 		$("#appointment_15-24_95").text(appointment_lt15_95);
 		$("#appointment_gt24_95").text(appointment_lt24_95);
@@ -613,8 +482,6 @@
 		$("#appointment_gt24_80").text(appointment_lt24_80);
 
 		//Apointment Gender
-		$("#appointment_male_100").text(appointment_male_100);
-		$("#appointment_female_100").text(appointment_female_100);
 		$("#appointment_male_95").text(appointment_male_95);
 		$("#appointment_female_95").text(appointment_female_95);
 		$("#appointment_male_85").text(appointment_male_85);
@@ -623,9 +490,6 @@
 		$("#appointment_female_80").text(appointment_female_80);
 
 		//Missed dose total
-		$("#missed_total_100").text(missed_total_100);
-		$("#missed_2_total_100").text(missed_2_total_100);
-		$("#missed_2_gt25_100avg").text((missed_total_100+missed_2_total_100)/2);
 		$("#missed_total_95").text(missed_total_95);
 		$("#missed_2_total_95").text(missed_2_total_95);
 		$("#missed_2_gt25_95avg").text((missed_total_95+missed_2_total_95)/2);
@@ -637,9 +501,6 @@
 		$("#missed_2_gt25_80avg").text((missed_total_80+missed_2_total_80)/2);
 
 		//Pill Count total
-		$("#pill_total_100").text(pill_total_100);
-		$("#pill_2_total_100").text(pill_2_total_100);
-		$("#pill_2_gt25_100avg").text((pill_total_100+pill_2_total_100)/2);
 		$("#pill_total_95").text(pill_total_95);
 		$("#pill_2_total_95").text(pill_2_total_95);
 		$("#pill_2_gt25_95avg").text((pill_total_95+pill_2_total_95)/2);
@@ -651,101 +512,81 @@
 		$("#pill_2_gt25_80avg").text((pill_total_80+pill_2_total_80)/2);
 
 		//Missed dose gender
-		$("#missed_1_male_100").text(missed_1_male_100);
 		$("#missed_1_male_95").text(missed_1_male_95);
 		$("#missed_1_male_85").text(missed_1_male_85);
 		$("#missed_1_male_80").text(missed_1_male_80);
-		$("#missed_1_female_100").text(missed_1_female_100);
 		$("#missed_1_female_95").text(missed_1_female_95);
 		$("#missed_1_female_85").text(missed_1_female_85);
 		$("#missed_1_female_80").text(missed_1_female_80);
 
-		$("#missed_2_male_100").text(missed_2_male_100);
 		$("#missed_2_male_95").text(missed_2_male_95);
 		$("#missed_2_male_85").text(missed_2_male_85);
 		$("#missed_2_male_80").text(missed_2_male_80);
-		$("#missed_2_female_100").text(missed_2_female_100);
 		$("#missed_2_female_95").text(missed_2_female_95);
 		$("#missed_2_female_85").text(missed_2_female_85);
 		$("#missed_2_female_80").text(missed_2_female_80);
 
 		//Pill Count gender
-		$("#pill_1_male_100").text(pill_1_male_100);
 		$("#pill_1_male_95").text(pill_1_male_95);
 		$("#pill_1_male_85").text(pill_1_male_85);
 		$("#pill_1_male_80").text(pill_1_male_80);
-		$("#pill_1_female_100").text(pill_1_female_100);
 		$("#pill_1_female_95").text(pill_1_female_95);
 		$("#pill_1_female_85").text(pill_1_female_85);
 		$("#pill_1_female_80").text(pill_1_female_80);
 
-		$("#pill_2_male_100").text(pill_2_male_100);
 		$("#pill_2_male_95").text(pill_2_male_95);
 		$("#pill_2_male_85").text(pill_2_male_85);
 		$("#pill_2_male_80").text(pill_2_male_80);
-		$("#pill_2_female_100").text(pill_2_female_100);
 		$("#pill_2_female_95").text(pill_2_female_95);
 		$("#pill_2_female_85").text(pill_2_female_85);
 		$("#pill_2_female_80").text(pill_2_female_80);
 
 		//Missed dose age
-		$("#missed_1_lt14_100").text(missed_1_lt14_100);
 		$("#missed_1_lt14_95").text(missed_1_lt14_95);
 		$("#missed_1_lt14_85").text(missed_1_lt14_85);
 		$("#missed_1_lt14_80").text(missed_1_lt14_80);
 
-		$("#missed_1_15-24_100").text(missed_1_lt15_100);
 		$("#missed_1_15-24_95").text(missed_1_lt15_95);
 		$("#missed_1_15-24_85").text(missed_1_lt15_85);
 		$("#missed_1_15-24_80").text(missed_1_lt15_80);
 
-		$("#missed_1_gt25_100").text(missed_1_lt24_100);
 		$("#missed_1_gt25_95").text(missed_1_lt24_95);
 		$("#missed_1_gt25_85").text(missed_1_lt24_85);
 		$("#missed_1_gt25_80").text(missed_1_lt24_80);
 
-		$("#missed_2_lt14_100").text(missed_2_lt14_100);
 		$("#missed_2_lt14_95").text(missed_2_lt14_95);
 		$("#missed_2_lt14_85").text(missed_2_lt14_85);
 		$("#missed_2_lt14_80").text(missed_2_lt14_80);
 
-		$("#missed_2_15-24_100").text(missed_2_lt15_100);
 		$("#missed_2_15-24_95").text(missed_2_lt15_95);
 		$("#missed_2_15-24_85").text(missed_2_lt15_85);
 		$("#missed_2_15-24_80").text(missed_2_lt15_80);
 
-		$("#missed_2_gt25_100").text(missed_2_lt24_100);
 		$("#missed_2_gt25_95").text(missed_2_lt24_95);
 		$("#missed_2_gt25_85").text(missed_2_lt24_85);
 		$("#missed_2_gt25_80").text(missed_2_lt24_80);
 
-		//Pill count age
-		$("#pill_1_lt14_100").text(pill_1_lt14_100);
+		//Pill count age		
 		$("#pill_1_lt14_95").text(pill_1_lt14_95);
 		$("#pill_1_lt14_85").text(pill_1_lt14_85);
 		$("#pill_1_lt14_80").text(pill_1_lt14_80);
-
-		$("#pill_1_15-24_100").text(pill_1_lt15_100);
+		
 		$("#pill_1_15-24_95").text(pill_1_lt15_95);
 		$("#pill_1_15-24_85").text(pill_1_lt15_85);
 		$("#pill_1_15-24_80").text(pill_1_lt15_80);
-
-		$("#pill_1_gt25_100").text(pill_1_lt24_100);
+	
 		$("#pill_1_gt25_95").text(pill_1_lt24_95);
 		$("#pill_1_gt25_85").text(pill_1_lt24_85);
 		$("#pill_1_gt25_80").text(pill_1_lt24_80);
 
-		$("#pill_2_lt14_100").text(pill_2_lt14_100);
 		$("#pill_2_lt14_95").text(pill_2_lt14_95);
 		$("#pill_2_lt14_85").text(pill_2_lt14_85);
 		$("#pill_2_lt14_80").text(pill_2_lt14_80);
-
-		$("#pill_2_15-24_100").text(pill_2_lt15_100);
+		
 		$("#pill_2_15-24_95").text(pill_2_lt15_95);
 		$("#pill_2_15-24_85").text(pill_2_lt15_85);
 		$("#pill_2_15-24_80").text(pill_2_lt15_80);
-
-		$("#pill_2_gt25_100").text(pill_2_lt24_100);
+		
 		$("#pill_2_gt25_95").text(pill_2_lt24_95);
 		$("#pill_2_gt25_85").text(pill_2_lt24_85);
 		$("#pill_2_gt25_80").text(pill_2_lt24_80);
@@ -792,7 +633,7 @@
 			<table class="listing_table" border="1" id="appointment_listing"  cellpadding="3" cellspacing="5" align="center" width="100%">
 				<thead>
 					<tr>
-						<th class="h1" rowspan="2">No of Days Missed</th>
+				
 						<th class="h1" rowspan="2">Adherence %</th>
 						<th class="h1" rowspan="2">Total</th>
 						<th class="h1 _status" colspan="2">Status</th>
@@ -811,16 +652,13 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td>0</td><td>100%</td><td id="appointment_total_100" class="_total"></td><td id="appointment_arv_100" class="_status"></td><td id="appointment_oi_100" class="_status"></td><td id="appointment_male_100" class="_sex"></td><td id="appointment_female_100" class="_sex"></td><td id="appointment_lt14_100" class="_age"></td><td id="appointment_15-24_100" class="_age"><td id="appointment_gt24_100" class="_age"></td>
+						<td>&gt;=95 % (Within 2 days)</td><td id="appointment_total_95" class="_total"></td><td id="appointment_arv_95" class="_status"></td><td id="appointment_oi_95" class="_status"></td><td id="appointment_male_95" class="_sex"></td><td id="appointment_female_95" class="_sex"></td><td id="appointment_lt14_95" class="_age"></td><td id="appointment_15-24_95" class="_age"><td id="appointment_gt24_95" class="_age"></td>
 					</tr>
 					<tr>
-						<td>Within 2 days</td><td>&gt;=95 %</td><td id="appointment_total_95" class="_total"></td><td id="appointment_arv_95" class="_status"></td><td id="appointment_oi_95" class="_status"></td><td id="appointment_male_95" class="_sex"></td><td id="appointment_female_95" class="_sex"></td><td id="appointment_lt14_95" class="_age"></td><td id="appointment_15-24_95" class="_age"><td id="appointment_gt24_95" class="_age"></td>
+						<td>85 - 94 %(3 - 14 days)</td><td id="appointment_total_85" class="_total"></td><td id="appointment_arv_85" class="_status"></td><td id="appointment_oi_85" class="_status"></td><td id="appointment_male_85" class="_sex"></td><td id="appointment_female_85" class="_sex"></td><td id="appointment_lt14_85" class="_age"></td><td id="appointment_15-24_85" class="_age"><td id="appointment_gt24_85" class="_age"></td>
 					</tr>
 					<tr>
-						<td>3 - 14 days</td><td>85 - 94 %</td><td id="appointment_total_85" class="_total"></td><td id="appointment_arv_85" class="_status"></td><td id="appointment_oi_85" class="_status"></td><td id="appointment_male_85" class="_sex"></td><td id="appointment_female_85" class="_sex"></td><td id="appointment_lt14_85" class="_age"></td><td id="appointment_15-24_85" class="_age"><td id="appointment_gt24_85" class="_age"></td>
-					</tr>
-					<tr>
-						<td>14 and above</td><td>&lt; 85 %</td><td id="appointment_total_80" class="_total"></td><td id="appointment_arv_80" class="_status"></td><td id="appointment_oi_80" class="_status"></td><td id="appointment_male_80" class="_sex"></td><td id="appointment_female_80" class="_sex"></td><td id="appointment_lt14_80" class="_age"></td><td id="appointment_15-24_80" class="_age"><td id="appointment_gt24_80" class="_age"></td>
+						<td>&lt; 85 % (14 and above)</td><td id="appointment_total_80" class="_total"></td><td id="appointment_arv_80" class="_status"></td><td id="appointment_oi_80" class="_status"></td><td id="appointment_male_80" class="_sex"></td><td id="appointment_female_80" class="_sex"></td><td id="appointment_lt14_80" class="_age"></td><td id="appointment_15-24_80" class="_age"><td id="appointment_gt24_80" class="_age"></td>
 					</tr>
 				</tbody>
 			</table>
@@ -856,9 +694,6 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td>100%</td><td>0 Doses</td><td class="_total" id="missed_total_100"></td><td id="missed_1_male_100"></td><td id="missed_1_female_100"></td><td id="missed_1_lt14_100"></td><td id="missed_1_15-24_100"></td><td id="missed_1_gt25_100"></td><td>0 Doses</td><td id="missed_2_total_100"></td><td id="missed_2_male_100"></td><td id="missed_2_female_100"></td><td id="missed_2_lt14_100"></td><td id="missed_2_15-24_100"></td><td id="missed_2_gt25_100"></td><td class="_total" id="missed_2_gt25_100avg"></td>
-					</tr>
 					<tr>
 						<td>&gt;=95%</td><td>&lt; 2 Doses</td><td class="_total" id="missed_total_95"></td><td id="missed_1_male_95"></td><td id="missed_1_female_95"></td><td id="missed_1_lt14_95"></td><td id="missed_1_15-24_95"></td><td id="missed_1_gt25_95"></td><td>&lt;=3 Doses</td><td id="missed_2_total_95"></td><td id="missed_2_male_95"></td><td id="missed_2_female_95"></td><td id="missed_2_lt14_95"></td><td id="missed_2_15-24_95"></td><td id="missed_2_gt25_95"></td><td class="_total" id="missed_2_gt25_95avg"></td>
 					</tr>
@@ -902,9 +737,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td>100%</td><td>0 Doses</td><td class="_total" id="pill_total_100"></td><td id="pill_1_male_100"></td><td id="pill_1_female_100"></td><td id="pill_1_lt14_100"></td><td id="pill_1_15-24_100"></td><td id="pill_1_gt25_100"></td><td>0 Doses</td><td id="pill_2_total_100"></td><td id="pill_2_male_100"></td><td id="pill_2_female_100"></td><td id="pill_2_lt14_100"></td><td id="pill_2_15-24_100"></td><td id="pill_2_gt25_100"></td><td class="_total" id="pill_2_gt25_100avg"></td>
-					</tr>
+				
 					<tr>
 						<td>&gt;=95%</td><td>&lt; 2 Doses</td><td class="_total" id="pill_total_95"></td><td id="pill_1_male_95"></td><td id="pill_1_female_95"></td><td id="pill_1_lt14_95"></td><td id="pill_1_15-24_95"></td><td id="pill_1_gt25_95"></td><td>&lt;=3 Doses</td><td id="pill_2_total_95"></td><td id="pill_2_male_95"></td><td id="pill_2_female_95"></td><td id="pill_2_lt14_95"></td><td id="pill_2_15-24_95"></td><td id="pill_2_gt25_95"></td><td class="_total"  id="pill_2_gt25_95avg"></td>
 					</tr>
