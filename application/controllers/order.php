@@ -710,7 +710,7 @@ class Order extends MY_Controller {
 		$main_array = array();
 		$updated = "";
 		$created = date('Y-m-d H:i:s'); 
-
+		
 		if ($id != "") {
 			$status = $this -> input -> post("status");
 			$created = $this -> input -> post("created");
@@ -721,7 +721,7 @@ class Order extends MY_Controller {
 				$status = $this -> input -> post("status_change");
 			}
 		}
-
+		
 		if ($type == "cdrr") {
 			$save = $this -> input -> post("save");
 			if ($save) {
@@ -854,6 +854,7 @@ class Order extends MY_Controller {
 
 			$save = $this -> input -> post("save_maps");
 			if ($save) {
+				
 				$code = $this -> input -> post("report_type");
 				$code = $this -> getActualCode($code, $type);
 				$reporting_period = $this -> input -> post('reporting_period');
@@ -931,9 +932,9 @@ class Order extends MY_Controller {
 				//Insert maps_item
 				$maps_item = array();
 				$regimen_counter = 0;
-
+				
 				if ($regimens != null) {
-
+				
 					foreach ($regimens as $regimen) {
 						//Check if any patient numbers have been reported for this regimen
 						if ($patient_numbers[$regimen_counter] > 0 && $regimens[$regimen_counter] != 0 && trim($regimens[$regimen_counter]) != '') {
@@ -948,6 +949,7 @@ class Order extends MY_Controller {
 						}
 						$regimen_counter++;
 					}
+					
 				}
 				$main_array['ownMaps_item'] = $maps_item;
 				//Insert Logs
@@ -2774,10 +2776,11 @@ class Order extends MY_Controller {
 		/*if ($supplier == "KEMSA") {
 			$regimen_column = "r.id";
 		}*/
-		$sql = "SELECT count(DISTINCT(p.id)) as patients,r.id as regimen_id, r.regimen_desc,r.regimen_code,$regimen_column as regimen 
+		$sql = "SELECT count(DISTINCT(p.id)) as patients,rc.name as regimen_category,r.id as regimen_id, r.regimen_desc,r.regimen_code,$regimen_column as regimen 
 		        FROM patient p
 		        INNER JOIN regimen r ON r.id=p.current_regimen
 		        INNER JOIN patient_status ps ON ps.id=p.current_status
+		        INNER JOIN regimen_category rc ON rc.id=r.category
 		        WHERE p.date_enrolled<='$to' 
 				AND ps.name LIKE '%active%' 
 				AND r.id=p.current_regimen 
@@ -2817,22 +2820,7 @@ class Order extends MY_Controller {
 		if (isset($facility_code)) {
 			//Defines which data to get
 			$counter = $this -> input -> post('counter');
-			if($data_type=='art'){
-				//Total patients on ART
-				$date = date('Y-m-d');
-				$sql_art = '
-						SELECT IF(round(datediff(CURDATE(),p.dob)/365)>15,"art_adult","art_child") as age,COUNT(DISTINCT(p.id)) as total FROM patient p 
-						INNER JOIN regimen_service_type rs ON rs.id=p.service
-						INNER JOIN patient_status ps ON ps.id=p.current_status
-						INNER JOIN regimen r ON r.id=p.current_regimen
-						WHERE rs.name LIKE "%art%" 
-						AND p.date_enrolled<="'.$end_date.'"
-						AND ps.name LIKE "%active%" GROUP BY age';
-
-				$query = $this -> db -> query($sql_art);
-				$results = $query -> result_array();
-				$data['art'] = $results;
-			}else if($data_type=='new_patient'){
+			if($data_type=='new_patient'){
 				//Males,females, revisit and new
 				//New , only get ART
 				$sql_clients = 'SELECT COUNT(DISTINCT(pv.id)) as total,IF(pv.gender=1,"new_male","new_female") as gender 

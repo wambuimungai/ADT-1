@@ -355,8 +355,24 @@ function getPeriodRegimenPatients(start_date, end_date) {
 			var total_patients_div = "";
 			$.each(data, function(i, jsondata) {
 				total_patients = jsondata.patients;
+				regimen_category = jsondata.regimen_category;
+				regimen_category = regimen_category.toLowerCase();
 				total_patients_div = "#patient_numbers_" + jsondata.regimen;
 				$(total_patients_div).attr("value", total_patients);
+				//Calculate total summary of ART patients
+				
+				if((regimen_category.indexOf('pep')>-1 || regimen_category.indexOf('pmtct')>-1)){
+					
+				}
+				else if((regimen_category.indexOf('paed')>-1 || regimen_category.indexOf('ped')>-1 || regimen_category.indexOf('child')>-1)){//Check if regimen is adult or paed
+					var old_val = $("#art_child").val();
+					var new_val = parseInt(old_val)+(parseInt(total_patients));
+					$("#art_child").val(new_val);
+				}else if(regimen_category.indexOf('adult')>-1 || regimen_category.indexOf('mother')>-1){//Adult regimen
+					var old_val = $("#art_adult").val();
+					var new_val = parseInt(old_val)+(parseInt(total_patients));
+					$("#art_adult").val(new_val);
+				}
 			});
 		}
 	});
