@@ -368,10 +368,8 @@ function getPeriodRegimenPatients(start_date, end_date) {
 					var old_val = $("#art_child").val();
 					var new_val = parseInt(old_val)+(parseInt(total_patients));
 					$("#art_child").val(new_val);
-					alert(old_val);
 				}else if(regimen_category.indexOf('adult')>-1 || regimen_category.indexOf('mother')>-1){//Adult regimen
 					var old_val = $("#art_adult").val();
-					alert(old_val);
 					var new_val = parseInt(old_val)+(parseInt(total_patients));
 					$("#art_adult").val(new_val);
 				}
