@@ -777,6 +777,8 @@ class auto_management extends MY_Controller {
 		$statements['isoniazid_start_date']='ALTER TABLE patient ADD isoniazid_start_date varchar(20)';
 		$statements['isoniazid_end_date']='ALTER TABLE patient ADD isoniazid_end_date varchar(20)';
 		$statements['tb_category']='ALTER TABLE patient ADD tb_category varchar(2)';
+		$statements['spouses']='ALTER TABLE `spouses` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT';
+		$statements['dependants']='ALTER TABLE `dependants` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT';
 		if ($statements) {
 			foreach ($statements as $column => $statement) {
 				if ($statement != null) {

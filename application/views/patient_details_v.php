@@ -116,6 +116,7 @@ if(isset($results)){
 			$("#other_name").val("<?php echo $result['other_name'];?>");
 			$("#dob").val("<?php echo $result['dob'];?>");
 			$("#pob").val("<?php echo $result['pob'];?>");
+			$("#match_parent").val("<?php echo $result['child'];?>");
 			$("#gender").val("<?php echo $result['gender'];?>");
 			
 			//Display Gender Tab
@@ -127,6 +128,15 @@ if(isset($results)){
 			
 			$('#start_age').val(getStartAge("<?php echo $result['dob'];?>","<?php echo $result['date_enrolled'];?>"));
 			$('#age').val(getAge("<?php echo $result['dob'];?>"));
+
+			current_age=getAge("<?php echo $result['dob'];?>");
+			if(current_age < 15 ){
+			   //if patient is less than 15 years old hide all family planning data
+               $(".plan_hidden").css("display","none");
+			}else{
+			   //if patient is more than 15 years old hide all parent/dependant data
+			   $('.match_hidden').css("display","none");
+			}
 		
 			$("#info_age").text($('#age').val());
 	        $('#start_weight').val("<?php echo $result['start_weight'];?>");
@@ -151,7 +161,15 @@ if(isset($results)){
 	        
 	        $('#partner_status').val("<?php echo $result['partner_status'];?>");
 	        $('#disclosure').val("<?php echo $result['disclosure'];?>");
-	        
+	        $('#match_spouse').val("<?php echo $result['secondary_spouse'];?>");
+
+
+	        //if partner status is not concordant do not show spouse field
+	    	partner_status="<?php echo $result['partner_status'];?>";
+	    	if(partner_status !=1){
+				$(".status_hidden").css("display","none");	
+				$("#match_spouse").val("");
+	    	}
 			
 		    //Select Family Planning Methods Selected
 		    var family_planning="<?php echo $result['fplan']; ?>";
@@ -190,13 +208,7 @@ if(isset($results)){
 			$("textarea[name='support_group_listing']").not(this).attr("disabled", "true");
 			
 			//Select Other Illnesses Methods Selected
-			var my_illnesses=<?php echo $result['other_illnesses']; ?>;
-			var other_illnesses='';
-			
-			$.each(my_illnesses, function(i, v){
-				other_illnesses +=v+","
-			});
-			
+			var other_illnesses="<?php echo $result['other_illnesses']; ?>";
 			if (other_illnesses.indexOf(',') == -1) {
               other_illnesses=other_illnesses+",";
             }else{
@@ -904,6 +916,10 @@ if(isset($results)){
 						</select>
 					</div>
 				</div>
+				<div class="max-row match_hidden">
+					<label>Match to parent/guardian in ccc?</label>
+					<input type="text" name="match_parent" id="match_parent">
+				</div>
 
 				<div class="max-row">
 					<div class="mid-row">
@@ -1003,6 +1019,7 @@ if(isset($results)){
 				<legend>
 					Program History
 				</legend>
+				<div class="plan_hidden">
 				<div class="max-row">
 					<label  id="tstatus"> Partner Status</label>
 					<select name="partner_status" id="partner_status" >
@@ -1021,6 +1038,10 @@ if(isset($results)){
 						No
 					</div>
 				</div>
+				<div class="max-row status_hidden">
+						<label>Match to spouse in this ccc?</label>
+						<input type="text" name="match_spouse" id="match_spouse">
+				</div>
 				<div class="max-row">
 					<label><u>Family Planning Method</u></label>
 					<table>
@@ -1032,6 +1053,7 @@ if(isset($results)){
 						}
 						?>
 					</table>
+				</div>
 				</div>
 				<hr size='1'>
 				<div class="max-row">
