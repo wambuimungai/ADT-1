@@ -53,6 +53,40 @@ foreach($results as $result){
 				    }
 				});
 	        });
+	        $("#match_spouse").change(function(){
+				var patient_no=$("#match_spouse").val();
+				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+				$.ajax({
+				    url: link,
+				    type: 'POST',
+				    success: function(data) {
+				        if(data==1){
+				         $(".btn").attr("disabled",false); 
+				        }else{
+				        	
+				        	bootbox.alert("<h4>Duplicate Entry</h4>\n\<hr/><center>Patient Number does not exist</center>");
+				          $(".btn").attr("disabled","disabled");
+				        }
+				    }
+				});
+	        });
+	         $("#match_parent").change(function(){
+				var patient_no=$("#match_parent").val();
+				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+				$.ajax({
+				    url: link,
+				    type: 'POST',
+				    success: function(data) {
+				        if(data==1){
+				         $(".btn").attr("disabled",false); 
+				        }else{
+				        	
+				        	bootbox.alert("<h4>Duplicate Entry</h4>\n\<hr/><center>Patient Number does not exist</center>");
+				          $(".btn").attr("disabled","disabled");
+				        }
+				    }
+				});
+	        });
 	        
 	        //Attach date picker for date of birth
 	        $("#dob").datepicker({
@@ -73,6 +107,8 @@ foreach($results as $result){
 			$("#pob").val("<?php echo $result['pob'];?>");
 			$("#gender").val("<?php echo $result['gender'];?>");
 			$("#who_stage").val("<?php echo $result['who_stage'] ?>");
+			$("#match_parent").val("<?php echo $result['child'] ?>");
+			$("#match_spouse").val("<?php echo $result['secondary_spouse'] ?>");
 			
 			//Display Gender Tab
 			if($("#gender").val()==2){
@@ -463,6 +499,7 @@ foreach($results as $result){
 			
 			$("#regimen").val("<?php echo $result['start_regimen'] ?>");
 			$("#current_regimen").val("<?php echo $result['current_regimen'] ?>");
+
 			
 			//Attach date picker for date of status change
 			$("#status_started").datepicker({
@@ -765,6 +802,12 @@ foreach($results as $result){
 				</div>
 			</div>
 
+			<div class="max-row match_hidden">
+							<label>Match to parent/guardian in ccc?</label>
+							<input type="text" name="match_parent" id="match_parent">
+
+						</div>
+
 			<div class="max-row">
 				<div class="mid-row">
 					<label><span class='astericks'>*</span>Gender</label>
@@ -883,6 +926,12 @@ foreach($results as $result){
 					No
 				</div>
 			</div>
+			<div class="max-row status_hidden">
+							<label>Match to spouse in this ccc?</label>
+							<input type="text" name="match_spouse" id="match_spouse">
+
+						</div>
+
 			<div class="max-row">
 				<label>Family Planning Method</label>
 				<input type="hidden" id="family_planning_holder" name="family_planning_holder" />

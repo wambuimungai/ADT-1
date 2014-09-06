@@ -265,10 +265,7 @@ class Patient_Management extends MY_Controller {
 		$this -> session -> set_userdata('record_no', $record_no);
 		$patient = "";
 		$facility = "";
-		$sql = "select p.*,rst.Name as service_name "
-                        . "from patient p "
-                        . "LEFT JOIN regimen_service_type rst ON rst.id=p.service "
-                        . "where p.id='$record_no'";
+		$sql = "select p.*,rst.Name as service_name,dp.child,s.secondary_spouse from patient p LEFT JOIN regimen_service_type rst ON rst.id=p.service LEFT JOIN dependants dp ON p.medical_record_number=dp.parent  LEFT JOIN spouses s ON p.medical_record_number=s.primary_spouse where p.id='$record_no'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -336,13 +333,14 @@ class Patient_Management extends MY_Controller {
 	}
 
 	public function edit($record_no) {
-		$sql = "select p.*,rst.Name as service_name from patient p LEFT JOIN regimen_service_type rst ON rst.id=p.service where p.id='$record_no'";
+		$sql = "select p.*,rst.Name as service_name,dp.child,s.secondary_spouse from patient p LEFT JOIN regimen_service_type rst ON rst.id=p.service LEFT JOIN dependants dp ON p.medical_record_number=dp.parent  LEFT JOIN spouses s ON p.medical_record_number=s.primary_spouse where p.id='$record_no'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
 			$results[0]['other_illnesses'] = $this -> extract_illness($results[0]['other_illnesses']);
 			$data['results'] = $results;
 		}
+
 		$data['record_no'] = $record_no;
 		$data['districts'] = District::getPOB();
 		$data['genders'] = Gender::getAll();
@@ -623,6 +621,19 @@ class Patient_Management extends MY_Controller {
 						//echo $record_id;die();
 		$this -> db -> where('id', $record_id);
 		$this -> db -> update('patient', $data);
+
+
+		$spouse_no=$this->input->post('match_spouse');
+		$patient_no=$this->input->post('patient_number');
+		$child_no=$this->input->post('match_parent');
+		//Map patient to spouse
+		if($spouse_no != NULL){
+			$this->merge_spouse($patient_no,$spouse_no);
+		}
+		//Map child to parent/guardian 
+		if($child_no != NULL){
+			$this->merge_parent($patient_no,$child_no);
+		}
 
 		//Set session for notications
 		$this -> session -> set_userdata('msg_save_transaction', 'success');

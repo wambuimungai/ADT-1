@@ -116,6 +116,7 @@ if(isset($results)){
 			$("#other_name").val("<?php echo $result['other_name'];?>");
 			$("#dob").val("<?php echo $result['dob'];?>");
 			$("#pob").val("<?php echo $result['pob'];?>");
+			$("#match_parent").val("<?php echo $result['child'];?>");
 			$("#gender").val("<?php echo $result['gender'];?>");
 			
 			//Display Gender Tab
@@ -151,7 +152,7 @@ if(isset($results)){
 	        
 	        $('#partner_status').val("<?php echo $result['partner_status'];?>");
 	        $('#disclosure').val("<?php echo $result['disclosure'];?>");
-	        
+	        $('#match_spouse').val("<?php echo $result['secondary_spouse'];?>");
 			
 			    //Select Family Planning Methods Selected
 			    var family_planning="<?php echo $result['fplan']; ?>";
@@ -826,6 +827,11 @@ if(isset($results)){
 						</select>
 					</div>
 				</div>
+				<div class="max-row">
+							<label>Match to parent/guardian in ccc?</label>
+							<input type="text" name="match_parent" id="match_parent">
+
+						</div>
 
 				<div class="max-row">
 					<div class="mid-row">
@@ -943,6 +949,11 @@ if(isset($results)){
 						No
 					</div>
 				</div>
+					<div class="max-row">
+							<label>Match to spouse in this ccc?</label>
+							<input type="text" name="match_spouse" id="match_spouse">
+
+						</div>
 				<div class="max-row">
 					<label><u>Family Planning Method</u></label>
 					<table>

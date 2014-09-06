@@ -26,7 +26,7 @@
 		<script type="text/javascript">
 		$(document).ready(function(){
 
-			//Function to Check Patient Numner exists
+			//Function to Check Patient Number exists
 			var base_url="<?php echo base_url();?>";
            $('.status_hidden').css("display","none");
            $('.match_hidden').css("display","none");
@@ -107,8 +107,8 @@
 
 					if ($('#age_in_years').val()>10){
 						$('.status_hidden').css("display","block");
-						$('.match_hidden').css("display","block");
-					}else if($('#age_in_years').val()<15){
+						$('.match_hidden').css("display","none");
+					}else if($('#age_in_years').val()<10){
 						$('.match_hidden').css("display","block");
 					}
 					var yearDiff = today.getFullYear() - dob.getFullYear();
@@ -182,15 +182,7 @@
 						$("#transfer_source").attr("value",'');
 					}
 				});
-				// function to dispaly match spouses
-				$('#partner_status').change(function(){
-					var selected_value= $(this).val();
-					if (selected_value == 1) {
-						$("#match_hidden").css("display","block");
-					}else{
-					$(".match_hidden").css("display","none");	
-					}
-				});
+			
 				
 		   //Function to display Regimens in this line
 		   $("#service").change(function() {
@@ -644,7 +636,7 @@
 								No
 							</div>
 						</div>
-							<div class="max-row matchspouse_hidden">
+							<div class="max-row status_hidden">
 							<label>Match to spouse in this ccc?</label>
 							<input type="text" name="match_spouse" id="match_spouse">
 
