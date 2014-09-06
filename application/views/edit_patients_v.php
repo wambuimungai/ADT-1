@@ -53,6 +53,40 @@ foreach($results as $result){
 				    }
 				});
 	        });
+	        $("#match_spouse").change(function(){
+				var patient_no=$("#match_spouse").val();
+				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+				$.ajax({
+				    url: link,
+				    type: 'POST',
+				    success: function(data) {
+				        if(data==1){
+				         $(".btn").attr("disabled",false); 
+				        }else{
+				        	
+				        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
+				          $(".btn").attr("disabled","disabled");
+				        }
+				    }
+				});
+	        });
+	         $("#match_parent").change(function(){
+				var patient_no=$("#match_parent").val();
+				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+				$.ajax({
+				    url: link,
+				    type: 'POST',
+				    success: function(data) {
+				        if(data==1){
+				         $(".btn").attr("disabled",false); 
+				        }else{
+				        	
+				        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
+				          $(".btn").attr("disabled","disabled");
+				        }
+				    }
+				});
+	        });
 	        
 	        //Attach date picker for date of birth
 	        $("#dob").datepicker({
@@ -61,6 +95,28 @@ foreach($results as $result){
 					dateFormat : $.datepicker.ATOM,
 					changeMonth : true,
 					changeYear : true
+			});
+
+			//Function to calculate age in years and months
+			$("#dob").change(function() {
+				var dob = $(this).val();
+				dob = new Date(dob);
+				var today = new Date();
+				$('.plan_hidden').css("display","none");
+				$('.match_hidden').css("display","none");
+				var age_in_years = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
+				$("#age").attr("value", age_in_years);
+				//change start age
+				$('#start_age').val(getStartAge(dob,"<?php echo $result['date_enrolled'];?>"));
+				//if age in years is less than 15 years
+				if ($('#age').val()>=15){
+					$('.plan_hidden').css("display","block");
+					$('.match_hidden').css("display","none");
+					$("#match_parent").val("<?php echo $result['child']; ?>");
+				}else if($('#age').val()<15){
+					$('.match_hidden').css("display","block");
+					$("#match_parent").val("");
+				}
 			});
 			
 			$("#medical_record_number").val("<?php echo $result['medical_record_number'];?>");
@@ -72,7 +128,9 @@ foreach($results as $result){
 			$("#dob").val("<?php echo $result['dob'];?>");
 			$("#pob").val("<?php echo $result['pob'];?>");
 			$("#gender").val("<?php echo $result['gender'];?>");
-			$("#who_stage").val("<?php echo $result['who_stage'] ?>");
+			$("#who_stage").val("<?php echo $result['who_stage']; ?>");
+			$("#match_parent").val("<?php echo $result['child']; ?>");
+			$("#match_spouse").val("<?php echo $result['secondary_spouse']; ?>");
 			
 			//Display Gender Tab
 			if($("#gender").val()==2){
@@ -80,20 +138,30 @@ foreach($results as $result){
 			}
 			$("#pregnant").val("<?php echo $result['pregnant'];?>");
 			$("#pregnant").change(function(){
-                            var selected_value=$(this).attr("value");
-                            if(selected_value==1){
-                              $("#service > option").each(function() {
-                              if(this.text==="PMTCT"){
-                                  $(this).attr("selected","selected");    
-                              }
-                               });     
-                            }else {
-                                 $("#service").removeAttr("value");
-                              }
-                        });
+                var selected_value=$(this).attr("value");
+                if(selected_value==1){
+                  $("#service > option").each(function() {
+                  if(this.text==="PMTCT"){
+                      $(this).attr("selected","selected");    
+                  }
+                   });     
+                }else {
+                     $("#service").removeAttr("value");
+                }
+            });
 			
 			$('#start_age').val(getStartAge("<?php echo $result['dob'];?>","<?php echo $result['date_enrolled'];?>"));
 			$('#age').val(getAge("<?php echo $result['dob'];?>"));
+			
+			current_age=getAge("<?php echo $result['dob'];?>");
+			if(current_age < 15 ){
+			   //if patient is less than 15 years old hide all family planning data
+               $(".plan_hidden").css("display","none");
+			}else{
+			   //if patient is more than 15 years old hide all parent/dependant data
+			   $('.match_hidden').css("display","none");
+			}
+
 	        $('#start_weight').val("<?php echo $result['start_weight'];?>");
 	        $('#start_height').val("<?php echo $result['start_height'];?>");
 	        $('#start_bsa').val("<?php echo $result['start_bsa'];?>");
@@ -116,6 +184,22 @@ foreach($results as $result){
 	        
 	        $('#partner_status').val("<?php echo $result['partner_status'];?>");
 	        $('#disclosure').val("<?php echo $result['disclosure'];?>");
+            //if partner status is not concordant do not show spouse field
+	    	partner_status="<?php echo $result['partner_status'];?>";
+	    	if(partner_status !=1){
+				$(".status_hidden").css("display","none");	
+				$("#match_spouse").val("");
+	    	}	 
+            $('#partner_status').change(function(){
+				var selected_value= $(this).val();
+				if (selected_value == 1) {
+					$(".status_hidden").css("display","block");
+					$("#match_spouse").val("<?php echo $result['secondary_spouse']; ?>");
+				}else{
+				    $(".status_hidden").css("display","none");	
+				    $("#match_spouse").val("");
+				}	
+			});
 	        
 	        //Function to configure multiselect in family planning and other chronic illnesses
 			$("#family_planning").multiselect().multiselectfilter();
@@ -209,13 +293,7 @@ foreach($results as $result){
 			$("textarea[name='support_group_listing']").not(this).attr("disabled", "true");
 			
 			//Select Other Illnesses Methods Selected
-			var my_illnesses=<?php echo $result['other_illnesses'];?>;
-			var other_illnesses='';
-			
-			$.each(my_illnesses, function(i, v){
-				other_illnesses +=v+","
-			});
-			
+			var other_illnesses="<?php echo $result['other_illnesses'];?>";			
 			if (other_illnesses.indexOf(',') == -1) {
               other_illnesses=other_illnesses+",";
             }else{
@@ -286,7 +364,7 @@ foreach($results as $result){
 			
 			
 			
-			 $("#support_group_listing").val("<?php echo $result['support_group']?>");
+			$("#support_group_listing").val("<?php echo $result['support_group']?>");
 
             if($("#support_group_listing").val()){
 				$("input[name='support_group']").not(this).attr("checked", "true");
@@ -482,6 +560,7 @@ foreach($results as $result){
 			
 			$("#regimen").val("<?php echo $result['start_regimen'] ?>");
 			$("#current_regimen").val("<?php echo $result['current_regimen'] ?>");
+
 			
 			//Attach date picker for date of status change
 			$("#status_started").datepicker({
@@ -785,6 +864,11 @@ foreach($results as $result){
 				</div>
 			</div>
 
+			<div class="max-row match_hidden">
+				<label>Match to parent/guardian in ccc?</label>
+				<input type="text" name="match_parent" id="match_parent">
+			</div>
+
 			<div class="max-row">
 				<div class="mid-row">
 					<label><span class='astericks'>*</span>Gender</label>
@@ -885,6 +969,7 @@ foreach($results as $result){
 			<legend>
 				Program History
 			</legend>
+			<div class="plan_hidden">
 			<div class="max-row">
 				<label  id="tstatus"> Partner Status</label>
 				<select name="partner_status" id="partner_status" >
@@ -903,6 +988,11 @@ foreach($results as $result){
 					No
 				</div>
 			</div>
+			<div class="max-row status_hidden">
+				<label>Match to spouse in this ccc?</label>
+				<input type="text" name="match_spouse" id="match_spouse">
+			</div>
+
 			<div class="max-row">
 				<label>Family Planning Method</label>
 				<input type="hidden" id="family_planning_holder" name="family_planning_holder" />
@@ -913,7 +1003,7 @@ foreach($results as $result){
 					}
 					?>
 				</select>
-
+			</div>
 			</div>
 			<div class="max-row">
 				<label>Does Patient have other Chronic illnesses</label>

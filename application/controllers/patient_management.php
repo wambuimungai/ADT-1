@@ -64,12 +64,21 @@ class Patient_Management extends MY_Controller {
 
 	}
 	public function merge_spouse($patient_no,$spouse_no){
-    $spousedata=array('primary_spouse'=>$patient_no,'secondary_spouse'=>$spouse_no);
-    $this->db->insert('spouses',$spousedata);
+	    $spousedata=array('primary_spouse'=>$patient_no,'secondary_spouse'=>$spouse_no);
+	    $this->db->insert('spouses',$spousedata);
+	}
+
+	public function unmerge_spouse($patient_no){
+	    $sql="DELETE FROM spouses WHERE primary_spouse='$patient_no'";
+		$this->db->query($sql);
 	}
 	public function merge_parent($patient_no,$child_no){
 		$childdata= array('parent' =>$patient_no ,'child'=>$child_no );
 		$this->db->insert('dependants',$childdata);
+	}
+	public function unmerge_parent($patient_no){
+		$sql="DELETE FROM dependants WHERE parent='$patient_no'";
+		$this->db->query($sql);
 	}
 
 	public function listing() {
@@ -265,10 +274,15 @@ class Patient_Management extends MY_Controller {
 		$this -> session -> set_userdata('record_no', $record_no);
 		$patient = "";
 		$facility = "";
-		$sql = "select p.*,rst.Name as service_name "
-                        . "from patient p "
-                        . "LEFT JOIN regimen_service_type rst ON rst.id=p.service "
-                        . "where p.id='$record_no'";
+		$sql = "SELECT p.*,
+		               rst.Name as service_name,
+		               dp.child,
+		               s.secondary_spouse 
+		        FROM patient p 
+		        LEFT JOIN regimen_service_type rst ON rst.id=p.service 
+		        LEFT JOIN dependants dp ON p.patient_number_ccc=dp.parent  
+		        LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse 
+		        WHERE p.id='$record_no'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -310,7 +324,7 @@ class Patient_Management extends MY_Controller {
 		        ORDER BY  pv.patient_visit_id DESC";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
-                if ($results) {
+        if ($results) {
 			$data['history_logs'] = $results;
 		} else {
 			$data['history_logs'] = "";
@@ -336,13 +350,22 @@ class Patient_Management extends MY_Controller {
 	}
 
 	public function edit($record_no) {
-		$sql = "select p.*,rst.Name as service_name from patient p LEFT JOIN regimen_service_type rst ON rst.id=p.service where p.id='$record_no'";
+		$sql = "SELECT p.*,
+		               rst.Name as service_name,
+		               dp.child,
+		               s.secondary_spouse 
+		               FROM patient p 
+		               LEFT JOIN regimen_service_type rst ON rst.id=p.service 
+		               LEFT JOIN dependants dp ON p.patient_number_ccc=dp.parent  
+		        	   LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse
+		               WHERE p.id='$record_no'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
 			$results[0]['other_illnesses'] = $this -> extract_illness($results[0]['other_illnesses']);
 			$data['results'] = $results;
 		}
+
 		$data['record_no'] = $record_no;
 		$data['districts'] = District::getPOB();
 		$data['genders'] = Gender::getAll();
@@ -623,6 +646,23 @@ class Patient_Management extends MY_Controller {
 						//echo $record_id;die();
 		$this -> db -> where('id', $record_id);
 		$this -> db -> update('patient', $data);
+
+
+		$spouse_no=$this->input->post('match_spouse');
+		$patient_no=$this->input->post('patient_number');
+		$child_no=$this->input->post('match_parent');
+		//Map patient to spouse
+		if($spouse_no != NULL){
+			$this->merge_spouse($patient_no,$spouse_no);
+		}else{
+			$this->unmerge_spouse($patient_no);
+		}
+		//Map child to parent/guardian 
+		if($child_no != NULL){
+			$this->merge_parent($patient_no,$child_no);
+		}else{
+			$this->unmerge_parent($patient_no);
+		}
 
 		//Set session for notications
 		$this -> session -> set_userdata('msg_save_transaction', 'success');
