@@ -165,6 +165,8 @@ foreach($results as $result){
 			
 			$("#drug_prophylaxis").on("multiselectclick", function(event, ui) { 
 				$("#isoniazid_view").css("display","none");
+				$("#iso_start_date").val("");
+			    $("#iso_end_date").val("");
 				var array_of_checked_values = $("select#drug_prophylaxis").multiselect("getChecked").map(function(){
 				   return this.value;    
 				}).get();
@@ -186,11 +188,10 @@ foreach($results as $result){
 						});
 					}
 					else if (v==3) {
-                    $("select#drug_prophylaxis").multiselect("widget").find(":checkbox[value='1']").each(function(){
-
-						 $("#isoniazid_view").css("display","block");
-						 
-						  
+	                    $("select#drug_prophylaxis").multiselect("widget").find(":checkbox[value='1']").each(function(){
+							 $("#isoniazid_view").css("display","block");  
+							 $("#iso_start_date").val("<?php echo $result['isoniazid_start_date'];?>");
+							 $("#iso_end_date").val("<?php echo $result['isoniazid_end_date'];?>");
 						});
 					}
 				});
@@ -208,20 +209,35 @@ foreach($results as $result){
 					changeMonth : true,
 					changeYear : true
 			});
-
-
 			//Select Family Planning Methods Selected
 			var family_planning="<?php echo $result['fplan'];?>";
-			
-				if(family_planning != null || family_planning != " ") {
-					var fplan = family_planning.split(',');
-					for(var i = 0; i < fplan.length; i++) {
-						$("select#family_planning").multiselect("widget").find(":checkbox[value='" + fplan[i] + "']").each(function() {
-	                       $(this).click();
-	                    });
-					}
+			if(family_planning != null || family_planning != " ") {
+				var fplan = family_planning.split(',');
+				for(var i = 0; i < fplan.length; i++) {
+					$("select#family_planning").multiselect("widget").find(":checkbox[value='" + fplan[i] + "']").each(function() {
+                       $(this).click();
+                    });
 				}
-				
+			}
+			//select drug_prophylaxis
+			var drug_prophylaxis="<?php echo $result['drug_prophylaxis'];?>";
+			if(drug_prophylaxis != null || drug_prophylaxis != " ") {
+				var prophylaxis = drug_prophylaxis.split(',');
+				for(var i = 0; i < prophylaxis.length; i++) {
+					$("select#drug_prophylaxis").multiselect("widget").find(":checkbox[value='" + prophylaxis[i] + "']").each(function() {
+                       $(this).click();
+                       //show isoniazid dates if its selected
+                       if($(this).attr("title").toLowerCase()=="isoniazid"){
+                        $("#isoniazid_view").show();   
+                       }
+                    });
+				}
+			}
+			//select isonazid dates
+			$("#iso_start_date").val("<?php echo $result['isoniazid_start_date'];?>");
+			$("#iso_end_date").val("<?php echo $result['isoniazid_end_date'];?>");
+
+
 			//To Disable Textareas
 			$("textarea[name='other_chronic']").not(this).attr("disabled", "true");
 			$("textarea[name='other_drugs']").not(this).attr("disabled", "true");
@@ -321,6 +337,8 @@ foreach($results as $result){
 			
 			if($("#tb").val()==1){
 				$("#tbphase_view").show();
+				$("#tbcategory_view").show();
+				$("#tbcategory").val("<?php echo $result['tb_category']; ?>");
 				$("#tbphase").val("<?php echo $result['tbphase']; ?>");
 				$("#fromphase").val("<?php echo $result['startphase']; ?>");
 				$("#tophase").val("<?php echo $result['endphase']; ?>");
@@ -339,30 +357,31 @@ foreach($results as $result){
 			     }
 			}
 
-			$("#tbcategory_view").hide();	
-
 			//Function to display tb phases
 		   $(".tb").change(function() {
 		   	    var tb = $(this).val();
 		   	     if(tb == 1) {
-				    
 				    $("#tbcategory_view").show();
+				    $("#tbphase_view").show();
 				 } 
 				 else {
-					//$("#tbphase_view").hide();
+				 	//hide views
 					$("#tbcategory_view").hide();
 					$("#fromphase_view").hide();
 				 	$("#tophase_view").hide();
+				 	$("#tbphase_view").hide();
+                    //reset values
 					$("#tbphase").attr("value",'0');
+					$("#tbcategory").attr("value",'0');
 					$("#fromphase").attr("value",'');
 		   	        $("#tophase").attr("value",'');
 			     }
 		   });
-		   
+
 		   $("#current_status").change(function(){
-		   	 $("#status_started").datepicker('setDate', new Date());
+		   	    $("#status_started").datepicker('setDate', new Date());
 		   });
-		   $("#tbphase_view").hide();
+
 		   // function to display tb phase view
 		   $("#tbcategory").change(function(){
               $("#tbphase_view").show();
@@ -1030,7 +1049,7 @@ foreach($results as $result){
 
 			<div class="max-row">
 				
-				<div class="mid-row" id="tbcategory_view">
+				<div class="mid-row" id="tbcategory_view" style="display:none;">
 					<label> Select TB category</label>
 					<select name="tbcategory" id="tbcategory" class="tbcategory">
 						<option value="0" selected="selected">--Select One--</option>
@@ -1135,16 +1154,16 @@ foreach($results as $result){
 				</select>
 			</div>
 			 <div class="max-row" id="pep_reason_listing" style="display:none;">
-							<label>PEP Reason</label>
-							<select name="pep_reason" id="pep_reason">
-								<option value="">--Select--</option>
-								<?php
-								    foreach($pep_reasons as $reason){
-										echo "<option value='".$reason['id']."'>".$reason['name']."</option>";
-									}
-								?>	
-							</select> </label>
-							</select>
+				<label>PEP Reason</label>
+				<select name="pep_reason" id="pep_reason">
+					<option value="">--Select--</option>
+					<?php
+					    foreach($pep_reasons as $reason){
+							echo "<option value='".$reason['id']."'>".$reason['name']."</option>";
+						}
+					?>	
+				</select> </label>
+				</select>
 			</div>
 			<div class="max-row">
 				<label id="start_of_regimen"><span class='astericks'>*</span>Start Regimen </label>

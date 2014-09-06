@@ -154,25 +154,35 @@ if(isset($results)){
 	        $('#disclosure').val("<?php echo $result['disclosure'];?>");
 	        $('#match_spouse').val("<?php echo $result['secondary_spouse'];?>");
 			
-			    //Select Family Planning Methods Selected
-			    var family_planning="<?php echo $result['fplan']; ?>";
-			
-				if(family_planning != null || family_planning != " ") {
-					var fplan = family_planning.split(',');
-					for(var i = 0; i < fplan.length; i++) {
-                      $('input[name="family_planning"][type="checkbox"][value="' + fplan[i] + '"]').attr('checked', true);
-					}
+		    //Select Family Planning Methods Selected
+		    var family_planning="<?php echo $result['fplan']; ?>";
+		
+			if(family_planning != null || family_planning != " ") {
+				var fplan = family_planning.split(',');
+				for(var i = 0; i < fplan.length; i++) {
+                  $('input[name="family_planning"][type="checkbox"][value="' + fplan[i] + '"]').attr('checked', true);
 				}
-				
-				//Select Drug Prophylaxis Methods Selected
-			    var drug_prophylaxis="<?php echo $result['drug_prophylaxis'];?>";
+			}
 			
-				if(drug_prophylaxis != null || drug_prophylaxis != " ") {
-					var prophylaxis = drug_prophylaxis.split(',');
-					for(var i = 0; i < prophylaxis.length; i++) {
-                      $('input[name="drug_prophylaxis"][type="checkbox"][value="' + prophylaxis[i] + '"]').attr('checked', true);
-					}
+			//Select Drug Prophylaxis Methods Selected
+		    var drug_prophylaxis="<?php echo $result['drug_prophylaxis'];?>";
+		    //On Select Drug Prophylaxis
+			$("#isoniazid_view").css("display","none");
+		
+			if(drug_prophylaxis != null || drug_prophylaxis != " ") {
+				var prophylaxis = drug_prophylaxis.split(',');
+				for(var i = 0; i < prophylaxis.length; i++) {
+					var selected_obj=$('input[name="drug_prophylaxis"][type="checkbox"][value="' + prophylaxis[i] + '"]');
+                  	selected_obj.attr('checked', true);
+                  	if(prophylaxis[i]==3){
+                  	   $("#isoniazid_view").show(); 
+                  	}
 				}
+			}
+
+			//select isonazid dates
+			$("#iso_start_date").val("<?php echo $result['isoniazid_start_date'];?>");
+			$("#iso_end_date").val("<?php echo $result['isoniazid_end_date'];?>");
 
 			//To Disable Textareas
 			$("textarea[name='other_chronic']").not(this).attr("disabled", "true");
@@ -289,6 +299,8 @@ if(isset($results)){
 			
 			if($("#tb").val()==1){
 				$("#tbphase_view").show();
+				$("#tbcategory_view").show();
+				$("#tbcategory").val("<?php echo $result['tb_category']; ?>");
 				$("#tbphase").val("<?php echo $result['tbphase']; ?>");
 				$("#fromphase").val("<?php echo $result['startphase']; ?>");
 				$("#tophase").val("<?php echo $result['endphase']; ?>");
@@ -304,27 +316,41 @@ if(isset($results)){
 					$("#fromphase_view").show();
 				    $("#tophase_view").show();
 					$("#transfer_source").attr("value",'');
-			                                 
-                                 }
+			     }
 			}
-
-				
 
 			//Function to display tb phases
 		   $(".tb").change(function() {
 		   	    var tb = $(this).val();
 		   	     if(tb == 1) {
+				    $("#tbcategory_view").show();
 				    $("#tbphase_view").show();
 				 } 
 				 else {
-					$("#tbphase_view").hide();
+				 	//hide views
+					$("#tbcategory_view").hide();
 					$("#fromphase_view").hide();
 				 	$("#tophase_view").hide();
+				 	$("#tbphase_view").hide();
+                    //reset values
 					$("#tbphase").attr("value",'0');
+					$("#tbcategory").attr("value",'0');
 					$("#fromphase").attr("value",'');
 		   	        $("#tophase").attr("value",'');
 			     }
 		   });
+
+		   $("#current_status").change(function(){
+		   	    $("#status_started").datepicker('setDate', new Date());
+		   });
+
+		   // function to display tb phase view
+		   $("#tbcategory").change(function(){
+              $("#tbphase_view").show();
+               $("#fromphase").attr("value",'');
+		   	    $("#tophase").attr("value",'');
+
+			});
 		   
 		   //Function to display tbphase dates
 		   $(".tbphase").change(function() {
@@ -334,6 +360,7 @@ if(isset($results)){
 		   	     if(tbpase ==3) {
 		   	     	$("#fromphase_view").hide();
 				    $("#tophase_view").show();
+				    $("#tb").val(0);
 				 } 
 				 else if(tbpase==0){
 				 	$("#fromphase_view").hide();
@@ -341,7 +368,6 @@ if(isset($results)){
 				 }else {
 					$("#fromphase_view").show();
 				    $("#tophase_view").show();
-					$("#transfer_source").attr("value",'');
 			     }
 		   });
 		   
@@ -358,6 +384,37 @@ if(isset($results)){
 					dateFormat : $.datepicker.ATOM,
 					changeMonth : true,
 					changeYear : true
+			});
+			
+			
+			//Function to calculate date ranges for tb stages
+			$("#fromphase").change(function(){
+				var from_date=$(this).val();
+				var new_date=new Date(from_date);
+				var to_date=new Date();
+				var category=$("#tbcategory").val();
+				var tbphase=$(".tbphase").val();
+			    if (category==1) {
+					if(tbphase==1){
+					  	//Intensive
+					  	var numberOfDaysToAdd=90;
+					}else if(tbphase==2){
+					  	//Continuation
+					  	var numberOfDaysToAdd=112;
+					} 
+			    }else if (category==2) {
+	                 if(tbphase==1){
+					  	//Intensive
+					  	var numberOfDaysToAdd=90;
+					}else if(tbphase==2){
+					  	//Continuation
+					  	var numberOfDaysToAdd=150;
+					}
+			    }
+                var start_date = new Date(new_date.getFullYear(), new_date.getMonth(), new_date.getDate());
+                var start_date_timestamp = start_date.getTime();
+                var end_date_timestamp = (1000 * 60 * 60 * 24 * numberOfDaysToAdd) + start_date_timestamp;
+			    $("#tophase").datepicker('setDate', new Date(end_date_timestamp));
 			});
 			
 			//Function to enable textareas for other chronic illnesses
@@ -563,12 +620,14 @@ if(isset($results)){
 				getRegimenChange();
 				getAppointmentHistory();
 				$("#patient_details").dialog("open");
+				//function to get last viral load for this patient
+				get_viral_result($("#patient_number").val())
 			});
 
 			$("#patient_details").dialog({
 	           width : 1200,
 	           modal : true,
-	           height: 'auto',
+	           height: 600,
 	           autoOpen : false,
 	           show: 'fold'
              });
@@ -585,8 +644,27 @@ if(isset($results)){
                 autoOpen: false,
                 show: 'fold',
              });
+
+			function get_viral_result(ccc_no){
+				data_source="<?php echo base_url().'assets/viral_load.json'; ?>";
+				$("#viral_load_date").text('N/A');
+				$("#viral_load_result").text('N/A');
+				$.get(data_source,function(data){
+					if(data.length !=0){
+						data_length=data[ccc_no].length 
+						if(data_length >0){
+	 						$.each(data[ccc_no],function(key,val) {
+	 						    if(key==(data_length-1)){  
+	 						    	$("#viral_load_date").text(val.date_tested);
+							        $("#viral_load_result").text(val.result)   
+							    }      
+							});	
+	 					}
+					}
+				});
+			}
              
-             function getDispensing(){
+            function getDispensing(){
              	 var patient_no=$("#patient_number").val();
              	 var link=base_url+"patient_management/getSixMonthsDispensing/"+patient_no;
 					$.ajax({
@@ -1049,26 +1127,37 @@ if(isset($results)){
 							<option value="1">Yes</option>
 						</select>
 					</div>
+					<div class="mid-row">
+					<label> Does Patient Have TB?</label>
+					<select name="tb" id="tb" class="tb">
+						<option value="0" selected="selected">No</option>
+						<option value="1">Yes</option>
+					</select>
+				</div>
 				</div>
 
-				<div class="max-row">
-					<div class="mid-row">
-						<label> Does Patient Have TB?</label>
-						<select name="tb" id="tb" class="tb">
-							<option value="0" selected="selected">No</option>
-							<option value="1">Yes</option>
-						</select>
-					</div>
-					<div class="mid-row" id="tbphase_view" style="display:none;">
-						<label id="tbstats"> TB Phase</label>
-						<select name="tbphase" id="tbphase" class="tbphase">
-							<option value="0" selected="selected">--Select One--</option>
-							<option value="1">Intensive</option>
-							<option value="2">Continuation</option>
-							<option value="3">Completed</option>
-						</select>
-					</div>
+			<div class="max-row">
+				
+				<div class="mid-row" id="tbcategory_view" style="display:none;">
+					<label> Select TB category</label>
+					<select name="tbcategory" id="tbcategory" class="tbcategory">
+						<option value="0" selected="selected">--Select One--</option>
+						<option value="1">Category 1</option>
+						<option value="2">Category 2</option>
+					</select>
 				</div>
+
+				<div class="mid-row" id="tbphase_view" style="display:none;">
+					<label id="tbstats"> TB Phase</label>
+					<select name="tbphase" id="tbphase" class="tbphase">
+						<option value="0" selected="selected">--Select One--</option>
+						<option value="1">Intensive</option>
+						<option value="2">Continuation</option>
+						<option value="3">Completed</option>
+					</select>
+				</div>
+				
+			</div>
 				<div class="max-row">
 					<div class="mid-row" id="fromphase_view" style="display:none;">
 						<label id="ttphase">Start of Phase</label>
@@ -1213,6 +1302,16 @@ if(isset($results)){
 						?>
 					</table>
 			 </div>
+			 <div class="max-row" id="isoniazid_view">
+				<div class="mid-row" id="isoniazid_start_date_view">
+				<label>Isoniazid Start Date</label>
+				<input type="text" name="iso_start_date" id="iso_start_date"  style="color:red"/>
+				</div>
+				<div class="mid-row" id="isoniazid_end_date_view">
+				<label> Isoniazid End Date</label>
+				<input  type="text"name="iso_end_date" id="iso_end_date" style="color:red">
+				</div>								
+			</div>
 			</fieldset>
 	</form>
 </div>
@@ -1271,6 +1370,8 @@ if(isset($results)){
 				<th>Age</th>
 				<th>Date Therapy Started</th>
 				<th>Current Status</th>
+				<th>Last Viral Load Date</th>
+				<th>Last Viral Load Result</th>
 			</tr>
 			<tr>
 				<td><?php echo $result['patient_number_ccc']; ?></td>
@@ -1280,6 +1381,8 @@ if(isset($results)){
 				<td id="info_age"></td>
 				<td><?php echo date('d-M-Y',strtotime($result['date_enrolled'])); ?></td>
 				<td id="info_status"></td>
+				<td id="viral_load_date"></td>
+				<td id="viral_load_result"></td>
 			</tr>
 		</table>
 		<h4 style="text-align: center">Patient Pill Count History (Last 12 Months)</h4>
