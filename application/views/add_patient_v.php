@@ -25,9 +25,10 @@
             </style>
 		<script type="text/javascript">
 		$(document).ready(function(){
-
+          
 			//Function to Check Patient Number exists
 			var base_url="<?php echo base_url();?>";
+			$('.match_spouse').css("display","none");
            $('.status_hidden').css("display","none");
            $('.match_hidden').css("display","none");
 		    $("#patient_number").change(function(){
@@ -149,6 +150,17 @@
                                  $("#service").removeAttr("value");
                               }
                         });
+			 $(".match_spouse").css("display","none");
+            $('#partner_status').change(function(){
+				var selected_value= $(this).val();
+					if (selected_value == 1) {
+						$(".match_spouse").css("display","block");
+					}else{
+					$(".match_spouse").css("display","none");	
+					}	
+					
+				});
+
 			//Attach date picker for date of enrollment
 			$("#enrolled").datepicker({
 					yearRange : "-30:+0",
@@ -636,7 +648,7 @@
 								No
 							</div>
 						</div>
-							<div class="max-row status_hidden">
+							<div class="max-row match_spouse">
 							<label>Match to spouse in this ccc?</label>
 							<input type="text" name="match_spouse" id="match_spouse">
 
