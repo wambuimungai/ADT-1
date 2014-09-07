@@ -63,14 +63,6 @@ class Patient_Management extends MY_Controller {
 		}
 
 	}
-	public function merge_spouse($patient_no,$spouse_no){
-    $spousedata=array('primary_spouse'=>$patient_no,'secondary_spouse'=>$spouse_no);
-    $this->db->insert('spouses',$spousedata);
-	}
-	public function merge_parent($patient_no,$child_no){
-		$childdata= array('parent' =>$patient_no ,'child'=>$child_no );
-		$this->db->insert('dependants',$childdata);
-	}
 
 	public function listing() {
 		$access_level = $this -> session -> userdata('user_indicator');
@@ -465,18 +457,22 @@ class Patient_Management extends MY_Controller {
 		$new_patient -> isoniazid_start_date = $this->input->post('iso_start_date',TRUE);
 		$new_patient -> isoniazid_end_date = $this->input->post('iso_end_date',TRUE);
 
+		$new_patient -> save();
+
 		$spouse_no=$this->input->post('match_spouse');
 		$patient_no=$this->input->post('patient_number');
-		$child_no=$this->input->post('match_parent');
+		$parent_no=$this->input->post('match_parent');
 
-		$new_patient -> save();
+		
 		//Map patient to spouse
 		if($spouse_no != NULL){
-			$this->merge_spouse($patient_no,$spouse_no);
+			$spouse = array('primary_spouse' =>$this->input->post('patient_number') ,'secondary_spouse'=> $this->input->post('match_spouse'));
+			$this->db->insert('spouses',$spouse);
 		}
 		//Map child to parent/guardian 
 		if($child_no != NULL){
-			$this->merge_parent($patient_no,$child_no);
+			$parent = array('child' =>$this->input->post('patient_number') ,'parent'=>$this->input->post('match_parent'));
+			$this->db->insert('dependants',$parent);
 		}
 		
 		$sql = "SELECT MAX(id) as id FROM patient";
@@ -628,11 +624,16 @@ class Patient_Management extends MY_Controller {
 		$child_no=$this->input->post('match_parent');
 		//Map patient to spouse
 		if($spouse_no != NULL){
-			$this->merge_spouse($patient_no,$spouse_no);
+			$this -> db -> where('primary_spouse', $patient_no);
+			$spouse = array('secondary_spouse' =>$this->input->post('match_spouse'));
+			$this -> db -> update('spouses', $spouse);
+			
 		}
 		//Map child to parent/guardian 
 		if($child_no != NULL){
-			$this->merge_parent($patient_no,$child_no);
+			$this -> db -> where('child', $patient_no);
+			$parent = array('parent' =>$this->input->post('match_parent'));
+			$this -> db -> update('dependants', $parent);
 		}
 
 		//Set session for notications

@@ -59,7 +59,7 @@
 				         $(".btn").attr("disabled",false); 
 				        }else{
 				        	
-				        	bootbox.alert("<h4>Duplicate Entry</h4>\n\<hr/><center>Patient Number does not exist</center>");
+				        	bootbox.alert("<h4>Does not exit</h4>\n\<hr/><center>Patient Number does not exist</center>");
 				          $(".btn").attr("disabled","disabled");
 				        }
 				    }
@@ -77,7 +77,7 @@
 				         $(".btn").attr("disabled",false); 
 				        }else{
 				        	
-				        	bootbox.alert("<h4>Duplicate Entry</h4>\n\<hr/><center>Patient Number does not exist</center>");
+				        	bootbox.alert("<h4>Does not exist</h4>\n\<hr/><center>Patient Number does not exist</center>");
 				          $(".btn").attr("disabled","disabled");
 				        }
 				    }
