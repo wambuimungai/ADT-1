@@ -29,8 +29,8 @@
 			//Function to Check Patient Number exists
 			var base_url="<?php echo base_url();?>";
 			$('.match_spouse').css("display","none");
-           $('.status_hidden').css("display","none");
-           $('.match_hidden').css("display","none");
+           	$('.status_hidden').css("display","none");
+           	$('.match_hidden').css("display","none");
 		    $("#patient_number").change(function(){
 				var patient_no=$("#patient_number").val();
 				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
@@ -60,6 +60,7 @@
 				        }else{
 				        	
 				        	bootbox.alert("<h4>Does not exit</h4>\n\<hr/><center>Patient Number does not exist</center>");
+
 				          $(".btn").attr("disabled","disabled");
 				        }
 				    }
@@ -76,7 +77,6 @@
 				        if(data==1){
 				         $(".btn").attr("disabled",false); 
 				        }else{
-				        	
 				        	bootbox.alert("<h4>Does not exist</h4>\n\<hr/><center>Patient Number does not exist</center>");
 				          $(".btn").attr("disabled","disabled");
 				        }
@@ -96,7 +96,6 @@
 					
 			//Function to calculate age in years and months
 			$("#dob").change(function() {
-				
 					var dob = $(this).val();
 					dob = new Date(dob);
 					var today = new Date();
@@ -104,12 +103,11 @@
 						$('.match_hidden').css("display","none");
 					var age_in_years = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
 					$("#age_in_years").attr("value", age_in_years);
-					//if age in years is less than 10 years
-
-					if ($('#age_in_years').val()>10){
+					//if age in years is less than 15 years
+					if ($('#age_in_years').val()>=15){
 						$('.status_hidden').css("display","block");
 						$('.match_hidden').css("display","none");
-					}else if($('#age_in_years').val()<10){
+					}else if($('#age_in_years').val()<15){
 						$('.match_hidden').css("display","block");
 					}
 					var yearDiff = today.getFullYear() - dob.getFullYear();
@@ -150,16 +148,15 @@
                                  $("#service").removeAttr("value");
                               }
                         });
-			 $(".match_spouse").css("display","none");
+			$(".match_spouse").css("display","none");
             $('#partner_status').change(function(){
 				var selected_value= $(this).val();
-					if (selected_value == 1) {
-						$(".match_spouse").css("display","block");
-					}else{
-					$(".match_spouse").css("display","none");	
-					}	
-					
-				});
+				if (selected_value == 1) {
+					$(".match_spouse").css("display","block");
+				}else{
+				    $(".match_spouse").css("display","none");	
+				}	
+			});
 
 			//Attach date picker for date of enrollment
 			$("#enrolled").datepicker({

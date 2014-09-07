@@ -63,7 +63,6 @@ class Patient_Management extends MY_Controller {
 		}
 
 	}
-
 	public function listing() {
 		$access_level = $this -> session -> userdata('user_indicator');
 		$facility_code = $this -> session -> userdata('facility');
@@ -257,7 +256,15 @@ class Patient_Management extends MY_Controller {
 		$this -> session -> set_userdata('record_no', $record_no);
 		$patient = "";
 		$facility = "";
-		$sql = "select p.*,rst.Name as service_name,dp.child,s.secondary_spouse from patient p LEFT JOIN regimen_service_type rst ON rst.id=p.service LEFT JOIN dependants dp ON p.medical_record_number=dp.parent  LEFT JOIN spouses s ON p.medical_record_number=s.primary_spouse where p.id='$record_no'";
+		$sql = "SELECT p.*,
+		               rst.Name as service_name,
+		               dp.child,
+		               s.secondary_spouse 
+		        FROM patient p 
+		        LEFT JOIN regimen_service_type rst ON rst.id=p.service 
+		        LEFT JOIN dependants dp ON p.patient_number_ccc=dp.parent  
+		        LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse 
+		        WHERE p.id='$record_no'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -299,7 +306,7 @@ class Patient_Management extends MY_Controller {
 		        ORDER BY  pv.patient_visit_id DESC";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
-                if ($results) {
+        if ($results) {
 			$data['history_logs'] = $results;
 		} else {
 			$data['history_logs'] = "";
@@ -325,7 +332,15 @@ class Patient_Management extends MY_Controller {
 	}
 
 	public function edit($record_no) {
-		$sql = "select p.*,rst.Name as service_name,dp.child,s.secondary_spouse from patient p LEFT JOIN regimen_service_type rst ON rst.id=p.service LEFT JOIN dependants dp ON p.medical_record_number=dp.parent  LEFT JOIN spouses s ON p.medical_record_number=s.primary_spouse where p.id='$record_no'";
+		$sql = "SELECT p.*,
+		               rst.Name as service_name,
+		               dp.child,
+		               s.secondary_spouse 
+		               FROM patient p 
+		               LEFT JOIN regimen_service_type rst ON rst.id=p.service 
+		               LEFT JOIN dependants dp ON p.patient_number_ccc=dp.parent  
+		        	   LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse
+		               WHERE p.id='$record_no'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -634,6 +649,7 @@ class Patient_Management extends MY_Controller {
 			$this -> db -> where('child', $patient_no);
 			$parent = array('parent' =>$this->input->post('match_parent'));
 			$this -> db -> update('dependants', $parent);
+
 		}
 
 		//Set session for notications
