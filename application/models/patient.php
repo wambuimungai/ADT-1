@@ -60,6 +60,7 @@ class Patient extends Doctrine_Record {
 		$this -> hasColumn('drug_prophylaxis', 'varchar', 20);
 		$this -> hasColumn('isoniazid_start_date', 'varchar', 20);
 		$this -> hasColumn('isoniazid_end_date', 'varchar', 20);
+		$this -> hasColumn('tb_category', 'varchar', 2);
 	}
 
 	public function setUp() {
