@@ -72,12 +72,12 @@ class Patient_Management extends MY_Controller {
 	    $sql="DELETE FROM spouses WHERE primary_spouse='$patient_no'";
 		$this->db->query($sql);
 	}
-	public function merge_parent($patient_no,$child_no){
-		$childdata= array('parent' =>$patient_no ,'child'=>$child_no );
+	public function merge_parent($patient_no,$parent_no){
+		$childdata= array('child'=>$patient_no,'parent' =>$parent_no);
 		$this->db->insert('dependants',$childdata);
 	}
 	public function unmerge_parent($patient_no){
-		$sql="DELETE FROM dependants WHERE parent='$patient_no'";
+		$sql="DELETE FROM dependants WHERE child='$patient_no'";
 		$this->db->query($sql);
 	}
 
@@ -643,25 +643,21 @@ class Patient_Management extends MY_Controller {
 						'Current_Regimen' => $this -> input -> post('current_regimen', TRUE), 
 						'Nextappointment' => $this -> input -> post('next_appointment_date', TRUE));
 
-						//echo $record_id;die();
 		$this -> db -> where('id', $record_id);
 		$this -> db -> update('patient', $data);
-
 
 		$spouse_no=$this->input->post('match_spouse');
 		$patient_no=$this->input->post('patient_number');
 		$child_no=$this->input->post('match_parent');
-		//Map patient to spouse
+		//Map patient to spouse but unmap all for this patient to remove duplicates
 		if($spouse_no != NULL){
-			$this->merge_spouse($patient_no,$spouse_no);
-		}else{
 			$this->unmerge_spouse($patient_no);
+			$this->merge_spouse($patient_no,$spouse_no);
 		}
-		//Map child to parent/guardian 
+		//Map child to parent/guardian but unmap all for this patient to remove duplicates
 		if($child_no != NULL){
-			$this->merge_parent($patient_no,$child_no);
-		}else{
 			$this->unmerge_parent($patient_no);
+			$this->merge_parent($patient_no,$child_no);
 		}
 
 		//Set session for notications

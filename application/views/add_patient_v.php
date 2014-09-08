@@ -33,54 +33,60 @@
            	$('.match_hidden').css("display","none");
 		    $("#patient_number").change(function(){
 				var patient_no=$("#patient_number").val();
-				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
-				$.ajax({
-				    url: link,
-				    type: 'POST',
-				    success: function(data) {
-				        if(data==1){
-				          bootbox.alert("<h4>Duplicate Entry</h4>\n\<hr/><center>Patient Number Matches an existing record</center>");
-				          $(".btn").attr("disabled","disabled");
-				        }else{
-				        	$(".btn").attr("disabled",false);
-				        }
-				    }
-				});
+				if(patient_no !=''){
+					var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+					$.ajax({
+					    url: link,
+					    type: 'POST',
+					    success: function(data) {
+					        if(data==1){
+					          bootbox.alert("<h4>Duplicate Entry</h4>\n\<hr/><center>Patient Number Matches an existing record</center>");
+					          $(".btn").attr("disabled","disabled");
+					        }else{
+					        	$(".btn").attr("disabled",false);
+					        }
+					    }
+					});
+				}
 	        });
 
 	        $("#match_spouse").change(function(){
 				var patient_no=$("#match_spouse").val();
-				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
-				$.ajax({
-				    url: link,
-				    type: 'POST',
-				    success: function(data) {
-				        if(data==1){
-				         $(".btn").attr("disabled",false); 
-				        }else{
-				        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
-				          $(".btn").attr("disabled","disabled");
-				        }
-				    }
-				});
+				if(patient_no !=''){
+					var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+					$.ajax({
+					    url: link,
+					    type: 'POST',
+					    success: function(data) {
+					        if(data==1){
+					         $(".btn").attr("disabled",false); 
+					        }else{
+					        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
+					          $(".btn").attr("disabled","disabled");
+					        }
+					    }
+					});
+				}
 	        });
 
 	         $("#match_parent").change(function(){
 				var patient_no=$("#match_parent").val();
-				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
-				$.ajax({
-				    url: link,
-				    type: 'POST',
-				    success: function(data) {
-				        if(data==1){
-				         $(".btn").attr("disabled",false); 
-				        }else{
-				        	
-				        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
-				          $(".btn").attr("disabled","disabled");
-				        }
-				    }
-				});
+				if(patient_no !=''){
+					var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+					$.ajax({
+					    url: link,
+					    type: 'POST',
+					    success: function(data) {
+					        if(data==1){
+					         $(".btn").attr("disabled",false); 
+					        }else{
+					        	
+					        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
+					          $(".btn").attr("disabled","disabled");
+					        }
+					    }
+					});
+				}
 	        });
 	        
 	        //Attach date picker for date of birth
