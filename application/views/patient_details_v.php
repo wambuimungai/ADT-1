@@ -201,7 +201,7 @@ if(isset($results)){
 			$("textarea[name='support_group_listing']").not(this).attr("disabled", "true");
 			
 			//Select Other Illnesses Methods Selected
-			var other_illnesses="<?php echo $result['other_illnesses']; ?>";
+			var other_illnesses="<?php echo  $illnesses=str_replace(array("\n"," ","/","[","]"),array(" \ ","","-","/","/"),$result['other_illnesses']);?>";
 			if (other_illnesses.indexOf(',') == -1) {
               other_illnesses=other_illnesses+",";
             }else{

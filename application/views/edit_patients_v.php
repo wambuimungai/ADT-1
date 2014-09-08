@@ -38,54 +38,60 @@ foreach($results as $result){
 			var base_url="<?php echo base_url();?>";
 		    $("#patient_number").change(function(){
 				var patient_no=$("#patient_number").val();
-				var original_patient_no=$("#original_patient_number").val();
-				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
-				$.ajax({
-				    url: link,
-				    type: 'POST',
-				    success: function(data) {
-				       if(data==1 && original_patient_no !=patient_no){
-				          bootbox.alert("<h4>Repeated Entry</h4>\n\<hr/><center>Patient Number Matches an existing record</center>");
-				          $(".btn").attr("disabled","disabled");
-				        }else{
-				        	$(".btn").attr("disabled",false);
-				        }
-				    }
-				});
+				if(patient_no !=''){
+					var original_patient_no=$("#original_patient_number").val();
+					var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+					$.ajax({
+					    url: link,
+					    type: 'POST',
+					    success: function(data) {
+					       if(data==1 && original_patient_no !=patient_no){
+					          bootbox.alert("<h4>Repeated Entry</h4>\n\<hr/><center>Patient Number Matches an existing record</center>");
+					          $(".btn").attr("disabled","disabled");
+					        }else{
+					        	$(".btn").attr("disabled",false);
+					        }
+					    }
+					});
+				}
 	        });
 	        $("#match_spouse").change(function(){
 				var patient_no=$("#match_spouse").val();
-				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
-				$.ajax({
-				    url: link,
-				    type: 'POST',
-				    success: function(data) {
-				        if(data==1){
-				         $(".btn").attr("disabled",false); 
-				        }else{
-				        	
-				        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
-				          $(".btn").attr("disabled","disabled");
-				        }
-				    }
-				});
+				if(patient_no !=''){
+					var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+					$.ajax({
+					    url: link,
+					    type: 'POST',
+					    success: function(data) {
+					        if(data==1){
+					         $(".btn").attr("disabled",false); 
+					        }else{
+					        	
+					        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
+					          $(".btn").attr("disabled","disabled");
+					        }
+					    }
+					});
+				}
 	        });
 	         $("#match_parent").change(function(){
 				var patient_no=$("#match_parent").val();
-				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
-				$.ajax({
-				    url: link,
-				    type: 'POST',
-				    success: function(data) {
-				        if(data==1){
-				         $(".btn").attr("disabled",false); 
-				        }else{
-				        	
-				        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
-				          $(".btn").attr("disabled","disabled");
-				        }
-				    }
-				});
+				if(patient_no !=''){
+					var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+					$.ajax({
+					    url: link,
+					    type: 'POST',
+					    success: function(data) {
+					        if(data==1){
+					         $(".btn").attr("disabled",false); 
+					        }else{
+					        	
+					        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
+					          $(".btn").attr("disabled","disabled");
+					        }
+					    }
+					});
+				}
 	        });
 	        
 	        //Attach date picker for date of birth
@@ -293,7 +299,7 @@ foreach($results as $result){
 			$("textarea[name='support_group_listing']").not(this).attr("disabled", "true");
 			
 			//Select Other Illnesses Methods Selected
-			var other_illnesses="<?php echo $result['other_illnesses'];?>";			
+			var other_illnesses="<?php echo  $illnesses=str_replace(array("\n"," ","/","[","]"),array(" \ ","","-","/","/"),$result['other_illnesses']);?>";			
 			if (other_illnesses.indexOf(',') == -1) {
               other_illnesses=other_illnesses+",";
             }else{

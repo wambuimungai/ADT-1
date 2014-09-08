@@ -66,6 +66,24 @@ class Patient_Management extends MY_Controller {
 
 	}
 
+	public function merge_spouse($patient_no,$spouse_no){
+	    $spousedata=array('primary_spouse'=>$patient_no,'secondary_spouse'=>$spouse_no);
+	    $this->db->insert('spouses',$spousedata);
+	}
+
+	public function unmerge_spouse($patient_no){
+	    $sql="DELETE FROM spouses WHERE primary_spouse='$patient_no'";
+		$this->db->query($sql);
+	}
+	public function merge_parent($patient_no,$parent_no){
+		$childdata= array('child'=>$patient_no,'parent' =>$parent_no);
+		$this->db->insert('dependants',$childdata);
+	}
+	public function unmerge_parent($patient_no){
+		$sql="DELETE FROM dependants WHERE child='$patient_no'";
+		$this->db->query($sql);
+	}
+
 	public function listing() {
 		$access_level = $this -> session -> userdata('user_indicator');
 		$facility_code = $this -> session -> userdata('facility');
@@ -632,27 +650,21 @@ class Patient_Management extends MY_Controller {
 						'Current_Regimen' => $this -> input -> post('current_regimen', TRUE), 
 						'Nextappointment' => $this -> input -> post('next_appointment_date', TRUE));
 
-						//echo $record_id;die();
 		$this -> db -> where('id', $record_id);
 		$this -> db -> update('patient', $data);
-
 
 		$spouse_no=$this->input->post('match_spouse');
 		$patient_no=$this->input->post('patient_number');
 		$child_no=$this->input->post('match_parent');
-		//Map patient to spouse
+		//Map patient to spouse but unmap all for this patient to remove duplicates
 		if($spouse_no != NULL){
-			$this -> db -> where('primary_spouse', $patient_no);
-			$spouse = array('secondary_spouse' =>$this->input->post('match_spouse'));
-			$this -> db -> update('spouses', $spouse);
-			
+			$this->unmerge_spouse($patient_no);
+			$this->merge_spouse($patient_no,$spouse_no);
 		}
-		//Map child to parent/guardian 
+		//Map child to parent/guardian but unmap all for this patient to remove duplicates
 		if($child_no != NULL){
-			$this -> db -> where('child', $patient_no);
-			$parent = array('parent' =>$this->input->post('match_parent'));
-			$this -> db -> update('dependants', $parent);
-
+			$this->unmerge_parent($patient_no);
+			$this->merge_parent($patient_no,$child_no);
 		}
 
 		//Set session for notications
