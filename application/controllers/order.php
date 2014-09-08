@@ -1,6 +1,6 @@
 <?php
 class Order extends MY_Controller {
-	var $esm_url = "https://api.kenyapharma.org/";
+	var $esm_url = "http://api.kenyapharma.org/demo/";
 	var $nascop_url = "";
 	function __construct() {
 		parent::__construct();
@@ -49,8 +49,6 @@ class Order extends MY_Controller {
 			$password = $this -> input -> post("password");
 			$curl -> setBasicAuthentication($username, $password);
 			$curl -> setOpt(CURLOPT_RETURNTRANSFER, TRUE);
-			$curl -> setOpt(CURLOPT_SSL_VERIFYHOST, FALSE);
-			$curl -> setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
 			$url = $this -> esm_url . 'user/' . $username;
 			$curl -> get($url);
 		} else {
@@ -143,8 +141,6 @@ class Order extends MY_Controller {
 			$password = $this -> session -> userdata('api_pass');
 			$curl -> setBasicAuthentication($username, $password);
 			$curl -> setOpt(CURLOPT_RETURNTRANSFER, TRUE);
-			$curl -> setOpt(CURLOPT_SSL_VERIFYHOST, FALSE);
-			$curl -> setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
 		} else {
 			$url = $this -> nascop_url;
 			$links['sync_drug'] = "sync/drugs";
@@ -218,8 +214,6 @@ class Order extends MY_Controller {
 			$password = $this -> session -> userdata('api_pass');
 			$curl -> setBasicAuthentication($username, $password);
 			$curl -> setOpt(CURLOPT_RETURNTRANSFER, TRUE);
-			$curl -> setOpt(CURLOPT_SSL_VERIFYHOST, FALSE);
-			$curl -> setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
 		} else {
 			$url = $this -> nascop_url;
 			foreach ($lists as $facility_id) {
@@ -830,14 +824,17 @@ class Order extends MY_Controller {
 					if ($this -> input -> post("status_change")) {
 						$status = $this -> input -> post("status_change");
 					}
+					$logs = Cdrr_Log::getHydratedLogs($id);
+
 					$log_array['id'] = "";
 					$log_array['description'] = $status;
 					$log_array['created'] = date('Y-m-d H:i:s');
 					$log_array['user_id'] = $this -> session -> userdata("api_id");
 					$log_array['cdrr_id'] = $id;
-					$this -> db -> insert('cdrr_log', $log_array);
-					$log_array = Cdrr_Log::getHydratedLogs($id);
-					$main_array['ownCdrr_log'] = $log_array;
+
+					$logs[]=$log_array;
+					
+					$main_array['ownCdrr_log'] = $logs;
 				} else {
 					$log_array['id'] = "";
 					$log_array['description'] = $status;
@@ -959,14 +956,17 @@ class Order extends MY_Controller {
 					if ($this -> input -> post("status_change")) {
 						$status = $this -> input -> post("status_change");
 					}
+					$logs = Maps_Log::getHydratedLogs($id);
+
 					$log_array['id'] = "";
 					$log_array['description'] = $status;
 					$log_array['created'] = date('Y-m-d H:i:s');
 					$log_array['user_id'] = $this -> session -> userdata("api_id");
 					$log_array['maps_id'] = $id;
-					$this -> db -> insert('maps_log', $log_array);
-					$log_array = Maps_Log::getHydratedLogs($id);
-					$main_array['ownMaps_log'] = $log_array;
+
+					$logs[]=$log_array;
+					
+					$main_array['ownMaps_log'] = $logs;
 				} else {
 					$log_array['id'] = "";
 					$log_array['description'] = $status;
@@ -1255,9 +1255,6 @@ class Order extends MY_Controller {
 			$username = $this -> session -> userdata('api_user');
 			$password = $this -> session -> userdata('api_pass');
 			curl_setopt($ch, CURLOPT_USERPWD, $username . ':' . $password);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-			curl_setopt($ch, CURLOPT_SSLVERSION, 3);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
@@ -1281,9 +1278,6 @@ class Order extends MY_Controller {
 		curl_setopt($ch, CURLOPT_USERPWD, $username . ':' . $password);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-		curl_setopt($ch, CURLOPT_SSLVERSION, 3);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($json_data)));
 
