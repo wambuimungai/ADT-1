@@ -55,6 +55,8 @@ class Patient_Management extends MY_Controller {
 		$facility_code = $this -> session -> userdata('facility');
 		$sql = "select * from patient where facility_code='$facility_code' and patient_number_ccc='$patient_no'";
 		$query = $this -> db -> query($sql);
+		$sql_spouse="select * from spouses where secondary_spouse='$patient_no'";
+		$query=$this-> db ->query($sql_spouse);
 		$results = $query -> result_array();
 		if ($results) {
 			echo json_decode("1");
@@ -63,6 +65,7 @@ class Patient_Management extends MY_Controller {
 		}
 
 	}
+
 	public function listing() {
 		$access_level = $this -> session -> userdata('user_indicator');
 		$facility_code = $this -> session -> userdata('facility');

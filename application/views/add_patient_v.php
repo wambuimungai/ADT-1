@@ -51,6 +51,7 @@
 	        $("#match_spouse").change(function(){
 				var patient_no=$("#match_spouse").val();
 				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+				
 				$.ajax({
 				    url: link,
 				    type: 'POST',
@@ -59,7 +60,7 @@
 				         $(".btn").attr("disabled",false); 
 				        }else{
 				        	
-				        	bootbox.alert("<h4>Does not exit</h4>\n\<hr/><center>Patient Number does not exist</center>");
+				        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
 
 				          $(".btn").attr("disabled","disabled");
 				        }
@@ -77,7 +78,7 @@
 				        if(data==1){
 				         $(".btn").attr("disabled",false); 
 				        }else{
-				        	bootbox.alert("<h4>Does not exist</h4>\n\<hr/><center>Patient Number does not exist</center>");
+				        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
 				          $(".btn").attr("disabled","disabled");
 				        }
 				    }
