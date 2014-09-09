@@ -521,11 +521,19 @@ if ($facility_object -> service_pep == "1") {
 			}
 			else if((reg_category.indexOf('paed')>-1 || reg_category.indexOf('ped')>-1 || reg_category.indexOf('child')>-1)){//Check if regimen is adult or paed
 				var old_val = $("#art_child").val();
-				var new_val = parseInt(old_val)+(parseInt(change));
+				if(old_val !=''){
+					var new_val = parseInt(old_val)+(parseInt(change));	
+				}else{
+					var new_val = parseInt(change);
+				}
 				$("#art_child").val(new_val);
 			}else if(reg_category.indexOf('adult')>-1 || reg_category.indexOf('mother')>-1){//Adult regimen
 				var old_val = $("#art_adult").val();
-				var new_val = parseInt(old_val)+(parseInt(change));
+				if(old_val !=''){
+					var new_val = parseInt(old_val)+(parseInt(change));
+				}else{
+					var new_val = parseInt(change);
+				}
 				$("#art_adult").val(new_val);
 			}
 			old_value = new_value;

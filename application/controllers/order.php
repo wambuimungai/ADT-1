@@ -778,41 +778,43 @@ class Order extends MY_Controller {
 				$commodity_counter = 0;
 				$cdrr_array = array();
 				foreach ($commodities as $commodity) {
-					if ($id == "") {
-						$cdrr_array[$commodity_counter]['id'] = "";
-					} else {
-						$cdrr_array[$commodity_counter]['id'] = $item_id[$commodity_counter];
-					}
-					$cdrr_array[$commodity_counter]['balance'] = $opening_balances[$commodity_counter];
-					$cdrr_array[$commodity_counter]['received'] = $quantities_received[$commodity_counter];
-					$cdrr_array[$commodity_counter]['dispensed_units'] = $quantities_dispensed[$commodity_counter];
-					if ($code == "F-CDRR_packs") {
-						$cdrr_array[$commodity_counter]['dispensed_packs'] = $quantities_dispensed_packs[$commodity_counter];
-					} else {
-						$cdrr_array[$commodity_counter]['dispensed_packs'] = ceil(@$quantities_dispensed[$commodity_counter] / @$pack_size[$commodity_counter]);
-					}
-					$cdrr_array[$commodity_counter]['losses'] = $losses[$commodity_counter];
-					$cdrr_array[$commodity_counter]['adjustments'] = $adjustments[$commodity_counter];
-					$cdrr_array[$commodity_counter]['count'] = $physical_count[$commodity_counter];
-					$cdrr_array[$commodity_counter]['expiry_quant'] = $expiry_quantity[$commodity_counter];
-					if ($expiry_date[$commodity_counter] != "-" && $expiry_date[$commodity_counter] != "" && $expiry_date[$commodity_counter] !=null && $expiry_date[$commodity_counter] != "NULL" && $expiry_date[$commodity_counter] != "1970-01-01" && $expiry_date[$commodity_counter] != "0000-00-00") {
-						$cdrr_array[$commodity_counter]['expiry_date'] = date('Y-m-d', strtotime($expiry_date[$commodity_counter]));
-					} else {
-						$cdrr_array[$commodity_counter]['expiry_date'] = null;
-					}
-					$cdrr_array[$commodity_counter]['out_of_stock'] = $out_of_stock[$commodity_counter];
-					$cdrr_array[$commodity_counter]['resupply'] = $resupply[$commodity_counter];
-					$cdrr_array[$commodity_counter]['aggr_consumed'] = null;
-					$cdrr_array[$commodity_counter]['aggr_on_hand'] = null;
-					$cdrr_array[$commodity_counter]['publish'] = 0;
-					if ($code == "D-CDRR") {
-						$cdrr_array[$commodity_counter]['aggr_consumed'] = $aggr_consumed[$commodity_counter];
-						$cdrr_array[$commodity_counter]['aggr_on_hand'] = $aggr_on_hand[$commodity_counter];
-					}
-					$cdrr_array[$commodity_counter]['cdrr_id'] = $id;
-					$cdrr_array[$commodity_counter]['drug_id'] = $commodity;
+					if (trim($resupply[$commodity_counter]) != '') {
+						if ($id == "") {
+							$cdrr_array[$commodity_counter]['id'] = "";
+						} else {
+							$cdrr_array[$commodity_counter]['id'] = $item_id[$commodity_counter];
+						}
+						$cdrr_array[$commodity_counter]['balance'] = $opening_balances[$commodity_counter];
+						$cdrr_array[$commodity_counter]['received'] = $quantities_received[$commodity_counter];
+						$cdrr_array[$commodity_counter]['dispensed_units'] = $quantities_dispensed[$commodity_counter];
+						if ($code == "F-CDRR_packs") {
+							$cdrr_array[$commodity_counter]['dispensed_packs'] = $quantities_dispensed_packs[$commodity_counter];
+						} else {
+							$cdrr_array[$commodity_counter]['dispensed_packs'] = ceil(@$quantities_dispensed[$commodity_counter] / @$pack_size[$commodity_counter]);
+						}
+						$cdrr_array[$commodity_counter]['losses'] = $losses[$commodity_counter];
+						$cdrr_array[$commodity_counter]['adjustments'] = $adjustments[$commodity_counter];
+						$cdrr_array[$commodity_counter]['count'] = $physical_count[$commodity_counter];
+						$cdrr_array[$commodity_counter]['expiry_quant'] = $expiry_quantity[$commodity_counter];
+						if ($expiry_date[$commodity_counter] != "-" && $expiry_date[$commodity_counter] != "" && $expiry_date[$commodity_counter] !=null && $expiry_date[$commodity_counter] != "NULL" && $expiry_date[$commodity_counter] != "1970-01-01" && $expiry_date[$commodity_counter] != "0000-00-00") {
+							$cdrr_array[$commodity_counter]['expiry_date'] = date('Y-m-d', strtotime($expiry_date[$commodity_counter]));
+						} else {
+							$cdrr_array[$commodity_counter]['expiry_date'] = null;
+						}
+						$cdrr_array[$commodity_counter]['out_of_stock'] = $out_of_stock[$commodity_counter];
+						$cdrr_array[$commodity_counter]['resupply'] = $resupply[$commodity_counter];
+						$cdrr_array[$commodity_counter]['aggr_consumed'] = null;
+						$cdrr_array[$commodity_counter]['aggr_on_hand'] = null;
+						$cdrr_array[$commodity_counter]['publish'] = 0;
+						if ($code == "D-CDRR") {
+							$cdrr_array[$commodity_counter]['aggr_consumed'] = $aggr_consumed[$commodity_counter];
+							$cdrr_array[$commodity_counter]['aggr_on_hand'] = $aggr_on_hand[$commodity_counter];
+						}
+						$cdrr_array[$commodity_counter]['cdrr_id'] = $id;
+						$cdrr_array[$commodity_counter]['drug_id'] = $commodity;
 
-					$commodity_counter++;
+						$commodity_counter++;
+					}
 				}
 
 				$main_array['ownCdrr_item'] = $cdrr_array;
@@ -1281,7 +1283,7 @@ class Order extends MY_Controller {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($json_data)));
 
-		$json_data = curl_exec($ch);
+		echo $json_data = curl_exec($ch);
 		if (empty($json_data)) {
 			echo "cURL Error: " . curl_error($ch);
 		}
