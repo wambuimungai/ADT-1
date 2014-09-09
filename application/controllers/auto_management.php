@@ -600,7 +600,7 @@ class auto_management extends MY_Controller {
 	public function updateFacilties(){
 		$total=Facilities::getTotalNumber();
 		$message="";
-		if($total < 7000){
+		if($total < 9800){
 			$this -> load -> library('PHPExcel');
 			$inputFileType = 'Excel5';
 			$inputFileName = $_SERVER['DOCUMENT_ROOT'] . '/ADT/assets/facility_list.xls';

@@ -513,7 +513,8 @@ class Patient_Management extends MY_Controller {
 		$direction = $this -> input -> post('direction', TRUE);
 
 		if ($direction == 0) {
-			$this -> session -> set_userdata('msg_success', 'Patient: ' . $this -> input -> post('first_name', TRUE) . " " . $this -> input -> post('last_name', TRUE) . ' was Saved');
+			$this -> session -> set_userdata('msg_save_transaction', 'success');
+			$this -> session -> set_flashdata('dispense_updated', 'Patient: ' . $this -> input -> post('first_name', TRUE) . " " . $this -> input -> post('last_name', TRUE) . ' was Saved');
 			redirect("patient_management");
 		} else if ($direction == 1) {
 			redirect("dispensement_management/dispense/$auto_id");

@@ -42,14 +42,20 @@ class Maps extends Doctrine_Record {
 
 	public function getAll() {
 		$query = Doctrine_Query::create() -> select("*") -> from("maps");
-		$cdrrs = $query -> execute();
-		return $cdrrs;
+		$maps = $query -> execute();
+		return $maps;
+	}
+
+	public function getMap($id){
+		$query = Doctrine_Query::create() -> select("*") -> from("maps")->where("id =? ",array($id));
+		$maps = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $maps;
 	}
 
 	public function getPeriods() {
 		$query = Doctrine_Query::create() -> select("Distinct(period_begin) as periods") -> from("maps")->orderBy("period_begin desc");
-		$cdrrs = $query -> execute();
-		return $cdrrs;
+		$maps = $query -> execute();
+		return $maps;
 	}
 
 }

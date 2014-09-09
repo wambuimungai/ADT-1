@@ -317,16 +317,17 @@
 		    });
 	  });	    
 	    
-	  $(".delete_order").click(function(event){
+	  $(".delete_order").live('click',function(event){
 	  		event.preventDefault();
 	  		var href=$(this).attr('href');
-	  		
-			$("#confirmsubmission").modal("show");
-			$(".conf_maps_body").html(
-				'<p id="cMessage" class="message error" >Are you sure you want to delete this report? This process is irreversible.</p><form id="fmDeleteOrder"></form>'
-			)
-			$("#fmDeleteOrder").attr("action",href);
-			
+	  		$(this).attr("href","#");
+	  		if(href !="#"){
+				$("#confirmsubmission").modal("show");
+				$(".conf_maps_body").html(
+					'<p id="cMessage" class="alert alert-danger" >Are you sure you want to delete this report? This process is irreversible.</p><form id="fmDeleteOrder"></form>'
+				)
+				$("#fmDeleteOrder").attr("action",href);
+			}
 	  });
 	  $(".order_btn").click(function(){
 	  	if($(this).attr("id")=="cTrue"){
