@@ -623,10 +623,7 @@
 		<input type="text" id="end_date" value="<?php echo $to; ?>">
 		</h4>
 		<hr size="1" style="width:80%">              
-		<h5 class="report_title" style="text-align: center">Number Of Patients: <span id="total_count" style="padding-right:5em"></span> 
-                 Total visits: <span  style="padding-right:5em"></span>
-                 Number Of visits without missed doses: <span  style="padding-right:5em"></span>
-                 Number Of visits without pill count: <span ></span>
+		<h5 class="report_title" style="text-align: center">Number Of Patients: <span id="total_count" style="padding-right:5em"></span>                  
                 </h5>
 		<div id="adherence_form">
 			<div style="text-align: center;	width:100%;margin:0 auto;">
