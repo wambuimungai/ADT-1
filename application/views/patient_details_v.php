@@ -482,6 +482,7 @@ if(isset($results)){
 			if(service_name=="PEP"){
 				$("#pep_reason_listing").show();
 				$("#who_listing").hide();
+				$("#drug_prophylax").hide();
 			}
 			
 			$("#service_started").val("<?php echo $result['start_regimen_date'] ?>");
@@ -521,6 +522,7 @@ if(isset($results)){
 				
 		   //Function to display Regimens in this line
 		   $("#service").change(function() {
+		   	$("#drug_prophylax").show();
 		   	$("#regimen option").remove();
 		   	  var service_line = $(this).val();
 		   	  var link=base_url+"regimen_management/getRegimenLine/"+service_line;
@@ -1294,7 +1296,7 @@ if(isset($results)){
 								?>				
 					</select>
 			 </div>
-			 <div class="max-row">
+			 <div class="max-row" id="drug_prophylax">
 				<label>Drug Prophylaxis</label>
 					<table>
 						<?php
@@ -1344,7 +1346,7 @@ if(isset($results)){
 								<th style="width:250px;">Drug</th>
 								<th style="width:4%;">Qty</th>
 								<th style="width:4%;">Weight</th>
-								<th style="width:200px;">Last Regimen</th>
+								<th style="width:200px;">Current Regimen</th>
 								<th>BatchNo</th>
 								<th>Pill Count</th>
 								<th>Adherence</th>

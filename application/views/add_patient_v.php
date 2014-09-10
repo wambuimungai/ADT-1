@@ -200,6 +200,7 @@
 				
 		   //Function to display Regimens in this line
 		   $("#service").change(function() {
+		   	$("#drug_prophylax").css("display","block");
 		   	$("#regimen option").remove();
 		   	  var service_line = $(this).val();
 		   	  $("#service_started").val("<?php echo date('Y-m-d');?>");
@@ -207,6 +208,7 @@
 		   	  if($("#service option[value='"+service_line+"']").text()=="PEP"){
 		   	  	$("#pep_reason_listing").show();
 		   	  	$("#who_listing").hide();
+		   	  	$("#drug_prophylax").css("display","none");
 		   	  }else if($("#service option[value='"+service_line+"']").text()=="OI Only"){
 		   	  	$("#service_started").val("");
                                 $("#pep_reason_listing").hide();
@@ -876,7 +878,7 @@
 								?>					
 							</select>
 						</div>
-						<div class="max-row">
+						<div class="max-row" id="drug_prophylax">
 							<label>Drug Prophylaxis</label>
 							<input type="hidden" id="drug_prophylaxis_holder" name="drug_prophylaxis_holder" />
 							<select name="drug_prophylaxis" id="drug_prophylaxis" multiple="multiple" style="width:300px;" >
