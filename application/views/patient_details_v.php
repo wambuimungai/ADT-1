@@ -208,31 +208,30 @@ if(isset($results)){
 			$("textarea[name='support_group_listing']").not(this).attr("disabled", "true");
 			
 			//Select Other Illnesses Methods Selected
-			var other_illnesses="<?php echo  $illnesses=str_replace(array("\n"," ","/","[","]"),array(" \ ","","-","/","/"),$result['other_illnesses']);?>";
-			if (other_illnesses.indexOf(',') == -1) {
-              other_illnesses=other_illnesses+",";
-            }else{
-              other_illnesses=other_illnesses;
-            }
-			var other_sickness="";
-				if(other_illnesses != null || other_illnesses != " ") {
-					var other_ill = other_illnesses.split(',');
-					for(var i = 0; i < other_ill.length; i++) {
-					   $('input[name="other_illnesses_listing"][type="checkbox"][value="' + other_ill[i] + '"]').attr('checked', true);
-	                   if(other_ill[i].charAt(0) !="-"){
-	                   	other_sickness+=","+other_ill[i];
-	                   }
-					}
-					$("#other_chronic").val(other_sickness.substring(1));
-				}
-		
+			other_illnesses=<?php echo $result['other_illnesses'];?>;
+			other_sickness_list="";
+			ill_count=0;
+			$.each(other_illnesses,function(i,v){
+				//get list of illnesses
+				illness_list=$('input[name="other_illnesses_listing"][type="checkbox"]');
+				//loop through list to find match for current selected illness
+				$.each(illness_list,function(index,value){
+                      if($(this).val()==v){
+                      	$(this).attr('checked', true);
+                      	ill_count=1;
+                      }
+				});
+                if(ill_count==0){
+                	other_sickness_list+=","+v;
+                }
+			});
+			$("#other_chronic").val(other_sickness_list.substring(1));
+
 			if($("#other_chronic").val()){
 				$("input[name='other_other']").not(this).attr("checked", "true");
 			    $("textarea[name='other_chronic']").not(this).removeAttr("disabled");		
 			}
-			
-			
-					
+	
 			<?php
 				$other_drugs=str_replace(array("\n"," ","/"),array(" \ ","","-"),$result['other_drugs']);
 			?>

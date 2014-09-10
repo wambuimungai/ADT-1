@@ -1,3 +1,13 @@
+Version 2.16 10/09/2014
+==============================================
+- Added: Manual Auto Update in settings
+- Added: Added an alert box for drug consumption in settings
+- Added: dependent/spouse lost to follow up message
+- Added: changed last regimen label to current regimen
+- Added: when type of service is pep hide prophylaxis
+- Fixed: update for spouses/dependants when ccc_no is changed
+- Fixed: bug for illnesses listing in edit annd patient details
+
 Version 2.15 09/09/2014
 ==============================================
 - Added: Graph for patients enrolled chnaged to highcharts,more accurate
