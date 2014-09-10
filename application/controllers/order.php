@@ -1,6 +1,6 @@
 <?php
 class Order extends MY_Controller {
-	var $esm_url = "https://api.kenyapharma.org/";
+	var $esm_url = "http://api.kenyapharma.org/";
 	var $nascop_url = "";
 	function __construct() {
 		parent::__construct();
@@ -49,8 +49,6 @@ class Order extends MY_Controller {
 			$password = $this -> input -> post("password");
 			$curl -> setBasicAuthentication($username, $password);
 			$curl -> setOpt(CURLOPT_RETURNTRANSFER, TRUE);
-			$curl -> setOpt(CURLOPT_SSL_VERIFYHOST, FALSE);
-			$curl -> setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
 			$url = $this -> esm_url . 'user/' . $username;
 			$curl -> get($url);
 		} else {
@@ -143,8 +141,6 @@ class Order extends MY_Controller {
 			$password = $this -> session -> userdata('api_pass');
 			$curl -> setBasicAuthentication($username, $password);
 			$curl -> setOpt(CURLOPT_RETURNTRANSFER, TRUE);
-			$curl -> setOpt(CURLOPT_SSL_VERIFYHOST, FALSE);
-			$curl -> setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
 		} else {
 			$url = $this -> nascop_url;
 			$links['sync_drug'] = "sync/drugs";
@@ -218,8 +214,6 @@ class Order extends MY_Controller {
 			$password = $this -> session -> userdata('api_pass');
 			$curl -> setBasicAuthentication($username, $password);
 			$curl -> setOpt(CURLOPT_RETURNTRANSFER, TRUE);
-			$curl -> setOpt(CURLOPT_SSL_VERIFYHOST, FALSE);
-			$curl -> setOpt(CURLOPT_SSL_VERIFYPEER, FALSE);
 		} else {
 			$url = $this -> nascop_url;
 			foreach ($lists as $facility_id) {
@@ -622,29 +616,20 @@ class Order extends MY_Controller {
 				$data['logs'] = Maps_Log::getMapLogs($map_id);
 
 				if ($data['options'] == "view") {
-					$data['hide_save'] = 1;
-					/*
-					$regimen_table = 'regimen';
-					$regimen_cat_table = 'regimen_category';
-					$regimen_code = 'r.regimen_code';
-					$regimen_desc = 'r.regimen_desc';
-					$regimen_cat_join = 'r.category';
-					$regimen_join = 'mi.regimen_id=r.map';*/
+					$data['hide_save'] = 1;	
+					$regimen_table = 'sync_regimen';
+					$regimen_cat_table = 'sync_regimen_category';
+					$regimen_code = 'r.code';
+					$regimen_desc = 'r.name as description';
+					$regimen_cat_join = 'r.category_id';
+					$regimen_join = 'mi.regimen_id=r.id';
 
-					//if($data['supplier']=='KENYA PHARMA'){	
-						$regimen_table = 'sync_regimen';
-						$regimen_cat_table = 'sync_regimen_category';
-						$regimen_code = 'r.code';
-						$regimen_desc = 'r.name as description';
-						$regimen_cat_join = 'r.category_id';
-						$regimen_join = 'mi.regimen_id=r.id';
-					//}
 					$sql_regimen = "SELECT rc.id,r.id as reg_id,rc.Name as name,$regimen_code,$regimen_desc,$regimen_cat_join,mi.total
-						FROM $regimen_table r
-						LEFT JOIN $regimen_cat_table rc ON rc.id = $regimen_cat_join
-						LEFT JOIN maps_item mi ON $regimen_join
-						WHERE maps_id='$map_id'";
-					//echo $sql_regimen;die();
+									FROM $regimen_table r
+									LEFT JOIN $regimen_cat_table rc ON rc.id = $regimen_cat_join
+									LEFT JOIN maps_item mi ON $regimen_join
+									WHERE maps_id='$map_id'";
+
 					$query_regimen = $this -> db -> query($sql_regimen);
 					$regimen_array = $query_regimen -> result_array();
 					$regimen_categories = array();
@@ -784,41 +769,43 @@ class Order extends MY_Controller {
 				$commodity_counter = 0;
 				$cdrr_array = array();
 				foreach ($commodities as $commodity) {
-					if ($id == "") {
-						$cdrr_array[$commodity_counter]['id'] = "";
-					} else {
-						$cdrr_array[$commodity_counter]['id'] = $item_id[$commodity_counter];
-					}
-					$cdrr_array[$commodity_counter]['balance'] = $opening_balances[$commodity_counter];
-					$cdrr_array[$commodity_counter]['received'] = $quantities_received[$commodity_counter];
-					$cdrr_array[$commodity_counter]['dispensed_units'] = $quantities_dispensed[$commodity_counter];
-					if ($code == "F-CDRR_packs") {
-						$cdrr_array[$commodity_counter]['dispensed_packs'] = $quantities_dispensed_packs[$commodity_counter];
-					} else {
-						$cdrr_array[$commodity_counter]['dispensed_packs'] = ceil(@$quantities_dispensed[$commodity_counter] / @$pack_size[$commodity_counter]);
-					}
-					$cdrr_array[$commodity_counter]['losses'] = $losses[$commodity_counter];
-					$cdrr_array[$commodity_counter]['adjustments'] = $adjustments[$commodity_counter];
-					$cdrr_array[$commodity_counter]['count'] = $physical_count[$commodity_counter];
-					$cdrr_array[$commodity_counter]['expiry_quant'] = $expiry_quantity[$commodity_counter];
-					if ($expiry_date[$commodity_counter] != "-" && $expiry_date[$commodity_counter] != "" && $expiry_date[$commodity_counter] !=null && $expiry_date[$commodity_counter] != "NULL" && $expiry_date[$commodity_counter] != "1970-01-01" && $expiry_date[$commodity_counter] != "0000-00-00") {
-						$cdrr_array[$commodity_counter]['expiry_date'] = date('Y-m-d', strtotime($expiry_date[$commodity_counter]));
-					} else {
-						$cdrr_array[$commodity_counter]['expiry_date'] = null;
-					}
-					$cdrr_array[$commodity_counter]['out_of_stock'] = $out_of_stock[$commodity_counter];
-					$cdrr_array[$commodity_counter]['resupply'] = $resupply[$commodity_counter];
-					$cdrr_array[$commodity_counter]['aggr_consumed'] = null;
-					$cdrr_array[$commodity_counter]['aggr_on_hand'] = null;
-					$cdrr_array[$commodity_counter]['publish'] = 0;
-					if ($code == "D-CDRR") {
-						$cdrr_array[$commodity_counter]['aggr_consumed'] = $aggr_consumed[$commodity_counter];
-						$cdrr_array[$commodity_counter]['aggr_on_hand'] = $aggr_on_hand[$commodity_counter];
-					}
-					$cdrr_array[$commodity_counter]['cdrr_id'] = $id;
-					$cdrr_array[$commodity_counter]['drug_id'] = $commodity;
+					if (trim($resupply[$commodity_counter]) != '') {
+						if ($id == "") {
+							$cdrr_array[$commodity_counter]['id'] = "";
+						} else {
+							$cdrr_array[$commodity_counter]['id'] = $item_id[$commodity_counter];
+						}
+						$cdrr_array[$commodity_counter]['balance'] = $opening_balances[$commodity_counter];
+						$cdrr_array[$commodity_counter]['received'] = $quantities_received[$commodity_counter];
+						$cdrr_array[$commodity_counter]['dispensed_units'] = $quantities_dispensed[$commodity_counter];
+						if ($code == "F-CDRR_packs") {
+							$cdrr_array[$commodity_counter]['dispensed_packs'] = $quantities_dispensed_packs[$commodity_counter];
+						} else {
+							$cdrr_array[$commodity_counter]['dispensed_packs'] = ceil(@$quantities_dispensed[$commodity_counter] / @$pack_size[$commodity_counter]);
+						}
+						$cdrr_array[$commodity_counter]['losses'] = $losses[$commodity_counter];
+						$cdrr_array[$commodity_counter]['adjustments'] = $adjustments[$commodity_counter];
+						$cdrr_array[$commodity_counter]['count'] = $physical_count[$commodity_counter];
+						$cdrr_array[$commodity_counter]['expiry_quant'] = $expiry_quantity[$commodity_counter];
+						if ($expiry_date[$commodity_counter] != "-" && $expiry_date[$commodity_counter] != "" && $expiry_date[$commodity_counter] !=null && $expiry_date[$commodity_counter] != "NULL" && $expiry_date[$commodity_counter] != "1970-01-01" && $expiry_date[$commodity_counter] != "0000-00-00") {
+							$cdrr_array[$commodity_counter]['expiry_date'] = date('Y-m-d', strtotime($expiry_date[$commodity_counter]));
+						} else {
+							$cdrr_array[$commodity_counter]['expiry_date'] = null;
+						}
+						$cdrr_array[$commodity_counter]['out_of_stock'] = $out_of_stock[$commodity_counter];
+						$cdrr_array[$commodity_counter]['resupply'] = $resupply[$commodity_counter];
+						$cdrr_array[$commodity_counter]['aggr_consumed'] = null;
+						$cdrr_array[$commodity_counter]['aggr_on_hand'] = null;
+						$cdrr_array[$commodity_counter]['publish'] = 0;
+						if ($code == "D-CDRR") {
+							$cdrr_array[$commodity_counter]['aggr_consumed'] = $aggr_consumed[$commodity_counter];
+							$cdrr_array[$commodity_counter]['aggr_on_hand'] = $aggr_on_hand[$commodity_counter];
+						}
+						$cdrr_array[$commodity_counter]['cdrr_id'] = $id;
+						$cdrr_array[$commodity_counter]['drug_id'] = $commodity;
 
-					$commodity_counter++;
+						$commodity_counter++;
+					}
 				}
 
 				$main_array['ownCdrr_item'] = $cdrr_array;
@@ -830,14 +817,17 @@ class Order extends MY_Controller {
 					if ($this -> input -> post("status_change")) {
 						$status = $this -> input -> post("status_change");
 					}
+					$logs = Cdrr_Log::getHydratedLogs($id);
+
 					$log_array['id'] = "";
 					$log_array['description'] = $status;
 					$log_array['created'] = date('Y-m-d H:i:s');
 					$log_array['user_id'] = $this -> session -> userdata("api_id");
 					$log_array['cdrr_id'] = $id;
-					$this -> db -> insert('cdrr_log', $log_array);
-					$log_array = Cdrr_Log::getHydratedLogs($id);
-					$main_array['ownCdrr_log'] = $log_array;
+
+					$logs[]=$log_array;
+					
+					$main_array['ownCdrr_log'] = $logs;
 				} else {
 					$log_array['id'] = "";
 					$log_array['description'] = $status;
@@ -959,14 +949,17 @@ class Order extends MY_Controller {
 					if ($this -> input -> post("status_change")) {
 						$status = $this -> input -> post("status_change");
 					}
+					$logs = Maps_Log::getHydratedLogs($id);
+
 					$log_array['id'] = "";
 					$log_array['description'] = $status;
 					$log_array['created'] = date('Y-m-d H:i:s');
 					$log_array['user_id'] = $this -> session -> userdata("api_id");
 					$log_array['maps_id'] = $id;
-					$this -> db -> insert('maps_log', $log_array);
-					$log_array = Maps_Log::getHydratedLogs($id);
-					$main_array['ownMaps_log'] = $log_array;
+
+					$logs[]=$log_array;
+					
+					$main_array['ownMaps_log'] = $logs;
 				} else {
 					$log_array['id'] = "";
 					$log_array['description'] = $status;
@@ -1255,9 +1248,6 @@ class Order extends MY_Controller {
 			$username = $this -> session -> userdata('api_user');
 			$password = $this -> session -> userdata('api_pass');
 			curl_setopt($ch, CURLOPT_USERPWD, $username . ':' . $password);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-			curl_setopt($ch, CURLOPT_SSLVERSION, 3);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
@@ -1281,9 +1271,6 @@ class Order extends MY_Controller {
 		curl_setopt($ch, CURLOPT_USERPWD, $username . ':' . $password);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-		curl_setopt($ch, CURLOPT_SSLVERSION, 3);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($json_data)));
 
@@ -1465,32 +1452,38 @@ class Order extends MY_Controller {
 		$status='deleted';
 		$log_array=array();
 		if ($type == "cdrr") {
-			$main_array = Cdrr::getCdrr($id);
+			$results= Cdrr::getCdrr($id);
+			$main_array=$results[0];
 			$main_array["ownCdrr_item"] = Cdrr_Item::getItems($id);
+
+			$logs = Cdrr_Log::getHydratedLogs($id);
 
 			$log_array['id'] = "";
 			$log_array['description'] = $status;
 			$log_array['created'] = date('Y-m-d H:i:s');
 			$log_array['user_id'] = $this -> session -> userdata("api_id");
 			$log_array['cdrr_id'] = $id;
-			$this -> db -> insert('cdrr_log', $log_array);
+			
+			$logs[]=$log_array;
 
-			$log_array = Cdrr_Log::getHydratedLogs($id);
-			$main_array['ownCdrr_log'] = $log_array;
+			$main_array['ownCdrr_log'] = $logs;
 
 		} else if ($type == "maps") {
-			$main_array = Maps::getMap($id);
+			$results = Maps::getMap($id);
+			$main_array=$results[0];
 			$main_array["ownMaps_item"] = Maps_Item::getItems($id);
+
+			$logs = Maps_Log::getHydratedLogs($id);
 
 			$log_array['id'] = "";
 			$log_array['description'] = $status;
 			$log_array['created'] = date('Y-m-d H:i:s');
 			$log_array['user_id'] = $this -> session -> userdata("api_id");
 			$log_array['maps_id'] = $id;
-			$this -> db -> insert('maps_log', $log_array);
 
-			$log_array = Maps_Log::getHydratedLogs($id);
-			$main_array['ownMaps_log'] = $log_array;
+			$logs[]=$log_array;
+
+			$main_array['ownMaps_log'] = $logs;
 		}
 		$main_array['status']=$status;
 		$main_array = array($main_array);
@@ -2622,7 +2615,6 @@ class Order extends MY_Controller {
 					AND m.status ="approved"
 					AND m.period_begin="' .$period_start. '" AND m.period_end="' .$period_end. '" ORDER BY m.code DESC';
 
-		//echo $sql_maps;die();
 		$query = $this -> db -> query($sql_maps);
 		$results = $query -> result_array();
 		$maps_array = array();

@@ -30,6 +30,13 @@ class Cdrr extends Doctrine_Record {
 		$cdrrs = $query -> execute();
 		return $cdrrs;
 	}
+
+	public function getCdrr($id){
+		$query = Doctrine_Query::create() -> select("*") -> from("cdrr")->where("id =? ",array($id));
+		$cdrrs = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $cdrrs;
+	}
+
 	public function getPeriods() {
 		$query = Doctrine_Query::create() -> select("Distinct(period_begin) as periods") -> from("cdrr")->orderBy("period_begin desc");
 		$cdrrs = $query -> execute();

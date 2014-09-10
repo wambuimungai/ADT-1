@@ -25,62 +25,68 @@
             </style>
 		<script type="text/javascript">
 		$(document).ready(function(){
-
-			//Function to Check Patient Numner exists
+          
+			//Function to Check Patient Number exists
 			var base_url="<?php echo base_url();?>";
-           $('.status_hidden').css("display","none");
-           $('.match_hidden').css("display","none");
+			$('.match_spouse').css("display","none");
+           	$('.status_hidden').css("display","none");
+           	$('.match_hidden').css("display","none");
 		    $("#patient_number").change(function(){
 				var patient_no=$("#patient_number").val();
-				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
-				$.ajax({
-				    url: link,
-				    type: 'POST',
-				    success: function(data) {
-				        if(data==1){
-				          bootbox.alert("<h4>Duplicate Entry</h4>\n\<hr/><center>Patient Number Matches an existing record</center>");
-				          $(".btn").attr("disabled","disabled");
-				        }else{
-				        	$(".btn").attr("disabled",false);
-				        }
-				    }
-				});
+				if(patient_no !=''){
+					var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+					$.ajax({
+					    url: link,
+					    type: 'POST',
+					    success: function(data) {
+					        if(data==1){
+					          bootbox.alert("<h4>Duplicate Entry</h4>\n\<hr/><center>Patient Number Matches an existing record</center>");
+					          $(".btn").attr("disabled","disabled");
+					        }else{
+					        	$(".btn").attr("disabled",false);
+					        }
+					    }
+					});
+				}
 	        });
 
 	        $("#match_spouse").change(function(){
 				var patient_no=$("#match_spouse").val();
-				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
-				$.ajax({
-				    url: link,
-				    type: 'POST',
-				    success: function(data) {
-				        if(data==1){
-				         $(".btn").attr("disabled",false); 
-				        }else{
-				        	
-				        	bootbox.alert("<h4>Duplicate Entry</h4>\n\<hr/><center>Patient Number does not exist</center>");
-				          $(".btn").attr("disabled","disabled");
-				        }
-				    }
-				});
+				if(patient_no !=''){
+					var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+					$.ajax({
+					    url: link,
+					    type: 'POST',
+					    success: function(data) {
+					        if(data==1){
+					         $(".btn").attr("disabled",false); 
+					        }else{
+					        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
+					          $(".btn").attr("disabled","disabled");
+					        }
+					    }
+					});
+				}
 	        });
 
 	         $("#match_parent").change(function(){
 				var patient_no=$("#match_parent").val();
-				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
-				$.ajax({
-				    url: link,
-				    type: 'POST',
-				    success: function(data) {
-				        if(data==1){
-				         $(".btn").attr("disabled",false); 
-				        }else{
-				        	
-				        	bootbox.alert("<h4>Duplicate Entry</h4>\n\<hr/><center>Patient Number does not exist</center>");
-				          $(".btn").attr("disabled","disabled");
-				        }
-				    }
-				});
+				if(patient_no !=''){
+					var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+					$.ajax({
+					    url: link,
+					    type: 'POST',
+					    success: function(data) {
+					        if(data==1){
+					         $(".btn").attr("disabled",false); 
+					        }else{
+					        	
+					        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
+					          $(".btn").attr("disabled","disabled");
+					        }
+					    }
+					});
+				}
 	        });
 	        
 	        //Attach date picker for date of birth
@@ -95,7 +101,6 @@
 					
 			//Function to calculate age in years and months
 			$("#dob").change(function() {
-				
 					var dob = $(this).val();
 					dob = new Date(dob);
 					var today = new Date();
@@ -103,11 +108,10 @@
 						$('.match_hidden').css("display","none");
 					var age_in_years = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
 					$("#age_in_years").attr("value", age_in_years);
-					//if age in years is less than 10 years
-
-					if ($('#age_in_years').val()>10){
+					//if age in years is less than 15 years
+					if ($('#age_in_years').val()>=15){
 						$('.status_hidden').css("display","block");
-						$('.match_hidden').css("display","block");
+						$('.match_hidden').css("display","none");
 					}else if($('#age_in_years').val()<15){
 						$('.match_hidden').css("display","block");
 					}
@@ -149,6 +153,16 @@
                                  $("#service").removeAttr("value");
                               }
                         });
+			$(".match_spouse").css("display","none");
+            $('#partner_status').change(function(){
+				var selected_value= $(this).val();
+				if (selected_value == 1) {
+					$(".match_spouse").css("display","block");
+				}else{
+				    $(".match_spouse").css("display","none");	
+				}	
+			});
+
 			//Attach date picker for date of enrollment
 			$("#enrolled").datepicker({
 					yearRange : "-30:+0",
@@ -182,18 +196,11 @@
 						$("#transfer_source").attr("value",'');
 					}
 				});
-				// function to dispaly match spouses
-				$('#partner_status').change(function(){
-					var selected_value= $(this).val();
-					if (selected_value == 1) {
-						$("#match_hidden").css("display","block");
-					}else{
-					$(".match_hidden").css("display","none");	
-					}
-				});
+			
 				
 		   //Function to display Regimens in this line
 		   $("#service").change(function() {
+		   	$("#drug_prophylax").css("display","block");
 		   	$("#regimen option").remove();
 		   	  var service_line = $(this).val();
 		   	  $("#service_started").val("<?php echo date('Y-m-d');?>");
@@ -201,9 +208,10 @@
 		   	  if($("#service option[value='"+service_line+"']").text()=="PEP"){
 		   	  	$("#pep_reason_listing").show();
 		   	  	$("#who_listing").hide();
+		   	  	$("#drug_prophylax").css("display","none");
 		   	  }else if($("#service option[value='"+service_line+"']").text()=="OI Only"){
 		   	  	$("#service_started").val("");
-                                $("#pep_reason_listing").hide();
+                $("#pep_reason_listing").hide();
 		   	  	$("#servicestartedcontent").hide();
 
 		   	  }else{
@@ -644,7 +652,7 @@
 								No
 							</div>
 						</div>
-							<div class="max-row matchspouse_hidden">
+							<div class="max-row match_spouse">
 							<label>Match to spouse in this ccc?</label>
 							<input type="text" name="match_spouse" id="match_spouse">
 
@@ -870,7 +878,7 @@
 								?>					
 							</select>
 						</div>
-						<div class="max-row">
+						<div class="max-row" id="drug_prophylax">
 							<label>Drug Prophylaxis</label>
 							<input type="hidden" id="drug_prophylaxis_holder" name="drug_prophylaxis_holder" />
 							<select name="drug_prophylaxis" id="drug_prophylaxis" multiple="multiple" style="width:300px;" >

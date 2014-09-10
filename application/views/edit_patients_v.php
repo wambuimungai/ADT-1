@@ -38,20 +38,60 @@ foreach($results as $result){
 			var base_url="<?php echo base_url();?>";
 		    $("#patient_number").change(function(){
 				var patient_no=$("#patient_number").val();
-				var original_patient_no=$("#original_patient_number").val();
-				var link=base_url+"patient_management/checkpatient_no/"+patient_no;
-				$.ajax({
-				    url: link,
-				    type: 'POST',
-				    success: function(data) {
-				       if(data==1 && original_patient_no !=patient_no){
-				          bootbox.alert("<h4>Repeated Entry</h4>\n\<hr/><center>Patient Number Matches an existing record</center>");
-				          $(".btn").attr("disabled","disabled");
-				        }else{
-				        	$(".btn").attr("disabled",false);
-				        }
-				    }
-				});
+				if(patient_no !=''){
+					var original_patient_no=$("#original_patient_number").val();
+					var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+					$.ajax({
+					    url: link,
+					    type: 'POST',
+					    success: function(data) {
+					       if(data==1 && original_patient_no !=patient_no){
+					          bootbox.alert("<h4>Repeated Entry</h4>\n\<hr/><center>Patient Number Matches an existing record</center>");
+					          $(".btn").attr("disabled","disabled");
+					        }else{
+					        	$(".btn").attr("disabled",false);
+					        }
+					    }
+					});
+				}
+	        });
+	        $("#match_spouse").change(function(){
+				var patient_no=$("#match_spouse").val();
+				if(patient_no !=''){
+					var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+					$.ajax({
+					    url: link,
+					    type: 'POST',
+					    success: function(data) {
+					        if(data==1){
+					         $(".btn").attr("disabled",false); 
+					        }else{
+					        	
+					        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
+					          $(".btn").attr("disabled","disabled");
+					        }
+					    }
+					});
+				}
+	        });
+	         $("#match_parent").change(function(){
+				var patient_no=$("#match_parent").val();
+				if(patient_no !=''){
+					var link=base_url+"patient_management/checkpatient_no/"+patient_no;
+					$.ajax({
+					    url: link,
+					    type: 'POST',
+					    success: function(data) {
+					        if(data==1){
+					         $(".btn").attr("disabled",false); 
+					        }else{
+					        	
+					        	bootbox.alert("<h4>CCC Number Mismatch</h4>\n\<hr/><center>Patient Number does not exist</center>");
+					          $(".btn").attr("disabled","disabled");
+					        }
+					    }
+					});
+				}
 	        });
 	        
 	        //Attach date picker for date of birth
@@ -61,6 +101,28 @@ foreach($results as $result){
 					dateFormat : $.datepicker.ATOM,
 					changeMonth : true,
 					changeYear : true
+			});
+
+			//Function to calculate age in years and months
+			$("#dob").change(function() {
+				var dob = $(this).val();
+				dob = new Date(dob);
+				var today = new Date();
+				$('.plan_hidden').css("display","none");
+				$('.match_hidden').css("display","none");
+				var age_in_years = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
+				$("#age").attr("value", age_in_years);
+				//change start age
+				$('#start_age').val(getStartAge(dob,"<?php echo $result['date_enrolled'];?>"));
+				//if age in years is less than 15 years
+				if ($('#age').val()>=15){
+					$('.plan_hidden').css("display","block");
+					$('.match_hidden').css("display","none");
+					$("#match_parent").val("<?php echo $result['child']; ?>");
+				}else if($('#age').val()<15){
+					$('.match_hidden').css("display","block");
+					$("#match_parent").val("");
+				}
 			});
 			
 			$("#medical_record_number").val("<?php echo $result['medical_record_number'];?>");
@@ -72,7 +134,9 @@ foreach($results as $result){
 			$("#dob").val("<?php echo $result['dob'];?>");
 			$("#pob").val("<?php echo $result['pob'];?>");
 			$("#gender").val("<?php echo $result['gender'];?>");
-			$("#who_stage").val("<?php echo $result['who_stage'] ?>");
+			$("#who_stage").val("<?php echo $result['who_stage']; ?>");
+			$("#match_parent").val("<?php echo $result['child']; ?>");
+			$("#match_spouse").val("<?php echo $result['secondary_spouse']; ?>");
 			
 			//Display Gender Tab
 			if($("#gender").val()==2){
@@ -80,20 +144,30 @@ foreach($results as $result){
 			}
 			$("#pregnant").val("<?php echo $result['pregnant'];?>");
 			$("#pregnant").change(function(){
-                            var selected_value=$(this).attr("value");
-                            if(selected_value==1){
-                              $("#service > option").each(function() {
-                              if(this.text==="PMTCT"){
-                                  $(this).attr("selected","selected");    
-                              }
-                               });     
-                            }else {
-                                 $("#service").removeAttr("value");
-                              }
-                        });
+                var selected_value=$(this).attr("value");
+                if(selected_value==1){
+                  $("#service > option").each(function() {
+                  if(this.text==="PMTCT"){
+                      $(this).attr("selected","selected");    
+                  }
+                   });     
+                }else {
+                     $("#service").removeAttr("value");
+                }
+            });
 			
 			$('#start_age').val(getStartAge("<?php echo $result['dob'];?>","<?php echo $result['date_enrolled'];?>"));
 			$('#age').val(getAge("<?php echo $result['dob'];?>"));
+			
+			current_age=getAge("<?php echo $result['dob'];?>");
+			if(current_age < 15 ){
+			   //if patient is less than 15 years old hide all family planning data
+               $(".plan_hidden").css("display","none");
+			}else{
+			   //if patient is more than 15 years old hide all parent/dependant data
+			   $('.match_hidden').css("display","none");
+			}
+
 	        $('#start_weight').val("<?php echo $result['start_weight'];?>");
 	        $('#start_height').val("<?php echo $result['start_height'];?>");
 	        $('#start_bsa').val("<?php echo $result['start_bsa'];?>");
@@ -116,6 +190,22 @@ foreach($results as $result){
 	        
 	        $('#partner_status').val("<?php echo $result['partner_status'];?>");
 	        $('#disclosure').val("<?php echo $result['disclosure'];?>");
+            //if partner status is not concordant do not show spouse field
+	    	partner_status="<?php echo $result['partner_status'];?>";
+	    	if(partner_status !=1){
+				$(".status_hidden").css("display","none");	
+				$("#match_spouse").val("");
+	    	}	 
+            $('#partner_status').change(function(){
+				var selected_value= $(this).val();
+				if (selected_value == 1) {
+					$(".status_hidden").css("display","block");
+					$("#match_spouse").val("<?php echo $result['secondary_spouse']; ?>");
+				}else{
+				    $(".status_hidden").css("display","none");	
+				    $("#match_spouse").val("");
+				}	
+			});
 	        
 	        //Function to configure multiselect in family planning and other chronic illnesses
 			$("#family_planning").multiselect().multiselectfilter();
@@ -209,31 +299,25 @@ foreach($results as $result){
 			$("textarea[name='support_group_listing']").not(this).attr("disabled", "true");
 			
 			//Select Other Illnesses Methods Selected
-			var my_illnesses=<?php echo $result['other_illnesses'];?>;
-			var other_illnesses='';
-			
-			$.each(my_illnesses, function(i, v){
-				other_illnesses +=v+","
+			other_illnesses=<?php echo $result['other_illnesses'];?>;
+			other_sickness_list="";
+			ill_count=0;
+			$.each(other_illnesses,function(i,v){
+				//get list of illnesses
+				illness_list=$('input[name="other_illnesses_listing"][type="checkbox"]');
+				//loop through list to find match for current selected illness
+				$.each(illness_list,function(index,value){
+                      if($(this).val()==v){
+                      	$(this).attr('checked', true);
+                      	ill_count=1;
+                      }
+				});
+                if(ill_count==0){
+                	other_sickness_list+=","+v;
+                }
 			});
+			$("#other_chronic").val(other_sickness_list.substring(1));
 			
-			if (other_illnesses.indexOf(',') == -1) {
-              other_illnesses=other_illnesses+",";
-            }else{
-              other_illnesses=other_illnesses;
-            }
-			var other_sickness="";
-			if(other_illnesses != null || other_illnesses != " ") {
-				var other_ill = other_illnesses.split(',');
-				for(var i = 0; i < other_ill.length; i++) {
-					$("select#other_illnesses").multiselect("widget").find(":checkbox[value='" + other_ill[i] + "']").each(function() {
-                       $(this).click();
-                    });
-                   if(other_ill[i].charAt(0) !="-"){
-                   	other_sickness+=","+other_ill[i];
-                   }
-				}
-				$("#other_chronic").val(other_sickness.substring(1));
-			}
 			if($("#other_chronic").val()){
 				$("input[name='other_other']").not(this).attr("checked", "true");
 			    $("textarea[name='other_chronic']").not(this).removeAttr("disabled");		
@@ -286,7 +370,7 @@ foreach($results as $result){
 			
 			
 			
-			 $("#support_group_listing").val("<?php echo $result['support_group']?>");
+			$("#support_group_listing").val("<?php echo $result['support_group']?>");
 
             if($("#support_group_listing").val()){
 				$("input[name='support_group']").not(this).attr("checked", "true");
@@ -475,6 +559,7 @@ foreach($results as $result){
 			if(service_name==="PEP"){
 				$("#pep_reason_listing").show();
 				$("#who_listing").hide();
+				$("#drug_prophylax").hide();
 			}
 			
 			$("#service").val("<?php echo $result['service'] ?>");
@@ -482,6 +567,7 @@ foreach($results as $result){
 			
 			$("#regimen").val("<?php echo $result['start_regimen'] ?>");
 			$("#current_regimen").val("<?php echo $result['current_regimen'] ?>");
+
 			
 			//Attach date picker for date of status change
 			$("#status_started").datepicker({
@@ -521,37 +607,35 @@ foreach($results as $result){
 				
 		   //Function to display Regimens in this line
 		   $("#service").change(function() {
-		   	
-		   	$("#current_regimen option").remove();
-                          var service_line = $(this).val();
-                          if($("#service option[value='"+service_line+"']").text()==="ART" || $("#service option[value='"+service_line+"']").text()==="PMTCT"){
-                               $("#servicestartedcontent").show();
-                               $("#service_started").val("<?php echo $result['start_regimen_date'] ?>");
-                               $("#regimen").val("<?php echo $result['start_regimen'] ?>");
-                            }else{
-                          $("#service_started").val("<?php echo date('Y-m-d');?>");
-		   	  $("#servicestartedcontent").show();
-                          $("#regimen option").remove();
-                      }
+			   	$("#drug_prophylax").show();
+			   	$("#current_regimen option").remove();
+                var service_line = $(this).val();
+                if($("#service option[value='"+service_line+"']").text()==="ART" || $("#service option[value='"+service_line+"']").text()==="PMTCT"){
+                   $("#servicestartedcontent").show();
+                   $("#service_started").val("<?php echo $result['start_regimen_date'] ?>");
+                   $("#regimen").val("<?php echo $result['start_regimen'] ?>");
+                }
+                else{
+                    $("#service_started").val("<?php echo date('Y-m-d');?>");
+	   	  			$("#servicestartedcontent").show();
+                    $("#regimen option").remove();
+                }
 
-		   	  if($("#service option[value='"+service_line+"']").text()==="PEP"){
-		   	  	$("#pep_reason_listing").show();
-		   	  	$("#who_listing").hide();
-		   	  }else if($("#service option[value='"+service_line+"']").text()==="OI Only"){
-		   	  	//$("#service_started").val("");
-		   	  	 $("#service_started").val("<?php echo date('Y-m-d');?>");
-
-		   	  	$("#servicestartedcontent").show();
-                                $("#pep_reason_listing").hide();
-                            }else{
-		   	  	$("#pep_reason_listing").hide();
-		   	  	$("#pep_reason").val(0);
-		   	  	$("#who_listing").show();
-		   	  	$("#who_stage").val(0);   
-		   	  }
-                          
-                      
-		   	  var link=base_url+"regimen_management/getRegimenLine/"+service_line;
+			   	if($("#service option[value='"+service_line+"']").text()==="PEP"){
+			   	  	$("#pep_reason_listing").show();
+			   	  	$("#who_listing").hide();
+			   	  	$("#drug_prophylax").hide();
+			   	}else if($("#service option[value='"+service_line+"']").text()==="OI Only"){
+			   	  	$("#service_started").val("<?php echo date('Y-m-d');?>");
+			   	  	$("#servicestartedcontent").show();
+	                $("#pep_reason_listing").hide();
+	            }else{
+			   	  	$("#pep_reason_listing").hide();
+			   	  	$("#pep_reason").val(0);
+			   	  	$("#who_listing").show();
+			   	  	$("#who_stage").val(0);   
+			   	}
+		   	    var link=base_url+"regimen_management/getRegimenLine/"+service_line;
 				$.ajax({
 				    url: link,
 				    type: 'POST',
@@ -562,7 +646,7 @@ foreach($results as $result){
 				    		$("#regimen,#current_regimen").append($("<option></option>").attr("value",jsondata.id).text(jsondata.Regimen_Code+" | "+jsondata.Regimen_Desc));
 				    	});
 				    }
-				 });
+				});
 		   });
 		   
 		   $("#next_appointment_date").datepicker({
@@ -785,6 +869,11 @@ foreach($results as $result){
 				</div>
 			</div>
 
+			<div class="max-row match_hidden">
+				<label>Match to parent/guardian in ccc?</label>
+				<input type="text" name="match_parent" id="match_parent">
+			</div>
+
 			<div class="max-row">
 				<div class="mid-row">
 					<label><span class='astericks'>*</span>Gender</label>
@@ -885,6 +974,7 @@ foreach($results as $result){
 			<legend>
 				Program History
 			</legend>
+			<div class="plan_hidden">
 			<div class="max-row">
 				<label  id="tstatus"> Partner Status</label>
 				<select name="partner_status" id="partner_status" >
@@ -903,6 +993,11 @@ foreach($results as $result){
 					No
 				</div>
 			</div>
+			<div class="max-row status_hidden">
+				<label>Match to spouse in this ccc?</label>
+				<input type="text" name="match_spouse" id="match_spouse">
+			</div>
+
 			<div class="max-row">
 				<label>Family Planning Method</label>
 				<input type="hidden" id="family_planning_holder" name="family_planning_holder" />
@@ -913,7 +1008,7 @@ foreach($results as $result){
 					}
 					?>
 				</select>
-
+			</div>
 			</div>
 			<div class="max-row">
 				<label>Does Patient have other Chronic illnesses</label>
@@ -1154,7 +1249,7 @@ foreach($results as $result){
 								?>				
 					</select>
 			</div>
-			<div class="max-row">
+			<div class="max-row" id="drug_prophylax">
 				<label>Drug Prophylaxis</label>
 				  <input type="hidden" id="drug_prophylaxis_holder" name="drug_prophylaxis_holder" />		
 					<select name="drug_prophylaxis" id="drug_prophylaxis" multiple="multiple" style="width:300px;" >
