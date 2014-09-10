@@ -27,10 +27,10 @@ class Maps_Log extends Doctrine_Record {
 		return $map_log;
 	}
 
-	public static function getHydratedLogs($cdrr) {
-		$query = Doctrine_Query::create() -> select("*") -> from("maps_log") -> where("maps_id = '$cdrr'");
-		$cdrr_log = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
-		return $cdrr_log;
+	public static function getHydratedLogs($map_id) {
+		$query = Doctrine_Query::create() -> select("*") -> from("maps_log") -> where("maps_id = '$map_id'");
+		$map_log = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $map_log;
 	}
 
 }

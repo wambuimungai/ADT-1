@@ -361,6 +361,9 @@
 							<a href="#" class="settings/listing/ccc_store_service_point" title="CCC Store Service Point Management" id="index">CCC Store/Pharmacy</a>
 						</li>
 						<li>
+							<a href="#" class="auto_management/index/true" title="Manual/Auto Scripts">Manual/Auto Scripts</a>
+						</li>
+						<li>
 							<a href="#" class="nonadherence_management" title="Non Adherence Reason Management">Non Adherence reasons</a>
 						</li>
 						<li>

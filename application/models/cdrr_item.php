@@ -38,5 +38,11 @@ class Cdrr_Item extends Doctrine_Record {
 		return @$items[0]['count'];
 	}
 
+	public function getItems($cdrr) {
+		$query = Doctrine_Query::create() -> select("*") -> from("cdrr_item") -> where("cdrr_id = '$cdrr'");
+		$items = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $items;
+	}
+
 }
 ?>

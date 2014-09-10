@@ -1,4 +1,31 @@
-03/09/2014
+Version 2.16 10/09/2014
+==============================================
+- Added: Manual Auto Update in settings
+- Added: Added an alert box for drug consumption in settings
+- Added: dependent/spouse lost to follow up message
+- Added: changed last regimen label to current regimen
+- Added: when type of service is pep hide prophylaxis
+- Fixed: update for spouses/dependants when ccc_no is changed
+- Fixed: bug for illnesses listing in edit annd patient details
+
+Version 2.15 09/09/2014
+==============================================
+- Added: Graph for patients enrolled chnaged to highcharts,more accurate
+- Added: Add the most recent viral load test on the patient info modal
+- Added: Latest facility master list
+- Added: When dispensing, if patient is no longer pregnant, change type of service to ART
+- Added: Mother to Child Linkage,Add QUESTION Match to parent/guardian in ccc?
+- Added: Concordant Partners linkage,Add Question Match to Spouse in ccc?
+- Added: Isonazid prophylaxis should have start date and end date
+- Added: Adherence report, include 100% to the >=95% group and include the number of days part into the percentage
+- Added: Add Category to TB section 
+(if category 1 then intensive is 3 months & continuation is 112 days, else if category 2 is intensive is 3 months range and continuation 5 months)
+- Fixed: Error listing for no status change should not list transit patients
+- Fixed: Send version of system installed
+- Fixed: 'round' function replaced with 'floor' in dispense controller
+- Fixed: ordering saving to escm
+
+Version 2.14 03/09/2014
 ==============================================
 - Added: When dispensing, if patient is no longer pregnant, change type of service to ART
 - Fixed: recheck how age is calculated, round is not working

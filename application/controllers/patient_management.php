@@ -55,8 +55,6 @@ class Patient_Management extends MY_Controller {
 		$facility_code = $this -> session -> userdata('facility');
 		$sql = "select * from patient where facility_code='$facility_code' and patient_number_ccc='$patient_no'";
 		$query = $this -> db -> query($sql);
-		$sql_spouse="select * from spouses where secondary_spouse='$patient_no'";
-		$query=$this-> db ->query($sql_spouse);
 		$results = $query -> result_array();
 		if ($results) {
 			echo json_decode("1");
@@ -65,7 +63,6 @@ class Patient_Management extends MY_Controller {
 		}
 
 	}
-
 	public function merge_spouse($patient_no,$spouse_no){
 	    $spousedata=array('primary_spouse'=>$patient_no,'secondary_spouse'=>$spouse_no);
 	    $this->db->insert('spouses',$spousedata);
@@ -288,11 +285,32 @@ class Patient_Management extends MY_Controller {
 		        WHERE p.id='$record_no'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
+		
+		$depdendant_msg = "";
 		if ($results) {
 			$results[0]['other_illnesses'] = $this -> extract_illness($results[0]['other_illnesses']);
 			$data['results'] = $results;
 			$patient = $results[0]['patient_number_ccc'];
 			$facility = $this -> session -> userdata("facility");
+			//Check dependedants/spouse status
+			$child = $results[0]['child'];
+			$spouse = $results[0]['secondary_spouse'];
+			$patient_name  = strtoupper($results[0]['first_name'].' '.$results[0]['last_name']);
+			if($child!=NULL){
+				
+				$pat = $this ->getDependentStatus($child);
+				if($pat!=''){
+					$depdendant_msg.="Patient $patient_name\'s dependant ".$pat." is lost to follow up ";
+				}
+				
+			}
+			if($spouse!=NULL){
+				$pat = $this ->getDependentStatus($spouse);
+				if($pat!=''){
+					$depdendant_msg.="Patient $patient_name\'s spouse ".$pat." is lost to follow up ";
+				}
+				
+			}
 		}
 		//Patient History
 		$sql = "SELECT pv.dispensing_date,
@@ -332,7 +350,7 @@ class Patient_Management extends MY_Controller {
 		} else {
 			$data['history_logs'] = "";
 		}
-
+		$data['dependant_msg'] = $depdendant_msg;
 		$data['districts'] = District::getPOB();
 		$data['genders'] = Gender::getAll();
 		$data['statuses'] = Patient_Status::getStatus();
@@ -493,22 +511,18 @@ class Patient_Management extends MY_Controller {
 		$new_patient -> isoniazid_start_date = $this->input->post('iso_start_date',TRUE);
 		$new_patient -> isoniazid_end_date = $this->input->post('iso_end_date',TRUE);
 
-		$new_patient -> save();
-
 		$spouse_no=$this->input->post('match_spouse');
 		$patient_no=$this->input->post('patient_number');
-		$parent_no=$this->input->post('match_parent');
+		$child_no=$this->input->post('match_parent');
 
-		
+		$new_patient -> save();
 		//Map patient to spouse
 		if($spouse_no != NULL){
-			$spouse = array('primary_spouse' =>$this->input->post('patient_number') ,'secondary_spouse'=> $this->input->post('match_spouse'));
-			$this->db->insert('spouses',$spouse);
+			$this->merge_spouse($patient_no,$spouse_no);
 		}
 		//Map child to parent/guardian 
 		if($child_no != NULL){
-			$parent = array('child' =>$this->input->post('patient_number') ,'parent'=>$this->input->post('match_parent'));
-			$this->db->insert('dependants',$parent);
+			$this->merge_parent($patient_no,$child_no);
 		}
 		
 		$sql = "SELECT MAX(id) as id FROM patient";
@@ -527,7 +541,22 @@ class Patient_Management extends MY_Controller {
 			redirect("dispensement_management/dispense/$auto_id");
 		}
 	}
-
+	
+	public function getDependentStatus($patient_number_ccc){
+		$sql = "SELECT ps.name,p.patient_number_ccc,p.first_name,p.last_name,p.other_name FROM patient p
+				INNER JOIN patient_status ps ON ps.id = p.current_status
+				AND p.patient_number_ccc='$patient_number_ccc'
+				AND ps.name LIKE '%lost%'";
+		$query = $this -> db -> query($sql);
+		$result = $query -> result_array();
+		if(count($result)>0){
+			$patient ='<b>'.strtoupper($result[0]['first_name'].' '.$result[0]['last_name'].' '.$result[0]['other_name']).'</b> ( CCC Number:'.$result[0]['patient_number_ccc'].')';
+			return $patient;
+		}else{
+			return '';
+		}
+	}
+	
 	public function update($record_id) {
 		$family_planning = "";
 		$other_illness_listing = "";
@@ -677,8 +706,13 @@ class Patient_Management extends MY_Controller {
 	public function update_visit() {
 		$original_patient_number = $this -> input -> post("original_patient_number", TRUE);
 		$patient_number = $this -> input -> post("patient_number", TRUE);
+		//update patient visits
 		$this -> db -> where('patient_id', $original_patient_number);
 		$this -> db -> update('patient_visit', array("patient_id" => $patient_number));
+		//update spouses
+		$this->unmerge_spouse($original_patient_number);
+        //update dependants
+		$this->unmerge_parent($original_patient_number);
 	}
 
 	public function base_params($data) {

@@ -74,8 +74,8 @@ class Dispensement_Management extends MY_Controller {
 			$data['visits'] = $results;//Get latest dispensed drug;
 			$data['prev_visit'] = json_encode($results);
 		}
-                $sql="UPDATE drugcode SET quantity='' WHERE quantity=0";
-                $this->db->query($sql);
+        $sql="UPDATE drugcode SET quantity='' WHERE quantity=0";
+        $this->db->query($sql);
 		$sql = "SELECT appointment "
                         . "FROM patient_appointment pa "
                         . "WHERE pa.patient = '$patient_no' "

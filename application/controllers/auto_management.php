@@ -16,7 +16,7 @@ class auto_management extends MY_Controller {
 		$this -> eid_url="http://nascop.org/eid/";
 	}
 
-	public function index(){
+	public function index($manual=FALSE){
 		$message ="";
 		$today = (int)date('Ymd');
 
@@ -25,7 +25,7 @@ class auto_management extends MY_Controller {
 		$last_update = (int)$log['last_index'];
 
 		//if not updated today
-		if ($today != $last_update) {
+		if ($today != $last_update || $manual==TRUE) {
 			//function to update destination column to 1 in drug_stock_movement table for issued transactions that have name 'pharm'
 			$message .= $this->updateIssuedTo();
 			//function to update source_destination column in drug_stock_movement table where it is zero
@@ -56,6 +56,10 @@ class auto_management extends MY_Controller {
 				$this -> db -> query($sql);
 				$this -> session -> set_userdata("curl_error", "");
 			} 
+	    }
+
+	    if($manual==TRUE){
+          	$message="<div class='alert alert-info'><button type='button' class='close' data-dismiss='alert'>&times;</button>".$message."</div>";
 	    }
 	    echo $message;
 	}
@@ -600,7 +604,7 @@ class auto_management extends MY_Controller {
 	public function updateFacilties(){
 		$total=Facilities::getTotalNumber();
 		$message="";
-		if($total < 7000){
+		if($total < 9800){
 			$this -> load -> library('PHPExcel');
 			$inputFileType = 'Excel5';
 			$inputFileName = $_SERVER['DOCUMENT_ROOT'] . '/ADT/assets/facility_list.xls';
