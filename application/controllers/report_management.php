@@ -4331,7 +4331,6 @@ class report_management extends MY_Controller {
 		$data['selected_report_type'] = "Early Warning Indicators";
 		$data['report_title'] = "Patient Adherence";
 		$data['facility_name'] = $this -> session -> userdata('facility_name');
-
 		$data['content_view'] = 'reports/patient_adherence_v';
 		$this -> load -> view('template', $data);
 	}
