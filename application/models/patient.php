@@ -151,7 +151,7 @@ class Patient extends Doctrine_Record {
 		$patients = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $patients;
 	}
-
+	
 	public function getAllArv($period_end, $indicator) {
 		$adult_age = 15;
 		if ($indicator == "G164") {
