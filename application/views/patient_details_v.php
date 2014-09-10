@@ -75,7 +75,15 @@ if(isset($results)){
 
 <script type="text/javascript">
 		$(document).ready(function(){
-                    $("#history_table").find("tr :first").css("width","120px");
+			
+			
+			//Check if patient has dependant/spouse who are lost to follow up
+			var dependant_msg = '<?php echo $dependant_msg; ?>';
+			if(dependant_msg!=''){
+				bootbox.alert("<h4>Dependant/Spouse Message </h4>\n\<hr/><span>"+dependant_msg+"</span>");
+			}
+			
+            $("#history_table").find("tr :first").css("width","120px");
 			var base_url="<?php echo base_url();?>";
 			var record_id="<?php echo @$result['id'];?>";
 			
@@ -250,8 +258,6 @@ if(isset($results)){
 			}else if(disclosure==0){
 			$("#disclosure_no").attr("checked", "true");	
 			}
-			
-			
 			
 			
 			//Select Other Drug Allergies

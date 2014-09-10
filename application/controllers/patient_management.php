@@ -285,11 +285,32 @@ class Patient_Management extends MY_Controller {
 		        WHERE p.id='$record_no'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
+		
+		$depdendant_msg = "";
 		if ($results) {
 			$results[0]['other_illnesses'] = $this -> extract_illness($results[0]['other_illnesses']);
 			$data['results'] = $results;
 			$patient = $results[0]['patient_number_ccc'];
 			$facility = $this -> session -> userdata("facility");
+			//Check dependedants/spouse status
+			$child = $results[0]['child'];
+			$spouse = $results[0]['secondary_spouse'];
+			$patient_name  = strtoupper($results[0]['first_name'].' '.$results[0]['last_name']);
+			if($child!=NULL){
+				
+				$pat = $this ->getDependentStatus($child);
+				if($pat!=''){
+					$depdendant_msg.="Patient $patient_name\'s dependant ".$pat." is lost to follow up ";
+				}
+				
+			}
+			if($spouse!=NULL){
+				$pat = $this ->getDependentStatus($spouse);
+				if($pat!=''){
+					$depdendant_msg.="Patient $patient_name\'s spouse ".$pat." is lost to follow up ";
+				}
+				
+			}
 		}
 		//Patient History
 		$sql = "SELECT pv.dispensing_date,
@@ -329,7 +350,7 @@ class Patient_Management extends MY_Controller {
 		} else {
 			$data['history_logs'] = "";
 		}
-
+		$data['dependant_msg'] = $depdendant_msg;
 		$data['districts'] = District::getPOB();
 		$data['genders'] = Gender::getAll();
 		$data['statuses'] = Patient_Status::getStatus();
@@ -520,7 +541,22 @@ class Patient_Management extends MY_Controller {
 			redirect("dispensement_management/dispense/$auto_id");
 		}
 	}
-
+	
+	public function getDependentStatus($patient_number_ccc){
+		$sql = "SELECT ps.name,p.patient_number_ccc,p.first_name,p.last_name,p.other_name FROM patient p
+				INNER JOIN patient_status ps ON ps.id = p.current_status
+				AND p.patient_number_ccc='$patient_number_ccc'
+				AND ps.name LIKE '%lost%'";
+		$query = $this -> db -> query($sql);
+		$result = $query -> result_array();
+		if(count($result)>0){
+			$patient ='<b>'.strtoupper($result[0]['first_name'].' '.$result[0]['last_name'].' '.$result[0]['other_name']).'</b> ( CCC Number:'.$result[0]['patient_number_ccc'].')';
+			return $patient;
+		}else{
+			return '';
+		}
+	}
+	
 	public function update($record_id) {
 		$family_planning = "";
 		$other_illness_listing = "";
