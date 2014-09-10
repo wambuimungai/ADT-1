@@ -559,6 +559,9 @@ foreach($results as $result){
 			if(service_name==="PEP"){
 				$("#pep_reason_listing").show();
 				$("#who_listing").hide();
+				$("#drug_prophylax").hide();
+
+				
 			}
 			
 			$("#service").val("<?php echo $result['service'] ?>");
@@ -606,7 +609,7 @@ foreach($results as $result){
 				
 		   //Function to display Regimens in this line
 		   $("#service").change(function() {
-		   	
+		   	$("#drug_prophylax").show();
 		   	$("#current_regimen option").remove();
                           var service_line = $(this).val();
                           if($("#service option[value='"+service_line+"']").text()==="ART" || $("#service option[value='"+service_line+"']").text()==="PMTCT"){
@@ -622,6 +625,8 @@ foreach($results as $result){
 		   	  if($("#service option[value='"+service_line+"']").text()==="PEP"){
 		   	  	$("#pep_reason_listing").show();
 		   	  	$("#who_listing").hide();
+		   	  	$("#drug_prophylax").hide();
+
 		   	  }else if($("#service option[value='"+service_line+"']").text()==="OI Only"){
 		   	  	//$("#service_started").val("");
 		   	  	 $("#service_started").val("<?php echo date('Y-m-d');?>");
@@ -1250,7 +1255,7 @@ foreach($results as $result){
 								?>				
 					</select>
 			</div>
-			<div class="max-row">
+			<div class="max-row" id="drug_prophylax">
 				<label>Drug Prophylaxis</label>
 				  <input type="hidden" id="drug_prophylaxis_holder" name="drug_prophylaxis_holder" />		
 					<select name="drug_prophylaxis" id="drug_prophylaxis" multiple="multiple" style="width:300px;" >

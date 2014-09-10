@@ -124,7 +124,7 @@ if(isset($results)){
 			$("#other_name").val("<?php echo $result['other_name'];?>");
 			$("#dob").val("<?php echo $result['dob'];?>");
 			$("#pob").val("<?php echo $result['pob'];?>");
-			$("#match_parent").val("<?php echo $result['child'];?>");
+			/*$("#match_parent").val("<?php echo $result['child'];?>");*/
 			$("#gender").val("<?php echo $result['gender'];?>");
 			
 			//Display Gender Tab
@@ -169,15 +169,8 @@ if(isset($results)){
 	        
 	        $('#partner_status').val("<?php echo $result['partner_status'];?>");
 	        $('#disclosure').val("<?php echo $result['disclosure'];?>");
-	        $('#match_spouse').val("<?php echo $result['secondary_spouse'];?>");
+	        /*$('#match_spouse').val("<?php echo $result['secondary_spouse'];?>");*/
 
-
-	        //if partner status is not concordant do not show spouse field
-	    	partner_status="<?php echo $result['partner_status'];?>";
-	    	if(partner_status !=1){
-				$(".status_hidden").css("display","none");	
-				$("#match_spouse").val("");
-	    	}
 			
 		    //Select Family Planning Methods Selected
 		    var family_planning="<?php echo $result['fplan']; ?>";
@@ -494,6 +487,7 @@ if(isset($results)){
 			if(service_name=="PEP"){
 				$("#pep_reason_listing").show();
 				$("#who_listing").hide();
+				$("#drug_prophylax").hide();
 			}
 			
 			$("#service_started").val("<?php echo $result['start_regimen_date'] ?>");
@@ -533,6 +527,7 @@ if(isset($results)){
 				
 		   //Function to display Regimens in this line
 		   $("#service").change(function() {
+		   	$("#drug_prophylax").show();
 		   	$("#regimen option").remove();
 		   	  var service_line = $(this).val();
 		   	  var link=base_url+"regimen_management/getRegimenLine/"+service_line;
@@ -1306,7 +1301,7 @@ if(isset($results)){
 								?>				
 					</select>
 			 </div>
-			 <div class="max-row">
+			 <div class="max-row" id="drug_prophylax">
 				<label>Drug Prophylaxis</label>
 					<table>
 						<?php
@@ -1356,7 +1351,7 @@ if(isset($results)){
 								<th style="width:250px;">Drug</th>
 								<th style="width:4%;">Qty</th>
 								<th style="width:4%;">Weight</th>
-								<th style="width:200px;">Last Regimen</th>
+								<th style="width:200px;">Current Regimen</th>
 								<th>BatchNo</th>
 								<th>Pill Count</th>
 								<th>Adherence</th>

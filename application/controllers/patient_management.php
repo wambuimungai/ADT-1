@@ -55,6 +55,8 @@ class Patient_Management extends MY_Controller {
 		$facility_code = $this -> session -> userdata('facility');
 		$sql = "select * from patient where facility_code='$facility_code' and patient_number_ccc='$patient_no'";
 		$query = $this -> db -> query($sql);
+		$sql_spouse="select * from spouses where secondary_spouse='$patient_no'";
+		$query=$this-> db ->query($sql_spouse);
 		$results = $query -> result_array();
 		if ($results) {
 			echo json_decode("1");
@@ -63,6 +65,7 @@ class Patient_Management extends MY_Controller {
 		}
 
 	}
+
 	public function merge_spouse($patient_no,$spouse_no){
 	    $spousedata=array('primary_spouse'=>$patient_no,'secondary_spouse'=>$spouse_no);
 	    $this->db->insert('spouses',$spousedata);
@@ -511,18 +514,22 @@ class Patient_Management extends MY_Controller {
 		$new_patient -> isoniazid_start_date = $this->input->post('iso_start_date',TRUE);
 		$new_patient -> isoniazid_end_date = $this->input->post('iso_end_date',TRUE);
 
+		$new_patient -> save();
+
 		$spouse_no=$this->input->post('match_spouse');
 		$patient_no=$this->input->post('patient_number');
-		$child_no=$this->input->post('match_parent');
+		$parent_no=$this->input->post('match_parent');
 
-		$new_patient -> save();
+		
 		//Map patient to spouse
 		if($spouse_no != NULL){
-			$this->merge_spouse($patient_no,$spouse_no);
+			$spouse = array('primary_spouse' =>$this->input->post('patient_number') ,'secondary_spouse'=> $this->input->post('match_spouse'));
+			$this->db->insert('spouses',$spouse);
 		}
 		//Map child to parent/guardian 
 		if($child_no != NULL){
-			$this->merge_parent($patient_no,$child_no);
+			$parent = array('child' =>$this->input->post('patient_number') ,'parent'=>$this->input->post('match_parent'));
+			$this->db->insert('dependants',$parent);
 		}
 		
 		$sql = "SELECT MAX(id) as id FROM patient";
