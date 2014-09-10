@@ -51,6 +51,7 @@
 	        });
 
 	        $("#match_spouse").change(function(){
+				var patient_no=$("#match_spouse").val();
 				if(patient_no !=''){
 					var link=base_url+"patient_management/checkpatient_no/"+patient_no;
 					$.ajax({
@@ -70,7 +71,6 @@
 
 	         $("#match_parent").change(function(){
 				var patient_no=$("#match_parent").val();
-
 				if(patient_no !=''){
 					var link=base_url+"patient_management/checkpatient_no/"+patient_no;
 					$.ajax({
@@ -211,7 +211,7 @@
 		   	  	$("#drug_prophylax").css("display","none");
 		   	  }else if($("#service option[value='"+service_line+"']").text()=="OI Only"){
 		   	  	$("#service_started").val("");
-                                $("#pep_reason_listing").hide();
+                $("#pep_reason_listing").hide();
 		   	  	$("#servicestartedcontent").hide();
 
 		   	  }else{

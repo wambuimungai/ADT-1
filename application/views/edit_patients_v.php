@@ -560,8 +560,6 @@ foreach($results as $result){
 				$("#pep_reason_listing").show();
 				$("#who_listing").hide();
 				$("#drug_prophylax").hide();
-
-				
 			}
 			
 			$("#service").val("<?php echo $result['service'] ?>");
@@ -609,39 +607,35 @@ foreach($results as $result){
 				
 		   //Function to display Regimens in this line
 		   $("#service").change(function() {
-		   	$("#drug_prophylax").show();
-		   	$("#current_regimen option").remove();
-                          var service_line = $(this).val();
-                          if($("#service option[value='"+service_line+"']").text()==="ART" || $("#service option[value='"+service_line+"']").text()==="PMTCT"){
-                               $("#servicestartedcontent").show();
-                               $("#service_started").val("<?php echo $result['start_regimen_date'] ?>");
-                               $("#regimen").val("<?php echo $result['start_regimen'] ?>");
-                            }else{
-                          $("#service_started").val("<?php echo date('Y-m-d');?>");
-		   	  $("#servicestartedcontent").show();
-                          $("#regimen option").remove();
-                      }
+			   	$("#drug_prophylax").show();
+			   	$("#current_regimen option").remove();
+                var service_line = $(this).val();
+                if($("#service option[value='"+service_line+"']").text()==="ART" || $("#service option[value='"+service_line+"']").text()==="PMTCT"){
+                   $("#servicestartedcontent").show();
+                   $("#service_started").val("<?php echo $result['start_regimen_date'] ?>");
+                   $("#regimen").val("<?php echo $result['start_regimen'] ?>");
+                }
+                else{
+                    $("#service_started").val("<?php echo date('Y-m-d');?>");
+	   	  			$("#servicestartedcontent").show();
+                    $("#regimen option").remove();
+                }
 
-		   	  if($("#service option[value='"+service_line+"']").text()==="PEP"){
-		   	  	$("#pep_reason_listing").show();
-		   	  	$("#who_listing").hide();
-		   	  	$("#drug_prophylax").hide();
-
-		   	  }else if($("#service option[value='"+service_line+"']").text()==="OI Only"){
-		   	  	//$("#service_started").val("");
-		   	  	 $("#service_started").val("<?php echo date('Y-m-d');?>");
-
-		   	  	$("#servicestartedcontent").show();
-                                $("#pep_reason_listing").hide();
-                            }else{
-		   	  	$("#pep_reason_listing").hide();
-		   	  	$("#pep_reason").val(0);
-		   	  	$("#who_listing").show();
-		   	  	$("#who_stage").val(0);   
-		   	  }
-                          
-                      
-		   	  var link=base_url+"regimen_management/getRegimenLine/"+service_line;
+			   	if($("#service option[value='"+service_line+"']").text()==="PEP"){
+			   	  	$("#pep_reason_listing").show();
+			   	  	$("#who_listing").hide();
+			   	  	$("#drug_prophylax").hide();
+			   	}else if($("#service option[value='"+service_line+"']").text()==="OI Only"){
+			   	  	$("#service_started").val("<?php echo date('Y-m-d');?>");
+			   	  	$("#servicestartedcontent").show();
+	                $("#pep_reason_listing").hide();
+	            }else{
+			   	  	$("#pep_reason_listing").hide();
+			   	  	$("#pep_reason").val(0);
+			   	  	$("#who_listing").show();
+			   	  	$("#who_stage").val(0);   
+			   	}
+		   	    var link=base_url+"regimen_management/getRegimenLine/"+service_line;
 				$.ajax({
 				    url: link,
 				    type: 'POST',
@@ -652,7 +646,7 @@ foreach($results as $result){
 				    		$("#regimen,#current_regimen").append($("<option></option>").attr("value",jsondata.id).text(jsondata.Regimen_Code+" | "+jsondata.Regimen_Desc));
 				    	});
 				    }
-				 });
+				});
 		   });
 		   
 		   $("#next_appointment_date").datepicker({

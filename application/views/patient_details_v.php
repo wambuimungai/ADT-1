@@ -124,7 +124,7 @@ if(isset($results)){
 			$("#other_name").val("<?php echo $result['other_name'];?>");
 			$("#dob").val("<?php echo $result['dob'];?>");
 			$("#pob").val("<?php echo $result['pob'];?>");
-			/*$("#match_parent").val("<?php echo $result['child'];?>");*/
+			$("#match_parent").val("<?php echo $result['child'];?>");
 			$("#gender").val("<?php echo $result['gender'];?>");
 			
 			//Display Gender Tab
@@ -169,8 +169,15 @@ if(isset($results)){
 	        
 	        $('#partner_status').val("<?php echo $result['partner_status'];?>");
 	        $('#disclosure').val("<?php echo $result['disclosure'];?>");
-	        /*$('#match_spouse').val("<?php echo $result['secondary_spouse'];?>");*/
+	        $('#match_spouse').val("<?php echo $result['secondary_spouse'];?>");
 
+
+	        //if partner status is not concordant do not show spouse field
+	    	partner_status="<?php echo $result['partner_status'];?>";
+	    	if(partner_status !=1){
+				$(".status_hidden").css("display","none");	
+				$("#match_spouse").val("");
+	    	}
 			
 		    //Select Family Planning Methods Selected
 		    var family_planning="<?php echo $result['fplan']; ?>";
