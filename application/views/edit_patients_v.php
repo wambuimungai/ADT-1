@@ -563,6 +563,8 @@ foreach($results as $result){
 			}
 			
 			$("#service").val("<?php echo $result['service'] ?>");
+			prev_service='';
+			$("#service").trigger("change");
 			$("#service_started").val("<?php echo $result['start_regimen_date'] ?>");
 			
 			$("#regimen").val("<?php echo $result['start_regimen'] ?>");
@@ -607,46 +609,60 @@ foreach($results as $result){
 				
 		   //Function to display Regimens in this line
 		   $("#service").change(function() {
+		   	    var service_line = $(this).val();
+                var link=base_url+"regimen_management/getRegimenLine/"+service_line;
+                var selected_text=$("#service option[value='"+service_line+"']").text();
+                append_start_regimen=true;
+                regimen_text="#regimen,#current_regimen";
+                
+
 			   	$("#drug_prophylax").show();
 			   	$("#current_regimen option").remove();
-                var service_line = $(this).val();
-                if($("#service option[value='"+service_line+"']").text()==="ART" || $("#service option[value='"+service_line+"']").text()==="PMTCT"){
-                   $("#servicestartedcontent").show();
-                   $("#service_started").val("<?php echo $result['start_regimen_date'] ?>");
-                   $("#regimen").val("<?php echo $result['start_regimen'] ?>");
-                }
-                else{
-                    $("#service_started").val("<?php echo date('Y-m-d');?>");
-	   	  			$("#servicestartedcontent").show();
-                    $("#regimen option").remove();
-                }
+			   	$("#servicestartedcontent").show();
+			   	$("#service_started").val("");
+			   	$("#pep_reason_listing").hide();
+		   		$("#pep_reason").val(0);
+		   	  	$("#who_listing").show();
+		   	  	$("#who_stage").val(0);  
+                
+                if(selected_text=="ART" || selected_text=="PMTCT"){
+	                $("#servicestartedcontent").show();
+	                $("#service_started").val("<?php echo $result['start_regimen_date'] ?>");
+	                $("#regimen").val("<?php echo $result['start_regimen'] ?>");
+	                regimen_text="#current_regimen";
+	                append_start_regimen=false;
 
-			   	if($("#service option[value='"+service_line+"']").text()==="PEP"){
+                    if(selected_text=="PMTCT" && $("#age").val() < 2){
+                        var link=base_url+"regimen_management/getRegimenLine/"+service_line+"/true";
+		   	  	    }
+
+		   	  	    if(prev_service !=''){
+	                    if((prev_service !="ART" && selected_text=="PMTCT") || (prev_service !="PMTCT" && selected_text=="ART")){
+				   	  	   	append_start_regimen=true;
+	                		regimen_text="#regimen,#current_regimen";
+				   	   	}
+		   	  	    }
+                }else if(selected_text==="PEP"){
 			   	  	$("#pep_reason_listing").show();
 			   	  	$("#who_listing").hide();
 			   	  	$("#drug_prophylax").hide();
-			   	}else if($("#service option[value='"+service_line+"']").text()==="OI Only"){
-			   	  	$("#service_started").val("<?php echo date('Y-m-d');?>");
-			   	  	$("#servicestartedcontent").show();
-	                $("#pep_reason_listing").hide();
-	            }else{
-			   	  	$("#pep_reason_listing").hide();
-			   	  	$("#pep_reason").val(0);
-			   	  	$("#who_listing").show();
-			   	  	$("#who_stage").val(0);   
 			   	}
-		   	    var link=base_url+"regimen_management/getRegimenLine/"+service_line;
+		   	    
 				$.ajax({
 				    url: link,
 				    type: 'POST',
 				    dataType: "json",
 				    success: function(data) {
-				        $("#regimen,#current_regimen").append($("<option></option>").attr("value",'').text('--Select One--'));	
+				    	if(append_start_regimen==true){
+				    		$("#regimen option").remove();
+				    	}
+				        $(regimen_text).append($("<option></option>").attr("value",'').text('--Select One--'));	
 				    	$.each(data, function(i, jsondata){
-				    		$("#regimen,#current_regimen").append($("<option></option>").attr("value",jsondata.id).text(jsondata.Regimen_Code+" | "+jsondata.Regimen_Desc));
+				    		$(regimen_text).append($("<option></option>").attr("value",jsondata.id).text(jsondata.Regimen_Code+" | "+jsondata.Regimen_Desc));
 				    	});
 				    }
 				});
+				prev_service=selected_text;
 		   });
 		   
 		   $("#next_appointment_date").datepicker({
