@@ -1173,7 +1173,7 @@ li.last{margin-right:0}#stock_level
 th{background:#999}.high_priority{color:red}.low_priority{color:orange}.status-title,.status-value{padding:1%}.status-title{display:inline-block}.status-value{display:inline-block;color:#999}.notif{margin-top:2%}#top-panel{overflow:visible}#my_profile_link_container
 .generated_link{display:none}#my_profile_link_containe{min-width:200px !important;background-color:red;height:100px}.temp_link{font-size:10px;width:100px !important;background-color:#B80000;margin:0px}.dataTables_wrapper{margin:0
 auto;position:static}table
-.dataTables{font-size:0.8em}.dataTables_scroll,.dataTables_scrollHead,.DataTables_sort_wrapper{position:static}table.setting_table{border:solid;border-color:#666;border-width:1px}.setting_table
+.dataTables{font-size:0.8em}.dataTables_scroll,.dataTables_scrollHead,.DataTables_sort_wrapper{position:static}.dataTables_scroll{overflow:auto}table.setting_table{border:solid;border-color:#666;border-width:1px}.setting_table
 td{max-width:300px}.sidebar-nav-fixed{/*/*/position: fixed;left:30px;top:157px;width:250px}.well{margin-bottom:0px}.btn-xlarge{min-width:100%}.btn-group{font-size:20px}.hero-unit{padding:0px}.btn{margin:3px;padding-left:25px;padding-right:25px}.btn_small{margin:3px;padding-left:25px;padding-right:25px}.rowCount-grid{color:green}.blue{color:#004}.btn
 .caret{margin:0
 auto;vertical-align:middle;margin-left:10px}#profile_list{right:0;left:auto}/**/#facility_name{color:#2B597E;font-weight:bold}.full-content
