@@ -1,6 +1,7 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		var results=<?php echo json_encode($results);?>;
+		console.log(results);
 		var missed_pills_count_95 = 0;
 		var missed_pills_count_85 = 0;
 		var missed_pills_count_80 = 0;
@@ -167,7 +168,7 @@
 			if(hey.length > 0) {
 				//calculate adherence by missed pills
 				if(dose_frequency == 1) {
-					 if(missed_pills < 2 && missed_pills >= 0) {
+					if(missed_pills < 2 && missed_pills >= 0) {
 						missed_total_95++;
 						if(gender == 1) {
 							missed_1_male_95++;
@@ -183,7 +184,6 @@
 						} else {
 							missed_1_lt15_95++;
 						}
-
 					} else if(missed_pills >= 2 && missed_pills <= 4) {
 						missed_total_85++;
 						if(gender == 1) {
@@ -191,7 +191,6 @@
 						} else if(gender == 2) {
 							missed_1_female_85++;
 						}
-
 						//Age
 						if(age < 15) {
 							missed_1_lt14_85++;
@@ -207,7 +206,6 @@
 						} else if(gender == 2) {
 							missed_1_female_80++;
 						}
-
 						//Age
 						if(age < 15) {
 							missed_1_lt14_80++;
@@ -217,9 +215,8 @@
 							missed_1_lt15_80++;
 						}
 					}
-
 				} else if(dose_frequency == 2) {
-					 if(missed_pills <= 3 && missed_pills >= 0) {
+					if(missed_pills <= 3 && missed_pills >= 0) {
 						missed_2_total_95++;
 						if(gender == 1) {
 							missed_2_male_95++;
@@ -269,10 +266,9 @@
 						}
 					}
 				}
-
 				//calculate adherence by pill count
 				if(dose_frequency == 1) {             
-					 if(pill_count < 2 && pill_count >= 0) {
+					if(pill_count < 2 && pill_count >= 0) {
 						pill_total_95++;
 						if(gender == 1) {
 							pill_1_male_95++;
@@ -324,7 +320,7 @@
 					}
 
 				} else if(dose_frequency == 2) {
-					 if(pill_count <= 3 && pill_count >= 0) {
+					if(pill_count <= 3 && pill_count >= 0) {
 						pill_2_total_95++;
 						if(gender == 1) {
 							pill_2_male_95++;
@@ -374,7 +370,6 @@
 						}
 					}
 				}
-
 				//calculate adherence by appointment
 				count++;
 				adherence_rate = parent_row['adherence']; 
@@ -442,10 +437,8 @@
 						appointment_lt15_80++;
 					}
 				} else {
-					//alert(parent_row['adherence']);
 					no_adherence++;
 				}
-
 			}
 
 			if(dose_frequency > 2) {
@@ -591,21 +584,11 @@
 		$("#pill_2_gt25_85").text(pill_2_lt24_85);
 		$("#pill_2_gt25_80").text(pill_2_lt24_80);
 
-		/*
-		 $("#pills_100_1").text(pills_count_100);
-		 $("#pills_100_2").text(pills_count_95);
-		 $("#pills_100_3").text(pills_count_85);
-		 $("#pills_100_4").text(pills_count_80);
-
-		 $("#pills_200_1").text(two_pills_count_100);
-		 $("#pills_200_2").text(two_pills_count_95);
-		 $("#pills_200_3").text(two_pills_count_85);
-		 $("#pills_200_4").text(two_pills_count_80);
-
-		 $("#no_adherence").text(no_adherence);
-		 $("#error_count").text(errors_count);
-		 */
 		$("#total_count").text(count);
+		missed_count=parseInt(count-(missed_total_95+missed_2_total_95+missed_total_85+missed_2_total_85+missed_total_80+missed_2_total_80));
+		$("#missed_count").text(missed_count);
+		pill_count=parseInt(count-(pill_total_95+pill_2_total_95+pill_total_85+pill_2_total_85+pill_total_80+pill_2_total_80));
+		$("#pill_count").text(pill_count);
 		function numberWithCommas(x) {
 		   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		}
@@ -625,7 +608,13 @@
 		<input type="text" id="end_date" value="<?php echo $to; ?>">
 		</h4>
 		<hr size="1" style="width:80%">
-		<h5 class="report_title" style="text-align: center">Number Of Patients: <span id="total_count"></span></h5>
+		<table align="center" class="table table-condensed" style="width:50%">
+		<tr>
+		    <td style="text-align:center;"><h5 class="report_title">Number Of Patients: <span id="total_count"></span></h5></td>
+		    <td style="text-align:center;"><h5 class="report_title">Patients without Pill Count: <span id="pill_count"></span></h5></td>
+		    <td style="text-align:center;"><h5 class="report_title">Patients without Missed Doses: <span id="missed_count"></span></h5></td>
+		</tr>
+		</table>
 		<div id="adherence_form">
 			<div style="text-align: center;	width:100%;margin:0 auto;">
 				<h3>Adherence By Appointment</h3>

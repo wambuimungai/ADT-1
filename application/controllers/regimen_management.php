@@ -261,8 +261,12 @@ class Regimen_management extends MY_Controller {
 
 	}
 
-	public function getRegimenLine($service) {
-		$regimens = Regimen::getLineRegimens($service);
+	public function getRegimenLine($service,$pmtct_oi=FALSE) {
+		if($pmtct_oi==TRUE){
+			$regimens = Regimen::get_pmtct_oi_regimens();
+		}else{
+			$regimens = Regimen::getLineRegimens($service);
+		}
 		echo json_encode($regimens);
 	}
 
