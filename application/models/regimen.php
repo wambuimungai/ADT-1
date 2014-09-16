@@ -100,6 +100,12 @@ class Regimen extends Doctrine_Record {
 		$regimens = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $regimens;
 	}
+
+	public function get_pmtct_oi_regimens(){
+		$query = Doctrine_Query::create() -> select("*") -> from("Regimen r") -> where("r.Enabled = '1' AND (r.Regimen_Service_Type.Name LIKE '%pmtct%' OR r.Regimen_Service_Type.Name LIKE '%oi%')") -> orderBy("Regimen_Code asc");
+		$regimens = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $regimens;
+	}
 		
 	public function getChildRegimens(){
 		$query = Doctrine_Query::create() -> select("*") -> from("Regimen r") -> where("(r.Regimen_Category.Name LIKE '%paed%' OR r.Regimen_Category.Name LIKE '%child%'  OR r.Regimen_Category.Name LIKE '%oi%')  AND r.Enabled = '1'") -> orderBy("Regimen_Code asc");

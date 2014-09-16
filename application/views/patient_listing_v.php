@@ -13,6 +13,7 @@
 	  overflow: hidden;         /* <- this does seem to be required */
 	  text-overflow: ellipsis;
 	}
+	
 </style>
 <script type="text/javascript">
 	
@@ -38,6 +39,8 @@
          /*	sPlaceHolder: "head:after",*/
          	aoColumns: [{ type: "text"},{ type: "text" },null,{ type: "text" },{ type: "text" },null]}
          );
+         
+         $(".listing_table").wrap('<div class="dataTables_scroll" />');
 	});
 
 </script>
