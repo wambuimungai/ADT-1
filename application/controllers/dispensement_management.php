@@ -532,7 +532,7 @@ class Dispensement_Management extends MY_Controller {
 		$str="";
 		
 		$this -> load -> library('mpdf');
-		$this -> mpdf = new mPDF('c','B6');
+		$this -> mpdf = new mPDF('c','B5');
 
 		if($check_if_print){
 			//loop through checkboxes check if they are selected to print
@@ -541,9 +541,11 @@ class Dispensement_Management extends MY_Controller {
 				if($check_print){
 	               //count no. to print
 	               $count=1;
+				   
 	               while($count<=$no_to_print[$counter]){
 	               	     $this -> mpdf -> addPage();
-		                 $str='<table border="1" align="center" width="100%" style="border-collapse:collapse;">';
+	               	     
+		                 $str='<table border="1" align="center" width="100%" style="border-collapse:collapse; font-size:26px;">';
 						 $str.='<tr>';
 						 $str.='<td colspan="2">Drugname: <b>'.strtoupper($drug_name[$counter]).'</b></td>';
 						 $str.='<td>Qty: <b>'.$qty[$counter].'</b></td>';
