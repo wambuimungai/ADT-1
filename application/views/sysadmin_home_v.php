@@ -16,14 +16,22 @@
 	<?php
   	if($this->session->userdata("msg_success")){
   		?>
-  		<span class="message success"><?php echo $this->session->userdata("msg_success")  ?></span>
+  		<div class="alert alert-block alert-success">
+		    <button type="button" class="close" data-dismiss="alert">&times;</button>
+		    <h4>Saved!</h4>
+		    <?php echo $this->session->userdata("msg_success"); ?>
+		</div>
   	<?php
   	$this->session->unset_userdata("msg_success");
 	}
   		
-  	elseif($this->session->userdata("msg_error")){
+  	else if($this->session->userdata("msg_error")){
   		?>
-  		<span class="message error"><?php echo $this->session->userdata("msg_error")  ?></span>
+  		<div class="alert alert-block alert-danger">
+		    <button type="button" class="close" data-dismiss="alert">&times;</button>
+		    <h4>Error!</h4>
+		    <?php echo $this->session->userdata("msg_error"); ?>
+		</div>
   	<?php
   	$this->session->unset_userdata("msg_error");
   	}
