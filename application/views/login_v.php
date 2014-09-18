@@ -54,7 +54,7 @@
 				Login
 			</div>
 			<form class="login-form" action="<?php echo base_url().'user_management/authenticate'?>" method="post" style="margin:0 auto " >
-				<label> <strong >Please Enter Your Email/Username</strong>
+				<label> <strong >Username</strong>
 					<br>
 					<input type="text" name="username" class="input-xlarge" id="username" value="" placeholder="user@example.com">
 				</label>

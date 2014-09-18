@@ -32,7 +32,9 @@ class Users extends Doctrine_Record {
 
 	public function login($username, $password) {
 
-		$query = Doctrine_Query::create() -> select("*") -> from("Users") -> where("Username = '" . $username . "' or Email_Address='" . $username . "' or Phone_Number='" . $username . "'");
+		//$query = Doctrine_Query::create() -> select("*") -> from("Users") -> where("Username = '" . $username . "' or Email_Address='" . $username . "' or Phone_Number='" . $username . "'");
+
+		$query = Doctrine_Query::create() -> select("*") -> from("Users") -> where("Username = '" . $username . "'");
 
 		$user = $query -> fetchOne();
 		if ($user) {
@@ -131,6 +133,12 @@ class Users extends Doctrine_Record {
 
 	public function getNotificationUsers() {
 		$query = Doctrine_Query::create() -> select("Distinct(u.Email_Address) as email") -> from("Users u") -> where("u.Access.Level_Name LIKE '%facility%' OR u.Access.Level_Name LIKE '%pharmacist%'");
+		$user = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $user;
+	}
+
+	public function get_email_account($email_address) {
+		$query = Doctrine_Query::create() -> select("*") -> from("Users") -> where("Email_Address = '" . $email_address . "'");
 		$user = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $user;
 	}
