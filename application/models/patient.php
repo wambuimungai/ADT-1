@@ -168,4 +168,10 @@ class Patient extends Doctrine_Record {
 		return $patients;
 	}
 
+	public function get_patient($id = NULL){
+		$query = Doctrine_Query::create() -> select("*") -> from("Patient") -> where("id='$id'") -> limit(1);
+		$patients = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $patients[0];
+	}
+
 }

@@ -40,9 +40,16 @@ class Patient_Source extends Doctrine_Record {
 	}
 	public static function getSource($id) {
 		$query = Doctrine_Query::create() -> select("*") -> from("Patient_Source") -> where("id = '$id'");
-		$ois = $query -> execute();
-		return $ois[0];
+		$sources = $query -> execute();
+		return $sources[0];
 	}
+
+	public function getItems() {
+		$query = Doctrine_Query::create() -> select("id,Name") -> from("Patient_Source")->where("Active='1'")->orderby("Name asc");
+		$sources = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $sources;
+	}
+
 
 }
 ?>
