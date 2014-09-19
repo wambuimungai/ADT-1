@@ -428,6 +428,15 @@
 					}
 			});
 			
+			$("#iso_start_date").change(function(){
+				var endDate =new  Date($("#iso_start_date").val());
+				var numberOfDaysToAdd = 168;
+				endDate.setDate(endDate.getDate() + numberOfDaysToAdd); 
+				var end_date = (endDate.getFullYear()+'-'+("0" + (endDate.getMonth() + 1)).slice(-2)+'-'+endDate.getDate());
+				$("#iso_end_date").val(end_date);
+				
+			});
+			
 			//Function to enable textareas for support group
 			$("#support_group").change(function() {
 					var other = $(this).is(":checked");
