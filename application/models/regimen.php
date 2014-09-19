@@ -119,5 +119,11 @@ class Regimen extends Doctrine_Record {
 		return $regimens;
 	}
 
+	public function getItems() {
+		$query = Doctrine_Query::create() -> select("id,CONCAT_WS(' | ',Regimen_Code,Regimen_Desc) AS Name") -> from("Regimen")->where("Enabled='1'")->orderby("Name asc");
+		$regimens = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $regimens;
+	}
+
 }
 ?>

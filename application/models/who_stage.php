@@ -21,5 +21,11 @@ class Who_Stage extends Doctrine_Record {
 		return $stages;
 	}
 
+	public function getItems() {
+		$query = Doctrine_Query::create() -> select("id,name as Name") -> from("who_stage")->orderby("name asc");
+		$stages = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $stages;
+	}
+
 }
 ?>

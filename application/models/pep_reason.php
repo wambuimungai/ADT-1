@@ -22,5 +22,11 @@ class Pep_Reason extends Doctrine_Record {
 		return $reasons;
 	}
 
+	public function getItems() {
+		$query = Doctrine_Query::create() -> select("id,name as Name") -> from("pep_reason")->where("active='1'")->orderby("name asc");
+		$reasons = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $reasons;
+	}
+
 }
 ?>

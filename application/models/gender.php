@@ -14,5 +14,11 @@ class Gender extends Doctrine_Record {
 		return $gender;
 	}
 
+	public function getItems() {
+		$query = Doctrine_Query::create() -> select("id, name AS Name") -> from("gender");
+		$gender = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $gender;
+	}
+
 	
 }

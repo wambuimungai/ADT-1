@@ -16,5 +16,11 @@ class Other_Illnesses extends Doctrine_Record {
 		$illnesses = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $illnesses;
 	}
+	
+	public function getItems() {
+		$query = Doctrine_Query::create() -> select("indicator AS id,name AS Name") -> from("other_illnesses")-> where("active", "1")->orderBy("name asc");
+		$illnesses = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $illnesses;
+	}
 
 }

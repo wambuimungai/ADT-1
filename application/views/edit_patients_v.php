@@ -301,17 +301,14 @@ foreach($results as $result){
 			//Select Other Illnesses Methods Selected
 			other_illnesses=<?php echo $result['other_illnesses'];?>;
 			other_sickness_list="";
-			ill_count=0;
+
 			$.each(other_illnesses,function(i,v){
-				//get list of illnesses
-				illness_list=$('input[name="other_illnesses_listing"][type="checkbox"]');
-				//loop through list to find match for current selected illness
-				$.each(illness_list,function(index,value){
-                      if($(this).val()==v){
-                      	$(this).attr('checked', true);
-                      	ill_count=1;
-                      }
-				});
+				ill_count=0;
+				//Loop through list to find match for current selected illness
+				$("select#other_illnesses").multiselect("widget").find(":checkbox[value='" + v + "']").each(function(){
+		            $(this).click();
+		            ill_count=1;
+                });
                 if(ill_count==0){
                 	other_sickness_list+=","+v;
                 }

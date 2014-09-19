@@ -218,8 +218,9 @@ if(isset($results)){
 			//Select Other Illnesses Methods Selected
 			other_illnesses=<?php echo $result['other_illnesses'];?>;
 			other_sickness_list="";
-			ill_count=0;
+
 			$.each(other_illnesses,function(i,v){
+				ill_count=0;
 				//get list of illnesses
 				illness_list=$('input[name="other_illnesses_listing"][type="checkbox"]');
 				//loop through list to find match for current selected illness

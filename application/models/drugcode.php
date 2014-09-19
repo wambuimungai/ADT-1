@@ -147,5 +147,11 @@ class Drugcode extends Doctrine_Record {
 		return $drugs[0]['id'];
 	}
 
+	public function getItems() {
+		$query = Doctrine_Query::create() -> select("id,Drug AS Name") -> from("Drugcode")->where("Enabled='1'")->orderby("Drug asc");
+		$drugs = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $drugs;
+	}
+
 }
 ?>

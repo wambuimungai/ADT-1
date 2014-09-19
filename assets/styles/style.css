@@ -777,6 +777,9 @@ table .dataTables {
 .dataTables_scroll, .dataTables_scrollHead, .DataTables_sort_wrapper {
 	position: static;
 }
+.dataTables_scroll{
+	overflow:auto;
+}
 table.setting_table {
 	border: solid;
 	border-color: #666;
