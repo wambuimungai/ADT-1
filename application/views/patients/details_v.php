@@ -1,5 +1,6 @@
 <!--art card form-->
 <div class="container full-content" style="background:#9CF">
+    <input type="hidden" id="hidden_data" data-baseurl="<?php echo base_url(); ?>" data-patient="<?php echo $patient_id; ?>">
 	<!--breadcrumb & instructions row-->
     <div class="row-fluid">
 	    <div class="span12">
@@ -100,11 +101,11 @@
 				<div class="row-fluid">
 					<div class="span6">
 						<label> Start Height (CM)</label>
-						<input type="text" class="span8" name="start_height" id="start_height" onblur="getStartMSQ()">
+						<input type="text" class="span8" name="start_height" id="start_height">
 					</div>
 					<div class="span6">
 						<label> Current Height (CM)</label>
-						<input  type="text" class="span8" name="current_height" id="height" onblur="getMSQ()">
+						<input  type="text" class="span8" name="current_height" id="height">
 					</div>
 				</div>
 				<div class="row-fluid">
@@ -120,7 +121,7 @@
 			    <div class="row-fluid">
 					<div class="span6">
 					    <label> Patient's Phone Contact(s)</label>
-					    <input  type="text" class="span8"  name="phone" id="phone" placeholder="e.g 0722123456">
+					    <input  type="text" class="span8"  name="phone" id="phone">
 				    </div>
 					<div class="span6">
 						<label> Receive SMS Reminders</label>
@@ -231,7 +232,7 @@
 				</div>
 				<div class="row-fluid">
 					<div class="span4">
-						<label>Has Patient been tested for TB?</label>
+						<label> Patient tested for TB?</label>
 						<select name="tb_test" id="tb_test" class="span12">
 							<option value="0">No</option>
 							<option value="1">Yes</option>
@@ -374,9 +375,9 @@
 	<div class="row-fluid">
 	    <div class="span12">
 	     	<div class="btn-group pull-right">
-	     	    <button class="btn btn-large" id="viral_load"><strong>Patient Info Report</strong></button>
-			    <button class="btn btn-large" id="edit_patient"><strong>Edit Patient Record</strong></button>
-			    <button class="btn btn-large" id="dispense"><strong>Dispense to Patient</strong></button>
+	     	    <button class="btn btn-inverse" id="patient_info"><strong>Patient Info Report</strong></button>
+			    <button class="btn btn-inverse" id="edit_patient"><strong>Edit Patient Record</strong></button>
+			    <button class="btn btn-inverse" id="dispense"><strong>Dispense to Patient</strong></button>
 			</div>
 	    </div>
 	</div>
@@ -519,37 +520,8 @@
 	    </div>
 	</div>
 </div>
-<!-- external scripts-->
-<script src="<?php echo base_url();?>assets/modules/form.js"></script>
-<script src="<?php echo base_url();?>assets/modules/patients.js"></script>
 
-<script type="text/javascript">
-	$(function(){
+<!-- custom scripts-->
+<script src="<?php echo base_url();?>assets/modules/forms/forms.js"></script>
+<script src="<?php echo base_url();?>assets/modules/patients/details.js"></script>
 
-		var base_url = "<?php echo base_url(); ?>";
-		var content_view = "<?php echo $content_view; ?>";
-		var patient_id = "<?php echo $patient_id; ?>";
-		var page_url = base_url + "patient_management/get_form_data/" + content_view;
-		var patient_url = base_url + "patient_management/get_patient_data/" + patient_id ;
-
-		//Load Page Data then load Patient Data
-        getPageData(page_url).always(function() {
-		    getPatientData(patient_url);
-		});
-
-		//Setup Dispensing History Datatable
-		$("#dispensing_history").dataTable({
-									"bJQueryUI" : true,
-									"sPaginationType" : "full_numbers",
-									"bStateSave" : true,
-									"sDom" : '<"H"T<"clear">lfr>t<"F"ip>',
-									"bProcessing" : true,
-									"bServerSide" : true,
-									"bAutoWidth" : false,
-									"bDeferRender" : true,
-									"bInfo" : true,
-									"sAjaxSource": base_url + "patient_management/get_dispensing_history/" + patient_id
-					            });
-
-	});
-</script>
