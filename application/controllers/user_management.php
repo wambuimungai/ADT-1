@@ -506,8 +506,7 @@ class User_Management extends MY_Controller {
 		$last_id = Access_Log::getLastUser($this -> session -> userdata('user_id'));
 		$this -> db -> where('id', $last_id);
 		$this -> db -> update("access_log", array('access_type' => "Logout", 'end_time' => date("Y-m-d H:i:s")));
-		
-                $this -> session -> sess_destroy();
+		$this -> session -> sess_destroy();
                 
 		if ($param == "2") {
 			delete_cookie("actual_page");

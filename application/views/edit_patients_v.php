@@ -327,7 +327,14 @@ foreach($results as $result){
 			    $("textarea[name='other_drugs']").not(this).removeAttr("disabled");		
 			}
 			
-			
+			$("#iso_start_date").change(function(){
+				var endDate =new  Date($("#iso_start_date").val());
+				var numberOfDaysToAdd = 168;
+				endDate.setDate(endDate.getDate() + numberOfDaysToAdd); 
+				var end_date = (endDate.getFullYear()+'-'+("0" + (endDate.getMonth() + 1)).slice(-2)+'-'+endDate.getDate());
+				$("#iso_end_date").val(end_date);
+				
+			});
 			
 			//Select Other Drug Allergies
 			var other_drug_allergies='<?php echo  $adr=str_replace(array("\n"," ","/"),array(" \ ","","-"),$result['adr']);?>';
