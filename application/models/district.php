@@ -39,6 +39,12 @@ class District extends Doctrine_Record {
 		return $districts;
 	}
 
+	public function getItems() {
+		$query = Doctrine_Query::create() -> select("id,Name") -> from("District")->where("active='1'")->orderby("Name asc");
+		$districts = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $districts;
+	}
+
 	public function getID($name) {
 		$query = Doctrine_Query::create() -> select("id") -> from("District")->where("Name LIKE '%$name%'");
 		$districts = $query -> execute();

@@ -14,5 +14,10 @@ class Drug_Prophylaxis extends Doctrine_Record {
 		$drug_prophylaxis = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $drug_prophylaxis;
 	}
+	public function getItems() {
+		$query = Doctrine_Query::create() -> select("id, name AS Name") -> from("drug_prophylaxis");
+		$drug_prophylaxis = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $drug_prophylaxis;
+	}
 
 }

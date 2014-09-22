@@ -34,5 +34,11 @@ class Patient_Status extends Doctrine_Record {
 		return $statuses;
 	}
 
+	public function getItems() {
+		$query = Doctrine_Query::create() -> select("id,Name") -> from("Patient_Status")->where("Active='1'")->orderby("Name asc");
+		$status = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $status;
+	}
+
 }
 ?>

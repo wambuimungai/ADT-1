@@ -454,8 +454,14 @@ if (isset($styles)) {
 					<div class="row-fluid">
 						<div id="footer_text2" class="span12" style="text-align:center">
 							Government of Kenya &copy; <?php echo date('Y');?>.
-							All Rights Reserved
-						</div>
+							All Rights Reserved 
+							<p class="text-right"> 
+							    <sub>
+							        <strong>time:</strong> {elapsed_time} seconds 
+							        <strong>memory:</strong> {memory_usage} 
+							    </sub>
+							</p>			
+						</div>	
 					</div>
 				</div>
 			</footer>

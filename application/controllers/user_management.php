@@ -275,6 +275,10 @@ class User_Management extends MY_Controller {
 				} else {
 					$data['invalid'] = false;
 					$data['title'] = "System Login";
+					$data['login_attempt'] = "enter the correct password!</p>";
+					$this -> load -> view("login_v", $data);
+					/*
+					 *
 					//Check if there is a login attempt
 					if (!$this -> session -> userdata($username . '_login_attempt')) {
 
@@ -308,7 +312,9 @@ class User_Management extends MY_Controller {
 
 						}
 					}
-					$this -> load -> view("login_v", $data);
+					*
+					*/
+					
 				}
 			} else if (isset($logged_in["attempt"]) && $logged_in["attempt"] == "attempt" && $logged_in["user"] -> Access -> Indicator == "system_administrator") {
 				$data['title'] = "System Login";
@@ -411,81 +417,27 @@ class User_Management extends MY_Controller {
 	}
 
 	public function save() {
-            $connected = @fsockopen("www.google.com", 80);
-            if($connected){
-		$creator_id = $this -> session -> userdata('user_id');
-		$source = $this -> input -> post('facility');
+		//default password
+		$default_password='123456';
 
-		$user = new Users();
-		$user -> Name = $this -> input -> post('fullname');
-		$user -> Username = $this -> input -> post('username');
-		$key = $this -> encrypt -> get_key();
-		$characters = strtoupper("abcdefghijklmnopqrstuvwxyz");
-		$characters = $characters . 'abcdefghijklmnopqrstuvwxyz0123456789';
-		$random_string_length = 8;
-		$string = '';
-		for ($i = 0; $i < $random_string_length; $i++) {
-			$string .= $characters[rand(0, strlen($characters) - 1)];
-		}
-		$password = $string;
+		$user_data=array(
+					'Name' => $this -> input -> post('fullname',TRUE),
+					'Username' => $this -> input -> post('username',TRUE),
+					'Password' => md5($this -> encrypt -> get_key(). $default_password),
+					'Access_Level' => $this -> input -> post('access_level',TRUE),
+					'Facility_Code' => $this -> input -> post('facility',TRUE),
+					'Created_By' => $this -> session -> userdata('user_id'),
+					'Time_Created' => date('Y-m-d,h:i:s A'),
+					'Phone_Number' => $this -> input -> post('phone',TRUE),
+					'Email_Address' => $this -> input -> post('email',TRUE),
+					'Active' => 1,
+					'Signature' => 1
+					);
 
-		$encrypted_password = $key . $password;
-		$user -> Password = $encrypted_password;
-		$user -> Access_Level = $this -> input -> post('access_level');
-		$user -> Facility_Code = $source;
-		$user -> Created_By = $creator_id;
-		$user -> Time_Created = date('Y-m-d , h:i:s A');
-		$user -> Phone_Number = $this -> input -> post('phone');
-		$user -> Email_Address = $this -> input -> post('email');
-		$phone = $this -> input -> post('phone');
-		$email = $this -> input -> post('email');
-		$username = $this -> input -> post('fullname');
+		$this->db->insert("users",$user_data);
 
-		$code = md5($user . $email);
-		$user -> Signature = $code;
-		$this -> sendActivationCode($username, $email, $password, $code, 'email');
-
-		$user -> Active = "1";
-
-		$user -> save();
-		$this -> session -> set_userdata('msg_success', $this -> input -> post('username') . ' \' s details were successfully saved!');
-		$this -> session -> set_flashdata('filter_datatable', $this -> input -> post('username'));
-		//Filter datatable
+		$this -> session -> set_userdata('msg_success', $this -> input -> post('fullname') . ' \' s details were successfully saved! The default password is <strong>'.$default_password.'</strong>');
 		redirect('settings_management');
-                fclose($connected);
-            }else{
-                $creator_id = $this -> session -> userdata('user_id');
-		$source = $this -> input -> post('facility');
-
-		$user = new Users();
-		$user -> Name = $this -> input -> post('fullname');
-		$user -> Username = $this -> input -> post('username');
-		$key = $this -> encrypt -> get_key();
-		$password = 123456;
-
-		$encrypted_password = $key . $password;
-		$user -> Password = $encrypted_password;
-		$user -> Access_Level = $this -> input -> post('access_level');
-		$user -> Facility_Code = $source;
-		$user -> Created_By = $creator_id;
-		$user -> Time_Created = date('Y-m-d , h:i:s A');
-		$user -> Phone_Number = $this -> input -> post('phone');
-		$user -> Email_Address = $this -> input -> post('email');
-		$phone = $this -> input -> post('phone');
-		$email = $this -> input -> post('email');
-		$username = $this -> input -> post('fullname');
-
-		
-		$user -> Signature = "1";
-
-		$user -> Active = "1";
-
-		$user -> save();
-		$this -> session -> set_userdata('msg_success', $this -> input -> post('username') . ' \' s details were successfully saved! Your <strong>PASSWORD</strong> is <strong>123456</strong>');
-		$this -> session -> set_flashdata('filter_datatable', $this -> input -> post('username'));
-		//Filter datatable
-		redirect('settings_management');
-            }
 	}
 
 	public function edit() {
@@ -554,8 +506,7 @@ class User_Management extends MY_Controller {
 		$last_id = Access_Log::getLastUser($this -> session -> userdata('user_id'));
 		$this -> db -> where('id', $last_id);
 		$this -> db -> update("access_log", array('access_type' => "Logout", 'end_time' => date("Y-m-d H:i:s")));
-		
-                $this -> session -> sess_destroy();
+		$this -> session -> sess_destroy();
                 
 		if ($param == "2") {
 			delete_cookie("actual_page");
@@ -629,18 +580,9 @@ class User_Management extends MY_Controller {
 
 	}
 
-	public function resetPassword($message = "") {
-		$data = array();
-		if ($message) {
-			$data['error'] = $message;
-		}
-		$data['title'] = "Reset password";
-		$data['content_view'] = "resend_password_v";
-		$data['link'] = "settings_management";
-		$data['banner_text'] = "Reset Password";
-		$data['hide_side_menu'] = 1;
-		$this -> load -> view('template', $data);
-
+	public function resetPassword() {
+		$data['title'] = "Reset Password";
+		$this -> load -> view('resend_password_v', $data);
 	}
 
 	public function resendPassword() {
@@ -809,6 +751,32 @@ class User_Management extends MY_Controller {
 
 	public function base_params($data) {
 		$this -> load -> view("template", $data);
+	}
+
+	public function resend_password()
+	{
+	    $email_address = $this->input->post("email_address",TRUE);
+	    $default_password='123456';
+	    $user=Users::get_email_account($email_address);
+	    if($user){
+            $this->db->where('id', $user[0]['id']);
+            $user[0]['Password']=md5($this -> encrypt -> get_key(). $default_password);
+		    $this->db->update('users', $user[0]); 
+		    $notification='<div class="alert alert-block alert-success">
+							  <button type="button" class="close" data-dismiss="alert">&times;</button>
+							  <h4>RESET!</h4>
+							  Account password was reset to the default password '.$default_password.'
+							</div>';
+	    }
+	    else{
+            $notification='<div class="alert alert-block alert-danger">
+							  <button type="button" class="close" data-dismiss="alert">&times;</button>
+							  <h4>FAILED!</h4>
+							  Account does not exist
+							</div>';
+	    }
+	    $this->session->set_flashdata("notification",$notification);
+	    redirect("user_management/resetPassword");
 	}
 
 }

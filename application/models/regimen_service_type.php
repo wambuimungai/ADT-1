@@ -32,6 +32,12 @@ class Regimen_Service_Type extends Doctrine_Record {
 		$types = $query -> execute();
 		return $types;
 	}
+	public function getItems() {
+		$query = Doctrine_Query::create() -> select("id,Name") -> from("Regimen_Service_Type")-> where("Active", "1")->orderBy("Name asc");
+		$types = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $types;
+	}
+
 
 }
 ?>
