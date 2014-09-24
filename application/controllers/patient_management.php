@@ -244,7 +244,7 @@ class Patient_Management extends MY_Controller {
 			}
 
 			if ($aRow['Active'] == 1) {
-				$row[] = '<a href="' . base_url() . 'patient_management/viewDetails/' . $id . '">Detail</a> | <a href="' . base_url() . 'patient_management/edit/' . $id . '">Edit</a> ' . $link;
+				$row[] = '<a href="' . base_url() . 'patient_management/load_view/details/' . $id . '">Detail</a> | <a href="' . base_url() . 'patient_management/edit/' . $id . '">Edit</a> ' . $link;
 			} else {
 				$link = str_replace("|", "", $link);
 				$link .= '| <a href="' . base_url() . 'patient_management/delete/' . $id . '" class="red actual">Delete</a>';
@@ -1672,7 +1672,8 @@ class Patient_Management extends MY_Controller {
 			$data = array();
 			foreach($aRow as $col => $value){
 				if($col == "record_id"){
-					$data[] = "<input id='".$value."' type='button' class='btn btn-warning edit_dispensing ' value='Edit'/>";
+					$link=base_url().'dispensement_management/edit/'.$value;
+					$data[] = "<a href='".$link."' class='btn btn-small btn-warning'>Edit</a>";
 				}else{
 					$data[] = $value;
 				}
@@ -1704,6 +1705,12 @@ class Patient_Management extends MY_Controller {
         	$illness_list['other_chronic'] = implode(",", $other_chronic);
         }
         return $illness_list;
+	}
+
+	public function load_summary( $patient_id = NULL )
+	{
+		//procedure
+		
 	}
 
 }

@@ -1,3 +1,6 @@
+<!--Custom CSS files-->
+<link href="<?php echo base_url().'assets/modules/patients/details.css'; ?>" type="text/css" rel="stylesheet"/>
+
 <!--art card form-->
 <div class="container full-content" style="background:#9CF">
     <input type="hidden" id="hidden_data" data-baseurl="<?php echo base_url(); ?>" data-patient="<?php echo $patient_id; ?>">
@@ -376,8 +379,8 @@
 	    <div class="span12">
 	     	<div class="btn-group pull-right">
 	     	    <button class="btn btn-inverse" id="patient_info"><strong>Patient Info Report</strong></button>
-			    <button class="btn btn-inverse" id="edit_patient"><strong>Edit Patient Record</strong></button>
-			    <button class="btn btn-inverse" id="dispense"><strong>Dispense to Patient</strong></button>
+			    <a class="btn btn-inverse" href="<?php echo base_url().'patient_management/edit/'.$patient_id; ?>"><strong>Edit Patient Record</strong></a>
+			    <a class="btn btn-inverse" href="<?php echo base_url().'dispensement_management/dispense/'.$patient_id; ?>"><strong>Dispense to Patient</strong></a>
 			</div>
 	    </div>
 	</div>
@@ -435,89 +438,87 @@
 	    </div>
 	</div>
 	<!--modals row-->
-	<div class="row-fluid hide">
-	    <div class="span12">
-		    <div class="accordion" id="summary_accordion">
-		    	<!--patient info summary-->
-				<div class="accordion-group">
-				    <div class="accordion-heading">
-				      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#patient_information_summary">
-				        Patient Information
-				      </a>
-				    </div>
-				    <div id="patient_information_summary" class="accordion-body collapse in">
-				      <div class="accordion-inner">
-				        Patient Information data...
-				      </div>
-				    </div>
-				</div>
-				<!--pill count summary-->
-				<div class="accordion-group">
-				    <div class="accordion-heading">
-				      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#pill_count_summary">
-				        Pill Count History
-				      </a>
-				    </div>
-				    <div id="pill_count_summary" class="accordion-body collapse in">
-				      <div class="accordion-inner">
-				        Pill Count data...
-				      </div>
-				    </div>
-				</div>
-		    	<!--regimen change summary-->
-				<div class="accordion-group">
-				    <div class="accordion-heading">
-				      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#regimen_change_summary">
-				        Regimen Change History
-				      </a>
-				    </div>
-				    <div id="regimen_change_summary" class="accordion-body collapse in">
-				      <div class="accordion-inner">
-				        Regimen Change data...
-				      </div>
-				    </div>
-				</div>
-				<!--appointment summary-->
-				<div class="accordion-group">
-				    <div class="accordion-heading">
-				      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#appointment_summary">
-				        Appointment History
-				      </a>
-				    </div>
-				    <div id="appointment_summary" class="accordion-body collapse">
-				      <div class="accordion-inner">
-				        Appointment data...
-				      </div>
-				    </div>
-				</div>
-				<!--viral load summary-->
-				<div class="accordion-group">
-				    <div class="accordion-heading">
-				      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#viral_load_summary">
-				        Viral Load Tests
-				      </a>
-				    </div>
-				    <div id="viral_load_summary" class="accordion-body collapse">
-				      <div class="accordion-inner">
-				        Viral load data...
-				      </div>
-				    </div>
-				</div>
-				<!--adherence summary-->
-				<div class="accordion-group">
-				    <div class="accordion-heading">
-				      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#adherence_summary">
-				        Adherence History
-				      </a>
-				    </div>
-				    <div id="adherence_summary" class="accordion-body collapse">
-				      <div class="accordion-inner">
-				        Adherence data...
-				      </div>
-				    </div>
-				</div>
-			</div>  
-	    </div>
+	<div id="patient_details" title="Patient Summary">
+	    <div class="accordion" id="summary_accordion">
+	    	<!--patient info summary-->
+			<div class="accordion-group">
+			    <div class="accordion-heading">
+			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#patient_information_summary">
+			        <strong>1.Demographics Summary</strong>
+			      </a>
+			    </div>
+			    <div id="patient_information_summary" class="accordion-body collapse in">
+			      <div class="accordion-inner">
+			        ........
+			      </div>
+			    </div>
+			</div>
+			<!--pill count summary-->
+			<div class="accordion-group">
+			    <div class="accordion-heading">
+			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#pill_count_summary">
+			        <strong>2.Pill Count Summary</strong>
+			      </a>
+			    </div>
+			    <div id="pill_count_summary" class="accordion-body collapse in">
+			      <div class="accordion-inner">
+			        ........
+			      </div>
+			    </div>
+			</div>
+	    	<!--regimen change summary-->
+			<div class="accordion-group">
+			    <div class="accordion-heading">
+			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#regimen_change_summary">
+			        <strong>3.Regimen Change Summary</strong>
+			      </a>
+			    </div>
+			    <div id="regimen_change_summary" class="accordion-body collapse in">
+			      <div class="accordion-inner">
+			        ...........
+			      </div>
+			    </div>
+			</div>
+			<!--appointment summary-->
+			<div class="accordion-group">
+			    <div class="accordion-heading">
+			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#appointment_summary">
+			        <strong>4.Appointment Summary</strong>
+			      </a>
+			    </div>
+			    <div id="appointment_summary" class="accordion-body collapse">
+			      <div class="accordion-inner">
+			        ...........
+			      </div>
+			    </div>
+			</div>
+			<!--viral load summary-->
+			<div class="accordion-group">
+			    <div class="accordion-heading">
+			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#viral_load_summary">
+			        <strong>5.Viral Load Summary</strong>
+			      </a>
+			    </div>
+			    <div id="viral_load_summary" class="accordion-body collapse">
+			      <div class="accordion-inner">
+			        ...........
+			      </div>
+			    </div>
+			</div>
+			<!--adherence summary-->
+			<div class="accordion-group">
+			    <div class="accordion-heading">
+			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#adherence_summary">
+			        <strong>6.Adherence Summary</strong>
+			      </a>
+			    </div>
+			    <div id="adherence_summary" class="accordion-body collapse">
+			      <div class="accordion-inner">
+			        .........
+			      </div>
+			    </div>
+			</div>
+		</div>  
 	</div>
 </div>
 
