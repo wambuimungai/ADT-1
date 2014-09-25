@@ -365,6 +365,12 @@
 				$(this).closest("tr").find("#batchselect_1").css("display","block");
 				$(this).closest("tr").find("#batchselect_1 ").html("<option value='0'>Loading batches ...</option> ");
 				batch_type = 1;
+				if(trans_type.indexOf('received') != -1){
+					var selected_source=$("#select_source option:selected").text().toLowerCase().replace(/ /g,'');
+					if(optgroup.indexOf('Stores')!= -1){
+						var stock_type=$("#select_source option:selected").val();
+					}
+				}
 				loadBatches(selected_drug,stock_type,row);
 			}
 			else if(is_batch_load==false){//No need to load batches
@@ -400,13 +406,8 @@
 			//If transaction type if received from
 			if(trans_type.indexOf('received') != -1){
 				var selected_source=$("#select_source option:selected").text().toLowerCase().replace(/ /g,'');
-				//If transaction if from Main Store to Pharmacy, get remaining balance from store
-				if(stock_type==2 && (selected_source.indexOf('mainstore')!= -1 || selected_source.indexOf('store')!= -1)){
-					stock_type=1;
-				}
-				//IF transaction is from Pharmacy to Main Store, get remaining balance from Pharmacy
-				else if(stock_type==1 && (selected_source.indexOf('outpatient')!= -1)){
-					stock_type=2;
+				if(optgroup.indexOf('Stores')!= -1){
+					stock_type=$("#select_source option:selected").val();
 				}
 			}
 			

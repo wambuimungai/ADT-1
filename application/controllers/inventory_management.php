@@ -605,7 +605,6 @@ class Inventory_Management extends MY_Controller {
 			}
 			
 			
-			
 			//If many transactions from the same drug, set balances to zero only once
 			if(($this -> session -> userdata("updated_dsb")) && ($this -> session -> userdata("updated_dsb")==$get_drug_id)){
 				
