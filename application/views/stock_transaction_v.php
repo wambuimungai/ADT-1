@@ -193,21 +193,34 @@
 			}
 		})
 		
+		
 		//Source change
 		$("#select_source").change(function(){
-				 $(".send_email").css("display","none");	
+			$(".send_email").css("display","none");	
 			stock_type=<?php echo  $stock_type ?>;
 			selected_source=$("#select_source option:selected").text().toLowerCase().replace(/ /g,'');
 			var supplier_name='<?php echo $supplier_name ?>';
 			pipeline_name=supplier_name.toLowerCase().replace(/ /g,'');
 			//show email
 			optgrp=$("#select_source :selected").parent().attr('label');
-			var online = navigator.onLine;
-			  	if(online==true){
-					if(trans_type.indexOf('receivedfrom')!= -1 && optgrp.indexOf('Central Site')!= -1){
+			
+			var request =$.ajax({
+		        type:"post",
+		        url:"<?php echo base_url().'system_management/checkConnection'; ?>",
+		        dataType: "json",
+		         
+		    });
+		    request.done(function(msg){
+		    	if(msg=="1"){
+		    		if(trans_type.indexOf('receivedfrom')!= -1 && optgrp.indexOf('Central Site')!= -1){
 						$(".send_email").css("display","block");	
 					} 
-			    }
+		    	}
+		    });
+		    request.fail(function(jqXHR, textStatus) {
+                bootbox.alert("<h4>InternetConnection Problem</h4>\n\<hr/>\n\<center>Could not check internet connection : </center>" + jqXHR.responseText);
+            });
+		   
 			//Get type of optgroup selected
 			optgroup =$('#select_source :selected').parent().attr('label');
 			
@@ -545,6 +558,7 @@
 			var data = $("#drugs_table >tbody tr");
 			print_transactions(counter,total_rows,data);
 		});
+		
 		
 		function print_transactions(counter,total,data){
 			
@@ -1195,7 +1209,7 @@
 		return dump;
 	}
 	
-	
+	    
 	
 </script>
 
