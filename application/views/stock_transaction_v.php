@@ -785,6 +785,7 @@
 			   
 			    request.always(function(data){
 			    	console.log(data);
+			    	//return;
 			    	//$("#list_drugs_transacted").append(data);
 			    	remaining_drugs-=1;
 			    	//console.log(data)
