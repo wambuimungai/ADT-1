@@ -402,7 +402,9 @@ class auto_management extends MY_Controller {
 			$rs = $q -> result_array();
 			if($rs){
 			    $state[$status] = $rs[0]['id'];
-			}	
+			}  else {
+                            $state[$status]='NAN'; //If non existant
+                        }	
 		}
 
 		/*Change Last Appointment to Next Appointment*/
@@ -431,7 +433,7 @@ class auto_management extends MY_Controller {
 				   LEFT JOIN patient_status ps ON ps.id=p.current_status
 				   WHERE ps.Name LIKE '%$lost%'
 				   AND (DATEDIFF(CURDATE(),nextappointment )) <$days_to_lost_followup) as p1
-				   SET p.current_status = '$state[$active]' ";
+				   SET p.current_status = '@$state[$active]' ";
 
 		/*Change Active to PEP End*/
 		$sql['Change Active to PEP End'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
@@ -441,7 +443,7 @@ class auto_management extends MY_Controller {
 				   WHERE (DATEDIFF(CURDATE(),date_enrolled))>=$days_to_pep_end 
 				   AND rst.name LIKE '%$pep%' 
 				   AND ps.Name NOT LIKE '%$pep%') as p1
-				   SET p.current_status = '$state[$pep]' ";
+				   SET p.current_status = '@$state[$pep]' ";
 
 		/*Change PEP End to Active*/
 		$sql['Change PEP End to Active'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
@@ -451,7 +453,7 @@ class auto_management extends MY_Controller {
 				   WHERE (DATEDIFF(CURDATE(),date_enrolled))<$days_to_pep_end 
 				   AND rst.name LIKE '%$pep%' 
 				   AND ps.Name NOT LIKE '%$active%') as p1
-				   SET p.current_status = '$state[$active]' ";
+				   SET p.current_status = '@$state[$active]' ";
 
 		/*Change Active to PMTCT End(children)*/
 		$sql['Change Active to PMTCT End(children)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
@@ -462,7 +464,7 @@ class auto_management extends MY_Controller {
 				   AND (DATEDIFF(CURDATE(),dob)) <$adult_days
 				   AND rst.name LIKE  '%$pmtct%'
 				   AND ps.Name NOT LIKE  '%$pmtct%') as p1
-				   SET p.current_status = '$state[$pmtct]'";
+				   SET p.current_status = '@$state[$pmtct]'";
 
 		/*Change PMTCT End to Active(Adults)*/
 		$sql['Change PMTCT End to Active(Adults)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
