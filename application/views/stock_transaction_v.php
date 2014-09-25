@@ -193,21 +193,34 @@
 			}
 		})
 		
+		
 		//Source change
 		$("#select_source").change(function(){
-				 $(".send_email").css("display","none");	
+			$(".send_email").css("display","none");	
 			stock_type=<?php echo  $stock_type ?>;
 			selected_source=$("#select_source option:selected").text().toLowerCase().replace(/ /g,'');
 			var supplier_name='<?php echo $supplier_name ?>';
 			pipeline_name=supplier_name.toLowerCase().replace(/ /g,'');
 			//show email
 			optgrp=$("#select_source :selected").parent().attr('label');
-			var online = navigator.onLine;
-			  	if(online==true){
-					if(trans_type.indexOf('receivedfrom')!= -1 && optgrp.indexOf('Central Site')!= -1){
+			
+			var request =$.ajax({
+		        type:"post",
+		        url:"<?php echo base_url().'system_management/checkConnection'; ?>",
+		        dataType: "json",
+		         
+		    });
+		    request.done(function(msg){
+		    	if(msg=="1"){
+		    		if(trans_type.indexOf('receivedfrom')!= -1 && optgrp.indexOf('Central Site')!= -1){
 						$(".send_email").css("display","block");	
 					} 
-			    }
+		    	}
+		    });
+		    request.fail(function(jqXHR, textStatus) {
+                bootbox.alert("<h4>InternetConnection Problem</h4>\n\<hr/>\n\<center>Could not check internet connection : </center>" + jqXHR.responseText);
+            });
+		   
 			//Get type of optgroup selected
 			optgroup =$('#select_source :selected').parent().attr('label');
 			
@@ -365,6 +378,12 @@
 				$(this).closest("tr").find("#batchselect_1").css("display","block");
 				$(this).closest("tr").find("#batchselect_1 ").html("<option value='0'>Loading batches ...</option> ");
 				batch_type = 1;
+				if(trans_type.indexOf('received') != -1){
+					var selected_source=$("#select_source option:selected").text().toLowerCase().replace(/ /g,'');
+					if(optgroup.indexOf('Stores')!= -1){
+						var stock_type=$("#select_source option:selected").val();
+					}
+				}
 				loadBatches(selected_drug,stock_type,row);
 			}
 			else if(is_batch_load==false){//No need to load batches
@@ -400,13 +419,8 @@
 			//If transaction type if received from
 			if(trans_type.indexOf('received') != -1){
 				var selected_source=$("#select_source option:selected").text().toLowerCase().replace(/ /g,'');
-				//If transaction if from Main Store to Pharmacy, get remaining balance from store
-				if(stock_type==2 && (selected_source.indexOf('mainstore')!= -1 || selected_source.indexOf('store')!= -1)){
-					stock_type=1;
-				}
-				//IF transaction is from Pharmacy to Main Store, get remaining balance from Pharmacy
-				else if(stock_type==1 && (selected_source.indexOf('outpatient')!= -1)){
-					stock_type=2;
+				if(optgroup.indexOf('Stores')!= -1){
+					stock_type=$("#select_source option:selected").val();
 				}
 			}
 			
@@ -544,6 +558,7 @@
 			var data = $("#drugs_table >tbody tr");
 			print_transactions(counter,total_rows,data);
 		});
+		
 		
 		function print_transactions(counter,total,data){
 			
@@ -784,6 +799,7 @@
 			   
 			    request.always(function(data){
 			    	console.log(data);
+			    	//return;
 			    	//$("#list_drugs_transacted").append(data);
 			    	remaining_drugs-=1;
 			    	//console.log(data)
@@ -1193,7 +1209,7 @@
 		return dump;
 	}
 	
-	
+	    
 	
 </script>
 
