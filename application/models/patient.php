@@ -76,6 +76,8 @@ class Patient extends Doctrine_Record {
 		$this -> hasOne('Facilities as TFacility', array('local' => 'Transfer_From', 'foreign' => 'facilitycode'));
 		$this -> hasOne('Pep_Reason as PReason', array('local' => 'Pep_Reason', 'foreign' => 'id'));
 		$this -> hasOne('Who_Stage as PStage', array('local' => 'who_stage', 'foreign' => 'id'));
+		$this -> hasOne('Dependants as dependant', array('local' => 'patient_number_ccc', 'foreign' => 'child'));
+		$this -> hasOne('Spouses as Spouse', array('local' => 'patient_number_ccc', 'foreign' => 'primary_spouse'));
 	}
 
 	public function getPatientNumbers($facility) {
@@ -168,8 +170,8 @@ class Patient extends Doctrine_Record {
 		return $patients;
 	}
 
-	public function get_patient($id = NULL){
-		$query = Doctrine_Query::create() -> select("*") -> from("Patient") -> where("id='$id'") -> limit(1);
+	public function get_patient($id = NULL , $columns = NULL){
+		$query = Doctrine_Query::create() -> select($columns) -> from("Patient p") -> where( "p.id = ?" , array($id) );
 		$patients = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $patients[0];
 	}

@@ -393,6 +393,7 @@ class auto_management extends MY_Controller {
 		$two_year_days = $days_in_year * 2;
 		$adult_days = $days_in_year * $adult_age;
 		$message = "";
+		$state = array();
 
 		//Get Patient Status id's
 		$status_array = array($active, $lost, $pep, $pmtct);
@@ -407,86 +408,88 @@ class auto_management extends MY_Controller {
                         }	
 		}
 
-		/*Change Last Appointment to Next Appointment*/
-		$sql['Change Last Appointment to Next Appointment'] = "(SELECT patient_number_ccc,nextappointment,temp.appointment,temp.patient
-					FROM patient p
-					LEFT JOIN 
-					(SELECT MAX(pa.appointment)as appointment,pa.patient
-					FROM patient_appointment pa
-					GROUP BY pa.patient) as temp ON p.patient_number_ccc =temp.patient
-					WHERE p.nextappointment !=temp.patient
-					AND DATEDIFF(temp.appointment,p.nextappointment)>0
-					GROUP BY p.patient_number_ccc) as p1
-					SET p.nextappointment=p1.appointment";
+		if(!empty($state)){
+			/*Change Last Appointment to Next Appointment*/
+			$sql['Change Last Appointment to Next Appointment'] = "(SELECT patient_number_ccc,nextappointment,temp.appointment,temp.patient
+						FROM patient p
+						LEFT JOIN 
+						(SELECT MAX(pa.appointment)as appointment,pa.patient
+						FROM patient_appointment pa
+						GROUP BY pa.patient) as temp ON p.patient_number_ccc =temp.patient
+						WHERE p.nextappointment !=temp.patient
+						AND DATEDIFF(temp.appointment,p.nextappointment)>0
+						GROUP BY p.patient_number_ccc) as p1
+						SET p.nextappointment=p1.appointment";
 
-		/*Change Active to Lost_to_follow_up*/
-		$sql['Change Active to Lost_to_follow_up'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
-				   FROM patient p
-				   LEFT JOIN patient_status ps ON ps.id=p.current_status
-				   WHERE ps.Name LIKE '%$active%'
-				   AND (DATEDIFF(CURDATE(),nextappointment )) >=$days_to_lost_followup) as p1
-				   SET p.current_status = '$state[$lost]'";
+			/*Change Active to Lost_to_follow_up*/
+			$sql['Change Active to Lost_to_follow_up'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
+					   FROM patient p
+					   LEFT JOIN patient_status ps ON ps.id=p.current_status
+					   WHERE ps.Name LIKE '%$active%'
+					   AND (DATEDIFF(CURDATE(),nextappointment )) >=$days_to_lost_followup) as p1
+					   SET p.current_status = '$state[$lost]'";
 
-		/*Change Lost_to_follow_up to Active */
-		$sql['Change Lost_to_follow_up to Active'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
-				   FROM patient p
-				   LEFT JOIN patient_status ps ON ps.id=p.current_status
-				   WHERE ps.Name LIKE '%$lost%'
-				   AND (DATEDIFF(CURDATE(),nextappointment )) <$days_to_lost_followup) as p1
-				   SET p.current_status = '@$state[$active]' ";
+			/*Change Lost_to_follow_up to Active */
+			$sql['Change Lost_to_follow_up to Active'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
+					   FROM patient p
+					   LEFT JOIN patient_status ps ON ps.id=p.current_status
+					   WHERE ps.Name LIKE '%$lost%'
+					   AND (DATEDIFF(CURDATE(),nextappointment )) <$days_to_lost_followup) as p1
+					   SET p.current_status = '$state[$active]' ";
 
-		/*Change Active to PEP End*/
-		$sql['Change Active to PEP End'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
-				   FROM patient p
-				   LEFT JOIN regimen_service_type rst ON rst.id=p.service
-				   LEFT JOIN patient_status ps ON ps.id=p.current_status
-				   WHERE (DATEDIFF(CURDATE(),date_enrolled))>=$days_to_pep_end 
-				   AND rst.name LIKE '%$pep%' 
-				   AND ps.Name NOT LIKE '%$pep%') as p1
-				   SET p.current_status = '@$state[$pep]' ";
+			/*Change Active to PEP End*/
+			$sql['Change Active to PEP End'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
+					   FROM patient p
+					   LEFT JOIN regimen_service_type rst ON rst.id=p.service
+					   LEFT JOIN patient_status ps ON ps.id=p.current_status
+					   WHERE (DATEDIFF(CURDATE(),date_enrolled))>=$days_to_pep_end 
+					   AND rst.name LIKE '%$pep%' 
+					   AND ps.Name NOT LIKE '%$pep%') as p1
+					   SET p.current_status = '$state[$pep]' ";
 
-		/*Change PEP End to Active*/
-		$sql['Change PEP End to Active'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
-				   FROM patient p
-				   LEFT JOIN regimen_service_type rst ON rst.id=p.service
-				   LEFT JOIN patient_status ps ON ps.id=p.current_status
-				   WHERE (DATEDIFF(CURDATE(),date_enrolled))<$days_to_pep_end 
-				   AND rst.name LIKE '%$pep%' 
-				   AND ps.Name NOT LIKE '%$active%') as p1
-				   SET p.current_status = '@$state[$active]' ";
+			/*Change PEP End to Active*/
+			$sql['Change PEP End to Active'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
+					   FROM patient p
+					   LEFT JOIN regimen_service_type rst ON rst.id=p.service
+					   LEFT JOIN patient_status ps ON ps.id=p.current_status
+					   WHERE (DATEDIFF(CURDATE(),date_enrolled))<$days_to_pep_end 
+					   AND rst.name LIKE '%$pep%' 
+					   AND ps.Name NOT LIKE '%$active%') as p1
+					   SET p.current_status = '$state[$active]' ";
 
-		/*Change Active to PMTCT End(children)*/
-		$sql['Change Active to PMTCT End(children)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
-				   FROM patient p
-				   LEFT JOIN regimen_service_type rst ON rst.id = p.service
-				   LEFT JOIN patient_status ps ON ps.id = p.current_status
-				   WHERE (DATEDIFF(CURDATE(),dob )) >=$two_year_days
-				   AND (DATEDIFF(CURDATE(),dob)) <$adult_days
-				   AND rst.name LIKE  '%$pmtct%'
-				   AND ps.Name NOT LIKE  '%$pmtct%') as p1
-				   SET p.current_status = '@$state[$pmtct]'";
+			/*Change Active to PMTCT End(children)*/
+			$sql['Change Active to PMTCT End(children)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
+					   FROM patient p
+					   LEFT JOIN regimen_service_type rst ON rst.id = p.service
+					   LEFT JOIN patient_status ps ON ps.id = p.current_status
+					   WHERE (DATEDIFF(CURDATE(),dob )) >=$two_year_days
+					   AND (DATEDIFF(CURDATE(),dob)) <$adult_days
+					   AND rst.name LIKE  '%$pmtct%'
+					   AND ps.Name NOT LIKE  '%$pmtct%') as p1
+					   SET p.current_status = '$state[$pmtct]'";
 
-		/*Change PMTCT End to Active(Adults)*/
-		$sql['Change PMTCT End to Active(Adults)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
-				   FROM patient p
-				   LEFT JOIN regimen_service_type rst ON rst.id = p.service
-				   LEFT JOIN patient_status ps ON ps.id = p.current_status 
-				   WHERE (DATEDIFF(CURDATE(),dob)) >=$two_year_days 
-				   AND (DATEDIFF(CURDATE(),dob)) >=$adult_days 
-				   AND rst.name LIKE '%$pmtct%'
-				   AND ps.Name LIKE '%$pmtct%') as p1
-				   SET p.current_status = '$state[$active]'";
+			/*Change PMTCT End to Active(Adults)*/
+			$sql['Change PMTCT End to Active(Adults)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
+					   FROM patient p
+					   LEFT JOIN regimen_service_type rst ON rst.id = p.service
+					   LEFT JOIN patient_status ps ON ps.id = p.current_status 
+					   WHERE (DATEDIFF(CURDATE(),dob)) >=$two_year_days 
+					   AND (DATEDIFF(CURDATE(),dob)) >=$adult_days 
+					   AND rst.name LIKE '%$pmtct%'
+					   AND ps.Name LIKE '%$pmtct%') as p1
+					   SET p.current_status = '$state[$active]'";
 
-				foreach ($sql as $i => $q) {
-					$stmt1 = "UPDATE patient p,";
-					$stmt2 = " WHERE p.patient_number_ccc=p1.patient_number_ccc;";
-					$stmt1 .= $q;
-					$stmt1 .= $stmt2;
-					$q = $this -> db -> query($stmt1);
-					if ($this -> db -> affected_rows() > 0) {
-						$message .= $i . "(<b>" . $this -> db -> affected_rows() . "</b>) rows affected<br/>";
+					foreach ($sql as $i => $q) {
+						$stmt1 = "UPDATE patient p,";
+						$stmt2 = " WHERE p.patient_number_ccc=p1.patient_number_ccc;";
+						$stmt1 .= $q;
+						$stmt1 .= $stmt2;
+						$q = $this -> db -> query($stmt1);
+						if ($this -> db -> affected_rows() > 0) {
+							$message .= $i . "(<b>" . $this -> db -> affected_rows() . "</b>) rows affected<br/>";
+						}
 					}
-				}
+		}
 		return $message;
 	}
 

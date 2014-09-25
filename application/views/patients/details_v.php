@@ -1,5 +1,9 @@
+<!--Custom CSS files-->
+<link href="<?php echo base_url().'assets/modules/patients/details.css'; ?>" type="text/css" rel="stylesheet"/>
+
 <!--art card form-->
 <div class="container full-content" style="background:#9CF">
+    <input type="hidden" id="hidden_data" data-baseurl="<?php echo base_url(); ?>" data-patient="<?php echo $patient_id; ?>">
 	<!--breadcrumb & instructions row-->
     <div class="row-fluid">
 	    <div class="span12">
@@ -100,11 +104,11 @@
 				<div class="row-fluid">
 					<div class="span6">
 						<label> Start Height (CM)</label>
-						<input type="text" class="span8" name="start_height" id="start_height" onblur="getStartMSQ()">
+						<input type="text" class="span8" name="start_height" id="start_height">
 					</div>
 					<div class="span6">
 						<label> Current Height (CM)</label>
-						<input  type="text" class="span8" name="current_height" id="height" onblur="getMSQ()">
+						<input  type="text" class="span8" name="current_height" id="height">
 					</div>
 				</div>
 				<div class="row-fluid">
@@ -120,7 +124,7 @@
 			    <div class="row-fluid">
 					<div class="span6">
 					    <label> Patient's Phone Contact(s)</label>
-					    <input  type="text" class="span8"  name="phone" id="phone" placeholder="e.g 0722123456">
+					    <input  type="text" class="span8"  name="phone" id="phone">
 				    </div>
 					<div class="span6">
 						<label> Receive SMS Reminders</label>
@@ -231,7 +235,7 @@
 				</div>
 				<div class="row-fluid">
 					<div class="span4">
-						<label>Has Patient been tested for TB?</label>
+						<label> Patient tested for TB?</label>
 						<select name="tb_test" id="tb_test" class="span12">
 							<option value="0">No</option>
 							<option value="1">Yes</option>
@@ -374,9 +378,9 @@
 	<div class="row-fluid">
 	    <div class="span12">
 	     	<div class="btn-group pull-right">
-	     	    <button class="btn btn-large" id="viral_load"><strong>Patient Info Report</strong></button>
-			    <button class="btn btn-large" id="edit_patient"><strong>Edit Patient Record</strong></button>
-			    <button class="btn btn-large" id="dispense"><strong>Dispense to Patient</strong></button>
+	     	    <button class="btn btn-inverse" id="patient_info"><strong>Patient Info Report</strong></button>
+			    <a class="btn btn-inverse" href="<?php echo base_url().'patient_management/edit/'.$patient_id; ?>"><strong>Edit Patient Record</strong></a>
+			    <a class="btn btn-inverse" href="<?php echo base_url().'dispensement_management/dispense/'.$patient_id; ?>"><strong>Dispense to Patient</strong></a>
 			</div>
 	    </div>
 	</div>
@@ -434,122 +438,91 @@
 	    </div>
 	</div>
 	<!--modals row-->
-	<div class="row-fluid hide">
-	    <div class="span12">
-		    <div class="accordion" id="summary_accordion">
-		    	<!--patient info summary-->
-				<div class="accordion-group">
-				    <div class="accordion-heading">
-				      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#patient_information_summary">
-				        Patient Information
-				      </a>
-				    </div>
-				    <div id="patient_information_summary" class="accordion-body collapse in">
-				      <div class="accordion-inner">
-				        Patient Information data...
-				      </div>
-				    </div>
-				</div>
-				<!--pill count summary-->
-				<div class="accordion-group">
-				    <div class="accordion-heading">
-				      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#pill_count_summary">
-				        Pill Count History
-				      </a>
-				    </div>
-				    <div id="pill_count_summary" class="accordion-body collapse in">
-				      <div class="accordion-inner">
-				        Pill Count data...
-				      </div>
-				    </div>
-				</div>
-		    	<!--regimen change summary-->
-				<div class="accordion-group">
-				    <div class="accordion-heading">
-				      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#regimen_change_summary">
-				        Regimen Change History
-				      </a>
-				    </div>
-				    <div id="regimen_change_summary" class="accordion-body collapse in">
-				      <div class="accordion-inner">
-				        Regimen Change data...
-				      </div>
-				    </div>
-				</div>
-				<!--appointment summary-->
-				<div class="accordion-group">
-				    <div class="accordion-heading">
-				      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#appointment_summary">
-				        Appointment History
-				      </a>
-				    </div>
-				    <div id="appointment_summary" class="accordion-body collapse">
-				      <div class="accordion-inner">
-				        Appointment data...
-				      </div>
-				    </div>
-				</div>
-				<!--viral load summary-->
-				<div class="accordion-group">
-				    <div class="accordion-heading">
-				      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#viral_load_summary">
-				        Viral Load Tests
-				      </a>
-				    </div>
-				    <div id="viral_load_summary" class="accordion-body collapse">
-				      <div class="accordion-inner">
-				        Viral load data...
-				      </div>
-				    </div>
-				</div>
-				<!--adherence summary-->
-				<div class="accordion-group">
-				    <div class="accordion-heading">
-				      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#adherence_summary">
-				        Adherence History
-				      </a>
-				    </div>
-				    <div id="adherence_summary" class="accordion-body collapse">
-				      <div class="accordion-inner">
-				        Adherence data...
-				      </div>
-				    </div>
-				</div>
-			</div>  
-	    </div>
+	<div id="patient_details" title="Patient Summary">
+	    <div class="accordion" id="summary_accordion">
+	    	<!--patient info summary-->
+			<div class="accordion-group">
+			    <div class="accordion-heading">
+			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#patient_information_summary">
+			        <strong>1.Demographics Summary</strong>
+			      </a>
+			    </div>
+			    <div id="patient_information_summary" class="accordion-body collapse in">
+			      <div class="accordion-inner">
+			        ........
+			      </div>
+			    </div>
+			</div>
+			<!--pill count summary-->
+			<div class="accordion-group">
+			    <div class="accordion-heading">
+			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#pill_count_summary">
+			        <strong>2.Pill Count Summary</strong>
+			      </a>
+			    </div>
+			    <div id="pill_count_summary" class="accordion-body collapse in">
+			      <div class="accordion-inner">
+			        ........
+			      </div>
+			    </div>
+			</div>
+	    	<!--regimen change summary-->
+			<div class="accordion-group">
+			    <div class="accordion-heading">
+			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#regimen_change_summary">
+			        <strong>3.Regimen Change Summary</strong>
+			      </a>
+			    </div>
+			    <div id="regimen_change_summary" class="accordion-body collapse in">
+			      <div class="accordion-inner">
+			        ...........
+			      </div>
+			    </div>
+			</div>
+			<!--appointment summary-->
+			<div class="accordion-group">
+			    <div class="accordion-heading">
+			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#appointment_summary">
+			        <strong>4.Appointment Summary</strong>
+			      </a>
+			    </div>
+			    <div id="appointment_summary" class="accordion-body collapse">
+			      <div class="accordion-inner">
+			        ...........
+			      </div>
+			    </div>
+			</div>
+			<!--viral load summary-->
+			<div class="accordion-group">
+			    <div class="accordion-heading">
+			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#viral_load_summary">
+			        <strong>5.Viral Load Summary</strong>
+			      </a>
+			    </div>
+			    <div id="viral_load_summary" class="accordion-body collapse">
+			      <div class="accordion-inner">
+			        ...........
+			      </div>
+			    </div>
+			</div>
+			<!--adherence summary-->
+			<div class="accordion-group">
+			    <div class="accordion-heading">
+			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#adherence_summary">
+			        <strong>6.Adherence Summary</strong>
+			      </a>
+			    </div>
+			    <div id="adherence_summary" class="accordion-body collapse">
+			      <div class="accordion-inner">
+			        .........
+			      </div>
+			    </div>
+			</div>
+		</div>  
 	</div>
 </div>
-<!-- external scripts-->
-<script src="<?php echo base_url();?>assets/modules/form.js"></script>
-<script src="<?php echo base_url();?>assets/modules/patients.js"></script>
 
-<script type="text/javascript">
-	$(function(){
+<!-- custom scripts-->
+<script src="<?php echo base_url();?>assets/modules/forms/forms.js"></script>
+<script src="<?php echo base_url();?>assets/modules/patients/details.js"></script>
 
-		var base_url = "<?php echo base_url(); ?>";
-		var content_view = "<?php echo $content_view; ?>";
-		var patient_id = "<?php echo $patient_id; ?>";
-		var page_url = base_url + "patient_management/get_form_data/" + content_view;
-		var patient_url = base_url + "patient_management/get_patient_data/" + patient_id ;
-
-		//Load Page Data then load Patient Data
-        getPageData(page_url).always(function() {
-		    getPatientData(patient_url);
-		});
-
-		//Setup Dispensing History Datatable
-		$("#dispensing_history").dataTable({
-									"bJQueryUI" : true,
-									"sPaginationType" : "full_numbers",
-									"bStateSave" : true,
-									"sDom" : '<"H"T<"clear">lfr>t<"F"ip>',
-									"bProcessing" : true,
-									"bServerSide" : true,
-									"bAutoWidth" : false,
-									"bDeferRender" : true,
-									"bInfo" : true,
-									"sAjaxSource": base_url + "patient_management/get_dispensing_history/" + patient_id
-					            });
-
-	});
-</script>

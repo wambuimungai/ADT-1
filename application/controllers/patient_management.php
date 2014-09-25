@@ -244,7 +244,7 @@ class Patient_Management extends MY_Controller {
 			}
 
 			if ($aRow['Active'] == 1) {
-				$row[] = '<a href="' . base_url() . 'patient_management/viewDetails/' . $id . '">Detail</a> | <a href="' . base_url() . 'patient_management/edit/' . $id . '">Edit</a> ' . $link;
+				$row[] = '<a href="' . base_url() . 'patient_management/load_view/details/' . $id . '">Detail</a> | <a href="' . base_url() . 'patient_management/edit/' . $id . '">Edit</a> ' . $link;
 			} else {
 				$link = str_replace("|", "", $link);
 				$link .= '| <a href="' . base_url() . 'patient_management/delete/' . $id . '" class="red actual">Delete</a>';
@@ -1410,17 +1410,19 @@ class Patient_Management extends MY_Controller {
 		$this -> session -> set_userdata("linkSub", "patient_management/merge_list");
 	}
 
-	public function get_art_card($id = NULL)
+	public function load_view( $page_id = NULL ,$id = NULL)
 	{
-		$data['patient_id'] = $id;
-		$data['content_view'] = 'test_v';
-		$data['hide_side_menu'] = '1';
-		$this -> base_params($data);
+        $config['details'] = array(
+        						'patient_id' => $id,
+        						'content_view' => 'patients/details_v',
+        						'hide_side_menu' => '1'
+        					 );
+        $this -> base_params($config[$page_id]);
 	}
 
-	public function get_form_data($form_id = NULL)
+	public function load_form($form_id = NULL)
 	{   
-        if($form_id == "test_v"){
+        if($form_id == "patient_details"){
 			$data['pob'] = District::getItems();
 			$data['gender'] = Gender::getItems();
 			$data['current_status'] = Patient_Status::getItems();
@@ -1449,20 +1451,84 @@ class Patient_Management extends MY_Controller {
 		echo json_encode($data);
 	}
 
-	public function get_patient_data($id = NULL)
-	{   
-		$details = Patient::get_patient($id);
+	public function load_patient($id = NULL)
+	{  
+		$columns = array(
+					'p.Medical_Record_Number AS medical_record_number',
+					'p.Patient_Number_CCC AS patient_number_ccc',
+					'p.First_Name AS first_name',
+					'p.Last_Name AS last_name',
+					'p.Other_Name AS other_name',
+					'p.Dob AS dob',
+					'p.Pob AS pob',
+					'p.dependant.parent as parent',
+					'p.Gender AS gender',
+					'p.Pregnant AS pregnant',
+					'FLOOR(DATEDIFF(p.Date_Enrolled,p.Dob)/365) AS start_age',
+					'FLOOR(DATEDIFF(CURDATE(),p.Dob)/365) AS age',
+					'p.Start_Weight AS start_weight',
+					'p.Weight AS weight',
+					'p.Start_Height AS start_height',
+					'p.Height AS height',
+					'p.Start_Bsa AS start_bsa',
+					'p.Sa AS sa',
+					'p.Phone AS phone',
+					'IF(p.SMS_Consent ="1","sms_yes","sms_no") AS sms_consent',
+					'p.Physical AS physical',
+					'p.Alternate AS alternate',
+					'p.Support_Group AS support_group',
+					'p.Partner_Status AS partner_status',
+					'IF(p.Disclosure ="1","disclosure_yes","disclosure_no") AS disclosure',
+					'p.Spouse.secondary_spouse AS secondary_spouse',
+					'Fplan AS fplan',
+					'Other_Illnesses AS other_illnesses',
+					'Drug_Allergies AS drug_allergies',
+					'p.Other_Drugs AS other_drugs',
+					'p.Adr AS adr',
+					'p.Smoke AS smoke',
+					'p.Alcohol AS alcohol',
+					'p.Tb_Test AS tb_test',
+					'p.Tb AS tb',
+					'p.tb_category AS tb_category',
+					'p.Tbphase AS tbphase',
+					'p.Startphase AS startphase',
+					'p.Endphase AS endphase',
+					'p.NextAppointment AS nextappointment',
+					'DATEDIFF(p.NextAppointment,CURDATE()) AS days_to_next',
+					'p.Date_Enrolled AS date_enrolled',
+					'p.Current_Status AS current_status',
+					'p.Status_Change_Date AS status_change_date',
+					'p.Source AS source',
+					'p.Transfer_From AS transfer_from',
+					'p.Service AS service',
+					'p.Pep_Reason AS pep_reason',
+					'p.Start_Regimen AS start_regimen',
+					'p.Start_Regimen_Date AS start_regimen_date',
+					'p.Current_Regimen AS current_regimen',
+					'p.who_stage',
+					'p.drug_prophylaxis AS drug_prophylaxis',
+					'p.isoniazid_start_date',
+					'p.isoniazid_end_date');
+
+        $details = Patient::get_patient( $id , implode(",", $columns) );
 
 		//Sanitize data
 		foreach($details as $index=> $detail){
-			$index = strtolower($index);
-			$data[$index] = utf8_encode($detail);
+			if( $index == "other_illnesses" )
+			{   
+                $illnesses = explode(",", $detail);
+                $others = $this -> get_other_chronic($illnesses);
+                $data[$index] = $others[$index];
+                $data["other_chronic"] = $others['other_chronic'];
+			}else{
+				$data[$index] = utf8_encode($detail);
+			}
 		}
 
-		echo json_encode($data);
+		echo json_encode($data,JSON_PRETTY_PRINT);
 	}
 
-	public function get_dispensing_history( $patient_id = NULL)
+	public function load_visits( $patient_id = NULL)
 	{
 
 		$iDisplayStart = $this -> input -> get_post('iDisplayStart', true);
@@ -1479,7 +1545,7 @@ class Patient_Management extends MY_Controller {
 						'v.name AS visit', 
 						'pv.dose', 
 						'pv.duration',
-						'pv.patient_visit_id AS record_id',
+						'pv.id AS record_id',
 						'd.drug', 
 						'pv.quantity', 
 						'pv.current_weight', 
@@ -1509,49 +1575,66 @@ class Patient_Management extends MY_Controller {
 			}
 		}
 
-		/*
+		/* 
 		 * Filtering
 		 * NOTE this does not match the built-in DataTables filtering which does it
 		 * word by word on any field. It's possible to do here, but concerned about efficiency
 		 * on very large tables, and MySQL's regex functionality is very limited
 		 */
-		for ($i = 0; $i < count($aColumns); $i++) {
-			$bSearchable = $this -> input -> get_post('bSearchable_' . $i, true);
-			$sSearch_ = $this -> input -> get_post('sSearch_' . $i, true);
+		$sWhere = "";
+		if ( isset($sSearch) && !empty($sSearch) ) 
+		{
+			for ($i = 0; $i < count($aColumns); $i++) 
+			{
+				$bSearchable = $this -> input -> get_post('bSearchable_' . $i, true);
 
-			$col = $aColumns[$i];
-			//If 'AS' is found remove it
-			$pos = strpos($col,"AS");
-			if( $pos !== FALSE){
-                $col = trim( $col = substr( $col , 0, $pos) );
-			}
+				// Individual column filtering
+				if (isset($bSearchable) && $bSearchable == 'true') 
+				{
+					//If 'AS' is found remove it
+					$col = $aColumns[$i];
+					$pos = strpos($col,"AS");
 
-			// Individual column filtering
-			if (isset($bSearchable) && $bSearchable == 'true' && !empty($sSearch_)) {
-				$this -> db -> like($col, $this -> db -> escape_like_str($sSearch_));
+					if( $pos !== FALSE)
+					{
+		                $col = trim( $col = substr( $col , 0, $pos) );
+					}
+
+					$sSearch = mysql_real_escape_string($sSearch);
+					
+					if ($i != 0) 
+					{   
+						$sWhere .= " OR ".$col." LIKE '%".$sSearch."%'";
+					}
+					else
+					{  
+						$sWhere .= "( ".$col." LIKE '%".$sSearch."%'";
+					}
+
+				}
 			}
-			if (isset($sSearch) && !empty($sSearch)) {
-				$this -> db -> or_like($col, $this -> db -> escape_like_str($sSearch));
-			}
+			$sWhere .= ")";
 		}
 
 		// Select Data
 		$this -> db -> select('SQL_CALC_FOUND_ROWS ' . str_replace(' , ', ' ', implode(', ', $aColumns)), false);
-		$this -> db -> from("v_patient_visits pv");
+		$this -> db -> from("patient_visit pv");
+		$this -> db -> join("patient p", "pv.patient_id = p.patient_number_ccc", "left");
 		$this -> db -> join("drugcode d", "pv.drug_id = d.id", "left");
-		$this -> db -> join("drug_unit u", "d.unit = u.id", "left");
-		$this -> db -> join("regimen r", "pv.regimen_id", "left");
+		$this -> db -> join("regimen r", "pv.regimen", "left");
 		$this -> db -> join("regimen r1", "pv.last_regimen = r1.id", "left");
-		$this -> db -> join("visit_purpose v", "pv.visit_purpose_id = v.id", "left");
+		$this -> db -> join("visit_purpose v", "pv.visit_purpose = v.id", "left");
 		$this -> db -> join("regimen_change_purpose rcp", "rcp.id=pv.regimen_change_reason", "left");
-		$this -> db -> where("pv.id", $patient_id);
+		$this -> db -> where("p.id", $patient_id);
 		$this -> db -> where("pv.facility", $facility_code);
 		$this -> db -> where("pv.active", 1);
-		$this -> db -> where("pv.pv_active", 1);
+		if($sWhere)
+		{
+			$this -> db -> where( $sWhere );
+		}
 		$this -> db -> group_by(array("d.drug,pv.dispensing_date"));
 
 		$rResult = $this -> db -> get();
-
 
 		// Data set length after filtering
 		$this -> db -> select('FOUND_ROWS() AS found_rows');
@@ -1559,17 +1642,20 @@ class Patient_Management extends MY_Controller {
 
 		// Total data set length
 		$this -> db -> select("pv.*");
-		$this -> db -> from("v_patient_visits pv");
+		$this -> db -> from("patient_visit pv");
+		$this -> db -> join("patient p", "pv.patient_id = p.patient_number_ccc", "left");
 		$this -> db -> join("drugcode d", "pv.drug_id = d.id", "left");
-		$this -> db -> join("drug_unit u", "d.unit = u.id", "left");
-		$this -> db -> join("regimen r", "pv.regimen_id", "left");
+		$this -> db -> join("regimen r", "pv.regimen", "left");
 		$this -> db -> join("regimen r1", "pv.last_regimen = r1.id", "left");
-		$this -> db -> join("visit_purpose v", "pv.visit_purpose_id = v.id", "left");
+		$this -> db -> join("visit_purpose v", "pv.visit_purpose = v.id", "left");
 		$this -> db -> join("regimen_change_purpose rcp", "rcp.id=pv.regimen_change_reason", "left");
-		$this -> db -> where("pv.id", $patient_id);
+		$this -> db -> where("p.id", $patient_id);
 		$this -> db -> where("pv.facility", $facility_code);
 		$this -> db -> where("pv.active", 1);
-		$this -> db -> where("pv.pv_active", 1);
+		if($sWhere)
+		{
+			$this -> db -> where( $sWhere );
+		}
 		$this -> db -> group_by(array("d.drug,pv.dispensing_date"));
 		$total = $this -> db -> get();
 		$iTotal = count($total -> result_array());
@@ -1586,14 +1672,45 @@ class Patient_Management extends MY_Controller {
 			$data = array();
 			foreach($aRow as $col => $value){
 				if($col == "record_id"){
-					$data[] = "<input id='".$value."' type='button' class='btn btn-warning edit_dispensing ' value='Edit'/>";
+					$link=base_url().'dispensement_management/edit/'.$value;
+					$data[] = "<a href='".$link."' class='btn btn-small btn-warning'>Edit</a>";
 				}else{
 					$data[] = $value;
 				}
 			}
 			$output['aaData'][] = $data;
 		}
+
 		echo json_encode($output,JSON_PRETTY_PRINT);
+	}
+
+	public function get_other_chronic($illnesses){
+		$illness_list = array('other_illnesses'=>'','other_chronic' => '');
+		$other_chronic = array();
+		$chronic = array();
+        if($illnesses)
+        {    
+        	$indicators = Other_Illnesses::getIndicators();
+        	foreach($illnesses as $illness)
+        	{   
+        		if(in_array($illness, $indicators))
+        		{
+					$chronic[] = $illness;
+        		}else{
+                    $other_chronic[] = $illness;
+        		}
+        	}
+
+        	$illness_list['other_illnesses'] = implode(",", $chronic);
+        	$illness_list['other_chronic'] = implode(",", $other_chronic);
+        }
+        return $illness_list;
+	}
+
+	public function load_summary( $patient_id = NULL )
+	{
+		//procedure
+		
 	}
 
 }

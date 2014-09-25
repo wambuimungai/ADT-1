@@ -630,7 +630,7 @@ if(isset($results)){
 				window.location.href = url;
 			});
 			$("#dispense").click(function() {
-                                       var url = base_url+"dispensement_management/dispense/"+ record_id;
+                var url = base_url+"dispensement_management/dispense/"+ record_id;
 				window.location.href = url;  
                                         
 			});
