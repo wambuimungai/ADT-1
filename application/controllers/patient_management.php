@@ -263,7 +263,7 @@ class Patient_Management extends MY_Controller {
 			if ($illness == null) {
 				unset($illness_array[$index]);
 			} else {
-				$illness = str_replace("\n", "", $illness);
+				$illness = str_replace("\n", "",$illness);
 				$new_array[] = trim($illness);
 			}
 		}
@@ -282,7 +282,8 @@ class Patient_Management extends MY_Controller {
 		        LEFT JOIN regimen_service_type rst ON rst.id=p.service 
 		        LEFT JOIN dependants dp ON p.patient_number_ccc=dp.parent  
 		        LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse 
-		        WHERE p.id='$record_no'";
+		        WHERE p.id='$record_no'
+		        GROUP BY p.id";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		
@@ -379,7 +380,8 @@ class Patient_Management extends MY_Controller {
 		               LEFT JOIN regimen_service_type rst ON rst.id=p.service 
 		               LEFT JOIN dependants dp ON p.patient_number_ccc=dp.parent  
 		        	   LEFT JOIN spouses s ON p.patient_number_ccc=s.primary_spouse
-		               WHERE p.id='$record_no'";
+		               WHERE p.id='$record_no'
+		               GROUP BY p.id";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -976,6 +978,51 @@ class Patient_Management extends MY_Controller {
 	}
 
 	public function getSixMonthsDispensing($patient_no) {
+		$dyn_table = "";
+        $facility = $this -> session -> userdata("facility");
+
+        $sql = "SELECT
+					DATE_FORMAT(pv.dispensing_date,'%d-%b-%Y') as dispensing_date,
+					UPPER(dc.Drug) as drug,
+					pv.quantity,
+					pv.pill_count,
+					pv.missed_pills,
+					round(((pv.quantity-(pv.pill_count-pv.months_of_stock))/pv.quantity)*100,2) as pill_adh,
+					round(((pv.quantity-pv.missed_pills)/pv.quantity)*100,2) as missed_adh,
+					pv.adherence
+				FROM patient_visit pv
+				LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
+				LEFT JOIN drugcode dc ON dc.id=pv.drug_id
+			    WHERE pv.patient_id = '$patient_no'
+			    AND pv.facility = '$facility' 
+			    ORDER BY pv.dispensing_date DESC";
+	    $query = $this -> db -> query($sql);
+		$results = $query -> result_array();
+
+		if ($results) 
+		{   
+			foreach ($results as $result) 
+			{
+				$dyn_table .= "<tbody><tr>";
+				$dyn_table .= "<td>" . $result['dispensing_date'] . "</td>";
+				$dyn_table .= "<td>" . $result['drug'] . "</td>";
+				$dyn_table .= "<td>" . $result['quantity'] . "</td>";
+				$dyn_table .= "<td>" . $result['pill_count'] . "</td>";
+				$dyn_table .= "<td>" . $result['missed_pills'] . "</td>";
+				$dyn_table .= "<td>" . $result['pill_adh'] . "%</td>";
+				$dyn_table .= "<td>" . $result['missed_adh'] . "%</td>";
+				
+                $adherence = doubleval(str_replace(array("%","<",">","="), "", $result['adherence']));
+				$average_adherence = (( doubleval($result['pill_adh']) + doubleval($result['missed_adh']) + $adherence) / 3);
+				$dyn_table .= "<td>" . $adherence . "%</td>";
+				$dyn_table .= "<td>" . number_format($average_adherence,2) . "%</td>";
+				$dyn_table .= "</tr></tbody>";
+			}
+		}
+		echo $dyn_table;
+	}
+
+	public function old_getSixMonthsDispensing($patient_no) {
 		$facility = $this -> session -> userdata("facility");
 		$dyn_table = "";
 		 $sql ="SELECT pv.pill_count,"
@@ -1406,6 +1453,309 @@ class Patient_Management extends MY_Controller {
 		$this -> session -> set_userdata('msg_success','['.$target_patient_ccc . '] was unmerged!');
 		$this -> session -> set_userdata("link_id", "merge_list");
 		$this -> session -> set_userdata("linkSub", "patient_management/merge_list");
+	}
+
+	public function load_view( $page_id = NULL ,$id = NULL)
+	{
+        $config['details'] = array(
+        						'patient_id' => $id,
+        						'content_view' => 'patients/details_v',
+        						'hide_side_menu' => '1'
+        					 );
+        $this -> base_params($config[$page_id]);
+	}
+
+	public function load_form($form_id = NULL)
+	{   
+        if($form_id == "patient_details"){
+			$data['pob'] = District::getItems();
+			$data['gender'] = Gender::getItems();
+			$data['current_status'] = Patient_Status::getItems();
+			$data['source'] = Patient_Source::getItems();
+			$data['drug_prophylaxis'] = Drug_Prophylaxis::getItems();
+			$data['service'] = Regimen_Service_Type::getItems();
+			$data['fplan'] = Family_Planning::getItems();
+			$data['other_illnesses'] = Other_Illnesses::getItems();
+			$data['pep_reason'] = Pep_Reason::getItems();
+			$data['drug_allergies'] = Drugcode::getItems();
+			$regimens = Regimen::getItems();
+			$data['start_regimen'] = $regimens;
+			$data['current_regimen'] = $regimens;
+		    $data['who_stage'] = Who_Stage::getItems();
+            
+            //Get facilities beacuse of UTF-8 encoding
+		    $this -> db-> select('facilitycode AS id, name AS Name');
+		    $query = $this ->db -> get('facilities');
+		    $facilities = $query -> result_array();
+		    foreach($facilities as $facility){
+                $facility_list[]=array('id' => $facility['id'],'Name' => utf8_encode($facility['Name']));
+		    }
+		    $data['transfer_from'] = $facility_list;
+		}
+
+		echo json_encode($data);
+	}
+
+	public function load_patient($id = NULL)
+	{  
+		$columns = array(
+					'p.Medical_Record_Number AS medical_record_number',
+					'p.Patient_Number_CCC AS patient_number_ccc',
+					'p.First_Name AS first_name',
+					'p.Last_Name AS last_name',
+					'p.Other_Name AS other_name',
+					'p.Dob AS dob',
+					'p.Pob AS pob',
+					'p.dependant.parent as parent',
+					'p.Gender AS gender',
+					'p.Pregnant AS pregnant',
+					'FLOOR(DATEDIFF(p.Date_Enrolled,p.Dob)/365) AS start_age',
+					'FLOOR(DATEDIFF(CURDATE(),p.Dob)/365) AS age',
+					'p.Start_Weight AS start_weight',
+					'p.Weight AS weight',
+					'p.Start_Height AS start_height',
+					'p.Height AS height',
+					'p.Start_Bsa AS start_bsa',
+					'p.Sa AS sa',
+					'p.Phone AS phone',
+					'IF(p.SMS_Consent ="1","sms_yes","sms_no") AS sms_consent',
+					'p.Physical AS physical',
+					'p.Alternate AS alternate',
+					'p.Support_Group AS support_group',
+					'p.Partner_Status AS partner_status',
+					'IF(p.Disclosure ="1","disclosure_yes","disclosure_no") AS disclosure',
+					'p.Spouse.secondary_spouse AS secondary_spouse',
+					'Fplan AS fplan',
+					'Other_Illnesses AS other_illnesses',
+					'Drug_Allergies AS drug_allergies',
+					'p.Other_Drugs AS other_drugs',
+					'p.Adr AS adr',
+					'p.Smoke AS smoke',
+					'p.Alcohol AS alcohol',
+					'p.Tb_Test AS tb_test',
+					'p.Tb AS tb',
+					'p.tb_category AS tb_category',
+					'p.Tbphase AS tbphase',
+					'p.Startphase AS startphase',
+					'p.Endphase AS endphase',
+					'p.NextAppointment AS nextappointment',
+					'DATEDIFF(p.NextAppointment,CURDATE()) AS days_to_next',
+					'p.Date_Enrolled AS date_enrolled',
+					'p.Current_Status AS current_status',
+					'p.Status_Change_Date AS status_change_date',
+					'p.Source AS source',
+					'p.Transfer_From AS transfer_from',
+					'p.Service AS service',
+					'p.Pep_Reason AS pep_reason',
+					'p.Start_Regimen AS start_regimen',
+					'p.Start_Regimen_Date AS start_regimen_date',
+					'p.Current_Regimen AS current_regimen',
+					'p.who_stage',
+					'p.drug_prophylaxis AS drug_prophylaxis',
+					'p.isoniazid_start_date',
+					'p.isoniazid_end_date');
+
+        $details = Patient::get_patient( $id , implode(",", $columns) );
+
+		//Sanitize data
+		foreach($details as $index=> $detail){
+			if( $index == "other_illnesses" )
+			{   
+                $illnesses = explode(",", $detail);
+                $others = $this -> get_other_chronic($illnesses);
+                $data[$index] = $others[$index];
+                $data["other_chronic"] = $others['other_chronic'];
+			}else{
+				$data[$index] = utf8_encode($detail);
+			}
+		}
+
+		echo json_encode($data,JSON_PRETTY_PRINT);
+	}
+
+	public function load_visits( $patient_id = NULL)
+	{
+
+		$iDisplayStart = $this -> input -> get_post('iDisplayStart', true);
+		$iDisplayLength = $this -> input -> get_post('iDisplayLength', true);
+		$iSortCol_0 = $this -> input -> get_post('iSortCol_0', true);
+		$iSortingCols = $this -> input -> get_post('iSortingCols', true);
+		$sSearch = $this -> input -> get_post('sSearch', true);
+		$sEcho = $this -> input -> get_post('sEcho', true);
+		$facility_code = $this -> session -> userdata("facility");
+
+		//Selected columns
+		$aColumns = array(
+			            'pv.dispensing_date',
+						'v.name AS visit', 
+						'pv.dose', 
+						'pv.duration',
+						'pv.id AS record_id',
+						'd.drug', 
+						'pv.quantity', 
+						'pv.current_weight', 
+						'r1.regimen_desc', 
+						'pv.batch_number', 
+					    'pv.pill_count', 
+					    'pv.adherence', 
+					    'pv.user', 
+					    'rcp.name AS regimen_change_reason'
+					    ); 
+
+		// Paging
+		if (isset($iDisplayStart) && $iDisplayLength != '-1') {
+			$this -> db -> limit($this -> db -> escape_str($iDisplayLength), $this -> db -> escape_str($iDisplayStart));
+		}
+
+		// Ordering
+		if (isset($iSortCol_0)) {
+			for ($i = 0; $i < intval($iSortingCols); $i++) {
+				$iSortCol = $this -> input -> get_post('iSortCol_' . $i, true);
+				$bSortable = $this -> input -> get_post('bSortable_' . intval($iSortCol), true);
+				$sSortDir = $this -> input -> get_post('sSortDir_' . $i, true);
+
+				if ($bSortable == 'true') {
+					$this -> db -> order_by($aColumns[intval($this -> db -> escape_str($iSortCol))], $this -> db -> escape_str($sSortDir));
+				}
+			}
+		}
+
+		/* 
+		 * Filtering
+		 * NOTE this does not match the built-in DataTables filtering which does it
+		 * word by word on any field. It's possible to do here, but concerned about efficiency
+		 * on very large tables, and MySQL's regex functionality is very limited
+		 */
+		$sWhere = "";
+		if ( isset($sSearch) && !empty($sSearch) ) 
+		{
+			for ($i = 0; $i < count($aColumns); $i++) 
+			{
+				$bSearchable = $this -> input -> get_post('bSearchable_' . $i, true);
+
+				// Individual column filtering
+				if (isset($bSearchable) && $bSearchable == 'true') 
+				{
+					//If 'AS' is found remove it
+					$col = $aColumns[$i];
+					$pos = strpos($col,"AS");
+
+					if( $pos !== FALSE)
+					{
+		                $col = trim( $col = substr( $col , 0, $pos) );
+					}
+
+					$sSearch = mysql_real_escape_string($sSearch);
+					
+					if ($i != 0) 
+					{   
+						$sWhere .= " OR ".$col." LIKE '%".$sSearch."%'";
+					}
+					else
+					{  
+						$sWhere .= "( ".$col." LIKE '%".$sSearch."%'";
+					}
+
+				}
+			}
+			$sWhere .= ")";
+		}
+
+		// Select Data
+		$this -> db -> select('SQL_CALC_FOUND_ROWS ' . str_replace(' , ', ' ', implode(', ', $aColumns)), false);
+		$this -> db -> from("patient_visit pv");
+		$this -> db -> join("patient p", "pv.patient_id = p.patient_number_ccc", "left");
+		$this -> db -> join("drugcode d", "pv.drug_id = d.id", "left");
+		$this -> db -> join("regimen r", "pv.regimen", "left");
+		$this -> db -> join("regimen r1", "pv.last_regimen = r1.id", "left");
+		$this -> db -> join("visit_purpose v", "pv.visit_purpose = v.id", "left");
+		$this -> db -> join("regimen_change_purpose rcp", "rcp.id=pv.regimen_change_reason", "left");
+		$this -> db -> where("p.id", $patient_id);
+		$this -> db -> where("pv.facility", $facility_code);
+		$this -> db -> where("pv.active", 1);
+		if($sWhere)
+		{
+			$this -> db -> where( $sWhere );
+		}
+		$this -> db -> group_by(array("d.drug,pv.dispensing_date"));
+
+		$rResult = $this -> db -> get();
+
+		// Data set length after filtering
+		$this -> db -> select('FOUND_ROWS() AS found_rows');
+		$iFilteredTotal = $this -> db -> get() -> row() -> found_rows;
+
+		// Total data set length
+		$this -> db -> select("pv.*");
+		$this -> db -> from("patient_visit pv");
+		$this -> db -> join("patient p", "pv.patient_id = p.patient_number_ccc", "left");
+		$this -> db -> join("drugcode d", "pv.drug_id = d.id", "left");
+		$this -> db -> join("regimen r", "pv.regimen", "left");
+		$this -> db -> join("regimen r1", "pv.last_regimen = r1.id", "left");
+		$this -> db -> join("visit_purpose v", "pv.visit_purpose = v.id", "left");
+		$this -> db -> join("regimen_change_purpose rcp", "rcp.id=pv.regimen_change_reason", "left");
+		$this -> db -> where("p.id", $patient_id);
+		$this -> db -> where("pv.facility", $facility_code);
+		$this -> db -> where("pv.active", 1);
+		if($sWhere)
+		{
+			$this -> db -> where( $sWhere );
+		}
+		$this -> db -> group_by(array("d.drug,pv.dispensing_date"));
+		$total = $this -> db -> get();
+		$iTotal = count($total -> result_array());
+
+		// Output
+		$output = array(
+			        'sEcho' => intval($sEcho), 
+			        'iTotalRecords' => $iTotal, 
+			        'iTotalDisplayRecords' => $iFilteredTotal, 
+			        'aaData' => array()
+			        );
+
+		foreach ($rResult->result_array() as $count => $aRow) {
+			$data = array();
+			foreach($aRow as $col => $value){
+				if($col == "record_id"){
+					$link=base_url().'dispensement_management/edit/'.$value;
+					$data[] = "<a href='".$link."' class='btn btn-small btn-warning'>Edit</a>";
+				}else{
+					$data[] = $value;
+				}
+			}
+			$output['aaData'][] = $data;
+		}
+
+		echo json_encode($output,JSON_PRETTY_PRINT);
+	}
+
+	public function get_other_chronic($illnesses){
+		$illness_list = array('other_illnesses'=>'','other_chronic' => '');
+		$other_chronic = array();
+		$chronic = array();
+        if($illnesses)
+        {    
+        	$indicators = Other_Illnesses::getIndicators();
+        	foreach($illnesses as $illness)
+        	{   
+        		if(in_array($illness, $indicators))
+        		{
+					$chronic[] = $illness;
+        		}else{
+                    $other_chronic[] = $illness;
+        		}
+        	}
+
+        	$illness_list['other_illnesses'] = implode(",", $chronic);
+        	$illness_list['other_chronic'] = implode(",", $other_chronic);
+        }
+        return $illness_list;
+	}
+
+	public function load_summary( $patient_id = NULL )
+	{
+		//procedure
+		
 	}
 
 }

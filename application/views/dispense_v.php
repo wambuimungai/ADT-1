@@ -177,15 +177,7 @@ foreach ($results as $result) {
                     getAdherenceRate();
                 });
 
-                //function to select individual
-                $(".label_checker").on('click', function() {
-                    var status = $(this).is(":checked");
-                    if (status == true) {
-                        $(this).val(1);
-                    } else {
-                        $(this).val(0);
-                    }
-                });
+           
 
                 //drug label modal settings
                 $("#open_print_label").dialog({
@@ -362,6 +354,12 @@ foreach ($results as $result) {
                     //insertafter
                     label_str += '</tbody></table></div>';
                     $(label_str).insertAfter(".label_selectall");
+
+                    //function to select individual
+                    $(".label_checker").on('click', function() {
+                        cb = $(this);
+                        cb.val(cb.prop('checked'));
+                    });
                 });
 
                 <?php $this->session->set_userdata('record_no', $result['id']); ?>
@@ -622,6 +620,8 @@ foreach ($results as $result) {
                     $("#stock_type_text").val(stock_type_text);
                     $("#current_regimen").trigger("change");
                     reinitialize();
+
+                    storeSession($(this).val());
                 });
 
                 //drug change event
@@ -1217,8 +1217,8 @@ foreach ($results as $result) {
               routine_check=0;
               hideFirstRemove();
             }
-            //function to calculate adherence rate(%)
-            function getAdherenceRate(){
+            //old function to calculate adherence rate(%)
+            function getAdherenceRate_old(){
                 $("#adherence").attr("value", " ");
                 $("#adherence").removeAttr("readonly");
 
@@ -1251,6 +1251,37 @@ foreach ($results as $result) {
                     ?>
                 }
             }
+            //function to calculate adherence rate(%)
+            function getAdherenceRate(){
+                $("#adherence").attr("value", " ");
+                $("#adherence").removeAttr("readonly");
+
+                var purpose_of_visit = $("#purpose option:selected").val();
+                var day_percentage = 0;
+
+                if(purpose_of_visit.toLowerCase().indexOf("routine") == -1 || purpose_of_visit.toLowerCase().indexOf("pmtct") == -1) {
+                    <?php
+                     if ($appointments) {
+                    ?>
+                        var dispensing_date = $.datepicker.parseDate('yy-mm-dd', $("#dispensing_date").val());
+                        var prev_visit_date = $.datepicker.parseDate('yy-mm-dd', "<?php echo @$last_regimens['dispensing_date']; ?>");
+                        var appointment_date = $.datepicker.parseDate('yy-mm-dd', "<?php echo $appointments['appointment']; ?>");
+                        
+                        var days_to_next_appointment = Math.floor((prev_visit_date.getTime() - appointment_date.getTime()) / (1000 * 3600 * 24));
+                        var days_missed_appointment = Math.floor((appointment_date.getTime() - dispensing_date.getTime()) / (1000 * 3600 * 24));
+                                         
+                        //Formula
+                        day_percentage = ((days_to_next_appointment - days_missed_appointment) / days_to_next_appointment) * 100;
+                        day_percentage = day_percentage.toFixed(2) + "%";
+                        
+                        $("#adherence").attr("value", day_percentage);
+                        $("#adherence").attr("readonly", "readonly");
+                    <?php
+                      }
+                    ?>
+                }
+            }
+
 
             function showFirstRemove(){
               $("#drugs_table tbody > tr:first").find(".remove").show();
@@ -1258,6 +1289,11 @@ foreach ($results as $result) {
 
             function hideFirstRemove(){
               $("#drugs_table tbody > tr:first").find(".remove").hide();
+            }
+
+            function storeSession(ccc_id){
+                var url = "<?php echo base_url().'dispensement_management/save_session'; ?>"
+                $.post(url,{'session_name':'ccc_store_id','session_value':ccc_id});
             }
 
         </script>
@@ -1280,7 +1316,7 @@ foreach ($results as $result) {
                 <div class="column-2">
                     <fieldset>
                         <legend>
-                            Dispensing Information
+                            Dispensing Information 
                         </legend>
                         <div class="max-row">
                         	<div class="mid-row">
@@ -1290,29 +1326,20 @@ foreach ($results as $result) {
 			                    $count_ccc = count($ccc_stores);
 			                    $selected = '';
 			                    if ($count_ccc > 0) {//In case on has more than one dispensing point
-			                        echo "
-			                                <label><span class='astericks'>*</span>Select dispensing point</label>
-			                                <select name='ccc_store_id' id='ccc_store_id' class='validate[required]' >
+			                        echo "<label><span class='astericks'>*</span>Select dispensing point</label>
+			                                <select name='ccc_store_id' id='ccc_store_id' class='validate[required]'>
 			                                	<option value=''>Select One</option>";
 			                        //Check if facility has more than one dispensing point
 			                        foreach ($ccc_stores as $value) {
 			                            $name = $value['Name'];
 			                            if ($this -> session -> userdata('ccc_store_id')) {
-			                                
-			                                $ccc_storeid = $this -> session -> userdata('ccc_store_id');
+			                             	$ccc_storeid = $this -> session -> userdata('ccc_store_id');
 			                                if ($value['id'] === $ccc_storeid) {
 			                                    $selected = "selected";
 			                                } else {
 			                                    $selected = "";
 			                                }
-			                            } else {
-			                                if (stripos($name, 'main pharmacy') === 0) {//Select Main Pharmacy as the default dispensing point
-			                                    //$selected = ' selected';
-			                                } else {
-			                                    $selected = '';
-			                                }
-			                            }
-			
+			                            } 
 			                            echo "<option value='" . $value['id'] . "' " . $selected . ">" . $name . "</option>";
 			                        }
 			                        echo "</select>";
@@ -1504,12 +1531,12 @@ foreach ($results as $result) {
                         </thead>
                         <tbody>
                             <tr drug_row="0">
-                                <td><select name="drug[]" class="drug input-large"  style=" "></select></td>
+                                <td><select name="drug[]" class="drug input-large span3"></select></td>
                                 <td>
                                     <input type="text" name="unit[]" class="unit input-small" style="" readonly="" />
                                     <input type="hidden" name="comment[]" class="comment input-small" style="" readonly="" />
                                 </td>
-                                <td><select name="batch[]" class="batch input-small next_pill" style=""></select></td>
+                                <td><select name="batch[]" class="batch input-small next_pill span2"></select></td>
                                 <td>
                                     <input type="text" name="expiry[]" name="expiry" class="expiry input-small" id="expiry_date" readonly="" size="15"/>
                                 </td>

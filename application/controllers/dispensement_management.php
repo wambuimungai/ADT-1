@@ -532,7 +532,21 @@ class Dispensement_Management extends MY_Controller {
 		$str="";
 		
 		$this -> load -> library('mpdf');
-		$this -> mpdf = new mPDF('c','B6');
+
+		//MPDF Config
+		$mode = 'utf-8';
+		$format = array(80,90);
+		$default_font_size = '11';
+		$default_font = 'Helvetica';
+		$margin_left = '5';
+		$margin_right = '5';
+		$margin_top = '4';
+		$margin_bottom = '4';
+		$margin_header = '';
+		$margin_footer = '';
+		$orientation = 'P';
+
+		$this -> mpdf = new mPDF($mode,$format,$default_font_size,$default_font,$margin_left,$margin_right,$margin_top,$margin_bottom,$margin_header,$margin_footer,$orientation);
 
 		if($check_if_print){
 			//loop through checkboxes check if they are selected to print
@@ -541,9 +555,10 @@ class Dispensement_Management extends MY_Controller {
 				if($check_print){
 	               //count no. to print
 	               $count=1;
+				   
 	               while($count<=$no_to_print[$counter]){
 	               	     $this -> mpdf -> addPage();
-		                 $str='<table border="1" align="center" width="100%" style="border-collapse:collapse;">';
+	               	     $str='<table border="1"  style="border-collapse:collapse;font-size:11px;">';
 						 $str.='<tr>';
 						 $str.='<td colspan="2">Drugname: <b>'.strtoupper($drug_name[$counter]).'</b></td>';
 						 $str.='<td>Qty: <b>'.$qty[$counter].'</b></td>';
@@ -610,6 +625,14 @@ class Dispensement_Management extends MY_Controller {
 		$data['banner_text'] = "Facility Dispensing";
 		$data['link'] = "dispensements";
 		$this -> load -> view('template', $data);
+	}
+
+	public function save_session(){
+		$session_name = $this -> input -> post("session_name",TRUE);
+		$session_value = $this -> input -> post("session_value",TRUE);
+		$this -> session -> set_userdata($session_name,$session_value);
+        
+        echo $this -> session -> userdata($session_name);
 	}
 
 }

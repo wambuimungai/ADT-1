@@ -301,17 +301,14 @@ foreach($results as $result){
 			//Select Other Illnesses Methods Selected
 			other_illnesses=<?php echo $result['other_illnesses'];?>;
 			other_sickness_list="";
-			ill_count=0;
+
 			$.each(other_illnesses,function(i,v){
-				//get list of illnesses
-				illness_list=$('input[name="other_illnesses_listing"][type="checkbox"]');
-				//loop through list to find match for current selected illness
-				$.each(illness_list,function(index,value){
-                      if($(this).val()==v){
-                      	$(this).attr('checked', true);
-                      	ill_count=1;
-                      }
-				});
+				ill_count=0;
+				//Loop through list to find match for current selected illness
+				$("select#other_illnesses").multiselect("widget").find(":checkbox[value='" + v + "']").each(function(){
+		            $(this).click();
+		            ill_count=1;
+                });
                 if(ill_count==0){
                 	other_sickness_list+=","+v;
                 }
@@ -330,7 +327,14 @@ foreach($results as $result){
 			    $("textarea[name='other_drugs']").not(this).removeAttr("disabled");		
 			}
 			
-			
+			$("#iso_start_date").change(function(){
+				var endDate =new  Date($("#iso_start_date").val());
+				var numberOfDaysToAdd = 168;
+				endDate.setDate(endDate.getDate() + numberOfDaysToAdd); 
+				var end_date = (endDate.getFullYear()+'-'+("0" + (endDate.getMonth() + 1)).slice(-2)+'-'+endDate.getDate());
+				$("#iso_end_date").val(end_date);
+				
+			});
 			
 			//Select Other Drug Allergies
 			var other_drug_allergies='<?php echo  $adr=str_replace(array("\n"," ","/"),array(" \ ","","-"),$result['adr']);?>';
@@ -563,6 +567,8 @@ foreach($results as $result){
 			}
 			
 			$("#service").val("<?php echo $result['service'] ?>");
+			prev_service='';
+			$("#service").trigger("change");
 			$("#service_started").val("<?php echo $result['start_regimen_date'] ?>");
 			
 			$("#regimen").val("<?php echo $result['start_regimen'] ?>");
@@ -607,46 +613,60 @@ foreach($results as $result){
 				
 		   //Function to display Regimens in this line
 		   $("#service").change(function() {
+		   	    var service_line = $(this).val();
+                var link=base_url+"regimen_management/getRegimenLine/"+service_line;
+                var selected_text=$("#service option[value='"+service_line+"']").text();
+                append_start_regimen=true;
+                regimen_text="#regimen,#current_regimen";
+                
+
 			   	$("#drug_prophylax").show();
 			   	$("#current_regimen option").remove();
-                var service_line = $(this).val();
-                if($("#service option[value='"+service_line+"']").text()==="ART" || $("#service option[value='"+service_line+"']").text()==="PMTCT"){
-                   $("#servicestartedcontent").show();
-                   $("#service_started").val("<?php echo $result['start_regimen_date'] ?>");
-                   $("#regimen").val("<?php echo $result['start_regimen'] ?>");
-                }
-                else{
-                    $("#service_started").val("<?php echo date('Y-m-d');?>");
-	   	  			$("#servicestartedcontent").show();
-                    $("#regimen option").remove();
-                }
+			   	$("#servicestartedcontent").show();
+			   	$("#service_started").val("");
+			   	$("#pep_reason_listing").hide();
+		   		$("#pep_reason").val(0);
+		   	  	$("#who_listing").show();
+		   	  	$("#who_stage").val(0);  
+                
+                if(selected_text=="ART" || selected_text=="PMTCT"){
+	                $("#servicestartedcontent").show();
+	                $("#service_started").val("<?php echo $result['start_regimen_date'] ?>");
+	                $("#regimen").val("<?php echo $result['start_regimen'] ?>");
+	                regimen_text="#current_regimen";
+	                append_start_regimen=false;
 
-			   	if($("#service option[value='"+service_line+"']").text()==="PEP"){
+                    if(selected_text=="PMTCT" && $("#age").val() < 2){
+                        var link=base_url+"regimen_management/getRegimenLine/"+service_line+"/true";
+		   	  	    }
+
+		   	  	    if(prev_service !=''){
+	                    if((prev_service !="ART" && selected_text=="PMTCT") || (prev_service !="PMTCT" && selected_text=="ART")){
+				   	  	   	append_start_regimen=true;
+	                		regimen_text="#regimen,#current_regimen";
+				   	   	}
+		   	  	    }
+                }else if(selected_text==="PEP"){
 			   	  	$("#pep_reason_listing").show();
 			   	  	$("#who_listing").hide();
 			   	  	$("#drug_prophylax").hide();
-			   	}else if($("#service option[value='"+service_line+"']").text()==="OI Only"){
-			   	  	$("#service_started").val("<?php echo date('Y-m-d');?>");
-			   	  	$("#servicestartedcontent").show();
-	                $("#pep_reason_listing").hide();
-	            }else{
-			   	  	$("#pep_reason_listing").hide();
-			   	  	$("#pep_reason").val(0);
-			   	  	$("#who_listing").show();
-			   	  	$("#who_stage").val(0);   
 			   	}
-		   	    var link=base_url+"regimen_management/getRegimenLine/"+service_line;
+		   	    
 				$.ajax({
 				    url: link,
 				    type: 'POST',
 				    dataType: "json",
 				    success: function(data) {
-				        $("#regimen,#current_regimen").append($("<option></option>").attr("value",'').text('--Select One--'));	
+				    	if(append_start_regimen==true){
+				    		$("#regimen option").remove();
+				    	}
+				        $(regimen_text).append($("<option></option>").attr("value",'').text('--Select One--'));	
 				    	$.each(data, function(i, jsondata){
-				    		$("#regimen,#current_regimen").append($("<option></option>").attr("value",jsondata.id).text(jsondata.Regimen_Code+" | "+jsondata.Regimen_Desc));
+				    		$(regimen_text).append($("<option></option>").attr("value",jsondata.id).text(jsondata.Regimen_Code+" | "+jsondata.Regimen_Desc));
 				    	});
 				    }
 				});
+				prev_service=selected_text;
 		   });
 		   
 		   $("#next_appointment_date").datepicker({

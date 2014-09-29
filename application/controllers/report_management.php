@@ -4331,8 +4331,21 @@ class report_management extends MY_Controller {
 		$data['selected_report_type'] = "Early Warning Indicators";
 		$data['report_title'] = "Patient Adherence";
 		$data['facility_name'] = $this -> session -> userdata('facility_name');
-
 		$data['content_view'] = 'reports/patient_adherence_v';
+		$this -> load -> view('template', $data);
+	}
+
+	public function graphical_adherence($start_date = "", $end_date = "")
+	{
+		$data['results'] =array();
+		$data['title'] = "webADT | Reports";
+		$data['hide_side_menu'] = 1;
+		$data['banner_text'] = "Facility Reports";
+		$data['selected_report_type_link'] = "early_warning_report_select";
+		$data['selected_report_type'] = "Early Warning Indicators";
+		$data['report_title'] = "Graphical Patient Adherence";
+		$data['facility_name'] = $this -> session -> userdata('facility_name');
+		$data['content_view'] = 'reports/graphical_adherence_v';
 		$this -> load -> view('template', $data);
 	}
 

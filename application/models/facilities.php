@@ -175,5 +175,10 @@ class Facilities extends Doctrine_Record {
 		}
 		return $lists;
 	}
+	public function getItems() {
+		$query = Doctrine_Query::create() -> select("facilitycode AS id,name AS Name") -> from("Facilities")->orderBy("name asc");
+		$facility = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $facility;
+	}
 
 }

@@ -203,6 +203,7 @@
 		   	$("#drug_prophylax").css("display","block");
 		   	$("#regimen option").remove();
 		   	  var service_line = $(this).val();
+		   	  var link=base_url+"regimen_management/getRegimenLine/"+service_line;
 		   	  $("#service_started").val("<?php echo date('Y-m-d');?>");
 		   	  $("#servicestartedcontent").show();
 		   	  if($("#service option[value='"+service_line+"']").text()=="PEP"){
@@ -215,12 +216,15 @@
 		   	  	$("#servicestartedcontent").hide();
 
 		   	  }else{
+		   	  	if($("#service option[value='"+service_line+"']").text()=="PMTCT" && $("#age_in_years").val() < 2){
+                    var link=base_url+"regimen_management/getRegimenLine/"+service_line+"/true";
+		   	  	}
 		   	  	$("#pep_reason_listing").hide();
 		   	  	$("#pep_reason").val(0);
 		   	  	$("#who_listing").show();
 		   	  	$("#who_stage").val(0);
 		   	  }
-		   	  var link=base_url+"regimen_management/getRegimenLine/"+service_line;
+		   	  
 				$.ajax({
 				    url: link,
 				    type: 'POST',
@@ -422,6 +426,15 @@
 					}else{
 						$("textarea[name='other_allergies_listing']").not(this).attr("disabled", "true");
 					}
+			});
+			
+			$("#iso_start_date").change(function(){
+				var endDate =new  Date($("#iso_start_date").val());
+				var numberOfDaysToAdd = 168;
+				endDate.setDate(endDate.getDate() + numberOfDaysToAdd); 
+				var end_date = (endDate.getFullYear()+'-'+("0" + (endDate.getMonth() + 1)).slice(-2)+'-'+endDate.getDate());
+				$("#iso_end_date").val(end_date);
+				
 			});
 			
 			//Function to enable textareas for support group

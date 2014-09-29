@@ -307,41 +307,26 @@ class admin_management extends MY_Controller {
 			$this -> session -> set_userdata('msg_success', 'Menu: ' . $menu_name . ' was Added');
 			$this -> session -> set_userdata('default_link', 'addMenu');
 		} else if ($table == "users") {
-			$creator_id = $this -> session -> userdata('user_id');
-			$source = $this -> input -> post('facility');
+			//default password
+			$default_password='123456';
 
-			$user = new Users();
-			$user -> Name = $this -> input -> post('fullname');
-			$user -> Username = $this -> input -> post('username');
-			$key = $this -> encrypt -> get_key();
-			$characters = strtoupper("abcdefghijklmnopqrstuvwxyz");
-			$characters = $characters . 'abcdefghijklmnopqrstuvwxyz0123456789';
-			$random_string_length = 8;
-			$string = '';
-			for ($i = 0; $i < $random_string_length; $i++) {
-				$string .= $characters[rand(0, strlen($characters) - 1)];
-			}
-			$password = $string;
-			$encrypted_password = $key . $password;
-			$user -> Password = $encrypted_password;
-			$user -> Access_Level = $this -> input -> post('access_level');
-			$user -> Facility_Code = $source;
-			$user -> Created_By = $creator_id;
-			$user -> Time_Created = date('Y-m-d , h:i:s A');
-			$user -> Phone_Number = $this -> input -> post('phone');
-			$user -> Email_Address = $this -> input -> post('email');
-			$phone = $this -> input -> post('phone');
-			$email = $this -> input -> post('email');
-			$username = $this -> input -> post('fullname');
+			$user_data=array(
+						'Name' => $this -> input -> post('fullname',TRUE),
+						'Username' => $this -> input -> post('username',TRUE),
+						'Password' => md5($this -> encrypt -> get_key(). $default_password),
+						'Access_Level' => $this -> input -> post('access_level',TRUE),
+						'Facility_Code' => $this -> input -> post('facility',TRUE),
+						'Created_By' => $this -> session -> userdata('user_id'),
+						'Time_Created' => date('Y-m-d,h:i:s A'),
+						'Phone_Number' => $this -> input -> post('phone',TRUE),
+						'Email_Address' => $this -> input -> post('email',TRUE),
+						'Active' => 1,
+						'Signature' => 1
+						);
 
-			$code = md5($user . $email);
-			$user -> Signature = $code;
-			$this -> sendActivationCode($username, $email, $password, $code, 'email');
+			$this->db->insert("users",$user_data);
 
-			$user -> Active = "1";
-
-			$user -> save();
-			$this -> session -> set_userdata('msg_success', 'User: ' . $username . ' was Added');
+			$this -> session -> set_userdata('msg_success', 'User: ' . $this -> input -> post('fullname',TRUE) . ' was Added');
 			$this -> session -> set_userdata('default_link', 'addUsers');
 		} else if ($table == "user_right") {
 			$access_level = $this -> input -> post("access_level");
