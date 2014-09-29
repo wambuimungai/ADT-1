@@ -627,6 +627,7 @@ foreach ($results as $result) {
                 //drug change event
                 $(".drug").change(function() {
                     var row = $(this);
+                    var drug_name = row.find("option:selected").text();
                     resetFields(row);
                     row.closest("tr").find(".batch option").remove();
                     row.closest("tr").find(".batch").append($("<option value='0'>Loading ...</option>"));
@@ -647,7 +648,16 @@ foreach ($results as $result) {
                     request.done(function(data) {
                         //If patient is allergic to selected drug,alert user
                         if (data == 1) {
-                            bootbox.alert("<h4>Allergy Alert</h4>\n\<hr/><center>This patient is allergic to this drug!</center>");
+                            bootbox.alert("<h4>Allergy Alert!</h4>\n\<hr/><center>This patient is allergic to "+drug_name+"</center>");
+                            //Remove row
+                            var rows=$("#drugs_table > tbody").find("tr").length;
+                            if(rows > 1){
+                                row.closest('tr').remove();  
+                            }
+                            else{
+                                row.closest('tr').find(".drug").val(0);
+                                row.closest('tr').find(".drug").trigger("change");
+                            }
                         } else {
                             <?php
                             if ($prev_visit) {
@@ -1018,25 +1028,35 @@ foreach ($results as $result) {
                 var facility="<?php echo $facility ?>";
                 var timestamp = new Date().getTime();
                 var user="<?php echo $user;?>";
-                var last_row=$('#drugs_table>tbody tr');
+                var all_rows=$('#drugs_table>tbody>tr');
+                var msg = '';
+                
+                //Loop through all rows to check values
+                $.each(all_rows,function(i,v){
+                    var last_row = $(this);
+                    var drug_name = last_row.find(".drug option:selected").text();
 
-                if(last_row.find(".drug").val()==0){
-                    bootbox.alert("<h4>No Drug!</h4>\n\<hr/><center>There is no commodity selected!</center>");
-                    return;
-                }
-                if(last_row.find(".batch").val()==0){
-                    bootbox.alert("<h4>No Batch!</h4>\n\<hr/><center>There is no batch for the commodity selected!</center>");
-                    return;
-                }
-                if(last_row.find(".qty_disp").val()==0 || last_row.find(".qty_disp").val()=="" || isNaN(last_row.find(".qty_disp").val())==true){
-                    bootbox.alert("<h4>No Quantity!</h4>\n\<hr/><center>You have not entered the quantity being dispensed for a commodity entered!!</center>");
-                    return;
+                    if(last_row.find(".drug").val()==0){
+                        msg+='There is no commodity selected<br/>';
+                    }
+                    if(last_row.find(".batch").val()==0){
+                        msg+='<b>'+drug_name + '</b><br/> There is no batch for the commodity selected<br/>';
+                    }
+                    if(last_row.find(".qty_disp").val()==0 || last_row.find(".qty_disp").val()=="" || isNaN(last_row.find(".qty_disp").val())==true){
+                        msg+='<b>'+drug_name + '</b><br/> You have not entered the quantity being dispensed for a commodity entered<br/>';
+                    }
+                    if(last_row.find(".qty_disp").hasClass("input_error")){
+                        msg+='<b>'+drug_name + '</b><br/> There is a commodity that has a quantity greater than the quantity available<br/>';
+                    }
+                
+                });
+
+                //Show Bootbox
+                if(msg !=''){
+                   bootbox.alert("<h4>Alert!</h4>\n\<hr/><center>"+msg+"</center>");
+                   return;
                 }
 
-                if(last_row.find(".qty_disp").hasClass("input_error")){
-                    bootbox.alert("<h4>Excess Quantity!</h4>\n\<hr/><center>There is a commodity that has a quantity greater than the quantity available!</center>");
-                    return;
-                }
                 
                 var rowCount = $('#drugs_table>tbody tr').length;
                 return true;
