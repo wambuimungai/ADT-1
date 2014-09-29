@@ -99,15 +99,5 @@ class System_management extends MY_Controller {
 		}
 	}
 
-	public function checkConnection(){//Check Internet Connection
-		$curl = new Curl();
-		$url ="http://google.com/";
-		$curl -> get($url);
-		if ($curl -> error) {
-			echo json_encode('0');
-		} else {
-			echo json_encode('1');
-		}
-	}
 
 }
