@@ -175,5 +175,77 @@ class Patient extends Doctrine_Record {
 		$patients = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $patients[0];
 	}
+	public function get_patients_starting_by_regimen(){
+		// number of patients starting each regimen within a period
+		$sql=("
+           SELECT  r.regimen_desc AS Regimen, p.start_regimen_date AS period,
+           COUNT(p.patient_number_ccc) AS Number_of_patients
+           FROM patient p
+           LEFT JOIN regimen r ON r.id=p.start_regimen
+           GROUP by p.start_regimen_date
+           ORDER by r.regimen_desc ASC");
+	    $query = $this -> db -> query($sql);
+		$patients = $query -> result_array();
+		return $patients;
+
+
+	}
+	public function get_patients_started_on_ART(){
+		//Get total number of patients starting on ART within a period
+		$sql=("SELECT COUNT( * ) AS Total_Patients 
+                        FROM patient p
+                        LEFT JOIN regimen_service_type rst ON rst.id=p.service
+                        LEFT JOIN regimen r ON r.id=p.start_regimen
+                        LEFT JOIN patient_source ps ON ps.id = p.source
+                        WHERE p.start_regimen_date
+                        BETWEEN '2013-01-01 '
+                        AND '2013-12-10'
+                        AND rst.name LIKE '%art%'
+                        AND ps.name NOT LIKE '%transfer%'
+                        AND p.start_regimen !=''");
+	
+	    $query = $this -> db -> query($sql);
+		$patients = $query -> result_array();
+		return $patients;
+
+	}
+	public function get_patients_started_on_firstline(){
+		//Get total number of patients started in firstline within a period
+		$sql=("SELECT COUNT( * ) AS First_Line 
+                     FROM patient p
+                     LEFT JOIN regimen_service_type rst ON rst.id=p.service
+                     LEFT JOIN regimen r ON r.id = p.start_regimen 
+                     LEFT JOIN patient_source ps ON ps.id = p.source 
+                     WHERE p.start_regimen_date 
+                     BETWEEN '2013-01-01 '
+                        AND '2013-12-10'
+                     AND r.line=1 
+                     AND p.facility_code='' 
+                     AND rst.name LIKE '%art%' 
+                     AND ps.name NOT LIKE '%transfer%'
+                     AND p.start_regimen !=''");
+
+		$query = $this -> db -> query($sql);
+		$patients = $query -> result_array();
+		return $patients;
+	}
+	public function get_lost_to_followup(){
+		//Get total number of patients lost to follow up within a period
+		$sql=("SELECT COUNT( * ) AS Total_Patients 
+                        FROM patient p 
+                        LEFT JOIN regimen_service_type rst ON rst.id=p.service 
+                        LEFT JOIN regimen r ON r.id=p.start_regimen 
+                        LEFT JOIN patient_source ps ON ps.id = p.source 
+                        LEFT JOIN patient_status pt ON pt.id = p.current_status 
+                        WHERE p.facility_code='$facility_code' 
+                        AND rst.name LIKE '%art%' 
+                        AND ps.name NOT LIKE '%transfer%' 
+                        AND pt.Name LIKE '%lost%'");
+		$query = $this -> db -> query($sql);
+		$patients = $query -> result_array();
+		return $patients;
+
+	}
+
 
 }
