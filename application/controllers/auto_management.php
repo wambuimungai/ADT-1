@@ -160,7 +160,7 @@ class auto_management extends MY_Controller {
 					  LEFT JOIN transaction_type t ON t.id=dsm.transaction_type
 					  SET dsm.source_destination=IF(dsm.$column=dsm.facility,'1',dsm.$column)
 				      WHERE t.name LIKE '%$transaction%'
-					  AND(dsm.source_destination IS NULL OR dsm.source_destination='' OR dsm.source_destination=0)";
+					  AND(dsm.source_destination IS NULL OR dsm.source_destination='' OR dsm.source_destination='0')";
                 $this->db->query($sql);
                 $count=$this->db->affected_rows();
                 $message.=$count." ".$transaction." transactions missing source_destination(".$column.") have been updated!<br/>";
