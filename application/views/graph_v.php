@@ -29,7 +29,7 @@
 		$('<?php echo "#" . $container; ?>').highcharts({
 			chart:{
 				height:<?php echo $chartSize;?>,
-			    type:'<?php echo $chartType ?>'
+			    type:'<?php echo $chartType ?>',
 			},
 			title: {
 			    text:'<?php echo $chartTitle; ?>',
@@ -58,8 +58,7 @@
 				column: {
 				    dataLabels: {
 				        enabled: true
-				    },
-				    colorByPoint:true
+				    }
 				}
 			},
 			legend: {
@@ -75,7 +74,7 @@
 		});
     });
 </script>
-<div class="graph">
+<div class="graph" style="height:auto !important;zoom:1.3;">
 	<div id="<?php echo $container?>"  style="width:98%"></div>
 </div>
 
