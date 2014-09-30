@@ -102,8 +102,10 @@ class Settings extends MY_Controller {
 				$name .= ' '.$source -> last_name;
 				//$name =str_replace(" ","",$name);
 				$name =strtoupper($name);
+			}else if($table=="patient_status"){
+				$name = $source -> Name;
 			}else{
-			    $name = $source -> name;
+				$name = $source -> name;
 			}
 
 			if($table=="transaction_type"){
@@ -122,11 +124,17 @@ class Settings extends MY_Controller {
                }
                $this -> table -> add_row("",$checkbox . "&nbsp;" .$source -> patient_number_ccc, $name, $links); 
 			}else{
-				if ($source -> active == 1) {
+				if($table=="patient_status"){
+					$active = $source -> Active;
+				}else{
+					$active = $source -> active;
+				}
+				if ($active == 1) {
 					$links .= anchor('#edit_form', 'Edit', $array_param);
 				}
 				if ($access_level == "facility_administrator") {
-					if ($source -> active == 1) {
+					
+					if ($active == 1) {
 						$links .= " | ";
 						$links .= anchor('settings/disable/' . $table . '/' . $source -> id, 'Disable', array('class' => 'disable_user'));
 					} else {

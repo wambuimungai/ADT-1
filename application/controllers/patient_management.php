@@ -978,6 +978,51 @@ class Patient_Management extends MY_Controller {
 	}
 
 	public function getSixMonthsDispensing($patient_no) {
+		$dyn_table = "";
+        $facility = $this -> session -> userdata("facility");
+
+        $sql = "SELECT
+					DATE_FORMAT(pv.dispensing_date,'%d-%b-%Y') as dispensing_date,
+					UPPER(dc.Drug) as drug,
+					pv.quantity,
+					pv.pill_count,
+					pv.missed_pills,
+					round(((pv.quantity-(pv.pill_count-pv.months_of_stock))/pv.quantity)*100,2) as pill_adh,
+					round(((pv.quantity-pv.missed_pills)/pv.quantity)*100,2) as missed_adh,
+					pv.adherence
+				FROM patient_visit pv
+				LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
+				LEFT JOIN drugcode dc ON dc.id=pv.drug_id
+			    WHERE pv.patient_id = '$patient_no'
+			    AND pv.facility = '$facility' 
+			    ORDER BY pv.dispensing_date DESC";
+	    $query = $this -> db -> query($sql);
+		$results = $query -> result_array();
+
+		if ($results) 
+		{   
+			foreach ($results as $result) 
+			{
+				$dyn_table .= "<tbody><tr>";
+				$dyn_table .= "<td>" . $result['dispensing_date'] . "</td>";
+				$dyn_table .= "<td>" . $result['drug'] . "</td>";
+				$dyn_table .= "<td>" . $result['quantity'] . "</td>";
+				$dyn_table .= "<td>" . $result['pill_count'] . "</td>";
+				$dyn_table .= "<td>" . $result['missed_pills'] . "</td>";
+				$dyn_table .= "<td>" . $result['pill_adh'] . "%</td>";
+				$dyn_table .= "<td>" . $result['missed_adh'] . "%</td>";
+				
+                $adherence = doubleval(str_replace(array("%","<",">","="), "", $result['adherence']));
+				$average_adherence = (( doubleval($result['pill_adh']) + doubleval($result['missed_adh']) + $adherence) / 3);
+				$dyn_table .= "<td>" . $adherence . "%</td>";
+				$dyn_table .= "<td>" . number_format($average_adherence,2) . "%</td>";
+				$dyn_table .= "</tr></tbody>";
+			}
+		}
+		echo $dyn_table;
+	}
+
+	public function old_getSixMonthsDispensing($patient_no) {
 		$facility = $this -> session -> userdata("facility");
 		$dyn_table = "";
 		 $sql ="SELECT pv.pill_count,"
@@ -1672,7 +1717,8 @@ class Patient_Management extends MY_Controller {
 			$data = array();
 			foreach($aRow as $col => $value){
 				if($col == "record_id"){
-					$data[] = "<input id='".$value."' type='button' class='btn btn-warning edit_dispensing ' value='Edit'/>";
+					$link=base_url().'dispensement_management/edit/'.$value;
+					$data[] = "<a href='".$link."' class='btn btn-small btn-warning'>Edit</a>";
 				}else{
 					$data[] = $value;
 				}
@@ -1704,6 +1750,12 @@ class Patient_Management extends MY_Controller {
         	$illness_list['other_chronic'] = implode(",", $other_chronic);
         }
         return $illness_list;
+	}
+
+	public function load_summary( $patient_id = NULL )
+	{
+		//procedure
+		
 	}
 
 }

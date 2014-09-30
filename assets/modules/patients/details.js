@@ -7,6 +7,7 @@ $(function(){
 	var page_url = base_url + "patient_management/load_form/patient_details";
 	var patient_url = base_url + "patient_management/load_patient/" + patient_id ;
 	var visits_url = base_url + "patient_management/load_visits/" + patient_id;
+	var summary_url = base_url + "patient_management/load_summary/" + patient_id;
 
 	//Load Page Data(form.js) then load Patient Data(details.js) after that sanitize form (details.js)
     getPageData(page_url).always( function(){
@@ -17,6 +18,22 @@ $(function(){
 
 	//Setup Dispensing History Datatable
 	createTable("#dispensing_history",visits_url,true);
+
+	//Show Patient Summary
+	$("#patient_info").on('click',function() {
+		$("#patient_details").dialog("open");
+		//Get Summary 
+		getSummaryData(summary_url);
+	});
+
+	//Summary Details
+	$("#patient_details").dialog({
+        width : 1200,
+        modal : true,
+        height: 600,
+        autoOpen : false,
+        show: 'fold'
+     });
 
 });
 
@@ -68,5 +85,15 @@ function createTable(div,url,serverside){
 
 
 function sanitizeForm(){
+   //Remove none selected options
+   $("select option:not(:selected)").remove();
+   //Disable Elements
+   $("input[type='text'],select,textarea").attr("disabled", 'disabled');
+}
 
+function getSummaryData(url){
+	//Request the data
+	$.get( url ,function( resp ) {
+	    
+	});
 }

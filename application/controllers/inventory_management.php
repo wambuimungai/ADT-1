@@ -605,13 +605,12 @@ class Inventory_Management extends MY_Controller {
 			}
 			
 			
-			
 			//If many transactions from the same drug, set balances to zero only once
 			if(($this -> session -> userdata("updated_dsb")) && ($this -> session -> userdata("updated_dsb")==$get_drug_id)){
 				
 			}else{
 				//If transaction is physical count, set actual quantity as physical count
-				if (strpos($transaction_type_name, "startingstock") === 0 || strpos($transaction_type_name, "physicalcount") === 0) {
+				if (stripos($transaction_type_name, "startingstock") === 0 || stripos($transaction_type_name, "physicalcount") === 0) {
 					$bal = 0;
 					$run_balance = 0;
 					//Set all balances fro each batch of the drug to be zero in drug_stock_balance for physical count transaction type
@@ -711,10 +710,11 @@ class Inventory_Management extends MY_Controller {
 		//Check if stock type is store or pharmacy
 		$s_d = "";
 		if($check_optgroup=='Stores'){
-			
+			$source_destination = $get_source_name;
 			if(stripos($stock_type_name, "pharmacy")){//If pharmacy transaction, source and destinations is facility code
 				$source = $facility;
 				$destination = $facility;
+				
 				//Check if transaction is coming in or going out to find what to put in source and destination
 				//If transaction is coming, destination is current store
 				if($transaction_effect==1){
@@ -836,6 +836,7 @@ class Inventory_Management extends MY_Controller {
 		}
 		//echo json_encode($running_balance ." -- ".$other_running_balance);die();
 		
+		//echo json_encode($source_destination);die();
 		// STEP 3, INSERT TRANSACTION IN DRUG STOCK MOVEMENT FOR CURRENT STORES
 		$drug_stock_mvt_transact = array(
 						'drug' =>$get_drug_id,
@@ -855,14 +856,15 @@ class Inventory_Management extends MY_Controller {
 						'operator'=>$get_user,
 						'order_number'=>$get_ref_number,
 						'facility'=>$facility,
-						'source_destination'=>$source_destination,
+						'Source_Destination'=>$source_destination,
 						'timestamp'=>$time_stamp,
 						'machine_code' =>$running_balance,
 						'ccc_store_sp'=>$get_stock_type
 					);
 		
-						
+					
 		$this->db->insert('drug_stock_movement', $drug_stock_mvt_transact);
+		
 		//check if query inserted
 		$inserted = $this->db->affected_rows(); 
 		if($inserted<1){//If query did not insert
@@ -951,7 +953,7 @@ class Inventory_Management extends MY_Controller {
 						'operator'=>$get_user,
 						'order_number'=>$get_ref_number,
 						'facility'=>$facility,
-						'source_destination'=>$source_destination,
+						'Source_Destination'=>$source_destination,
 						'timestamp'=>$time_stamp,
 						'machine_code' =>$other_running_balance,
 						'ccc_store_sp'=>$source_dest_type
@@ -959,6 +961,7 @@ class Inventory_Management extends MY_Controller {
 			
 					
 			$this->db->insert('drug_stock_movement', $drug_stock_mvt_other_trans);
+			//echo json_encode($source_destination);die();
 			//check if query inserted
 			$inserted = $this->db->affected_rows(); 
 			if($inserted<1){//If query did not insert
@@ -1013,7 +1016,7 @@ class Inventory_Management extends MY_Controller {
 		//Get drug_name
 		$drug_det = Drugcode::getDrugCodeHydrated($get_drug_id);
 		$drug_name = $drug_det[0]['Drug'];
-		echo json_encode($drug_name);
+		echo json_encode($drug_name);die();
 		
 	}
 	

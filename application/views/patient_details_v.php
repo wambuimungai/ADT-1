@@ -630,7 +630,7 @@ if(isset($results)){
 				window.location.href = url;
 			});
 			$("#dispense").click(function() {
-                                       var url = base_url+"dispensement_management/dispense/"+ record_id;
+                var url = base_url+"dispensement_management/dispense/"+ record_id;
 				window.location.href = url;  
                                         
 			});
@@ -1407,14 +1407,20 @@ if(isset($results)){
 		<h4 style="text-align: center">Patient Pill Count History (Last 12 Months)</h4>
 		<table id="patient_pill_count"  class="data-table sortable" style="zoom:90%;">
 			<thead>
-				<th>Date of Visit</th>
-				<th>Drug Name</th>
-				<th>Qty. Dispensed</th>
-				<th>Pill Count</th>
-				<th>Missed Pills</th>
-				<th>Adherence<sub>(Pill Count)</sub></th>
-				<th>Adherence<sub>(Missed Pills)</sub></th>
-				<th>Adherence<sub>(Appointment)</sub></th>
+			   <tr>
+					<th rowspan='2'>Date of Visit</th>
+					<th rowspan='2'>Drug Name</th>
+					<th rowspan='2'>Qty. Dispensed</th>
+					<th rowspan='2'>Pill Count</th>
+					<th rowspan='2'>Missed Pills</th>
+					<th colspan='4'>Adherence Rates</sub></th>
+				</tr>
+				<tr>
+					<th>Pill Count(%)</sub></th>
+					<th>Missed Pills(%)</sub></th>
+					<th>Appointment(%)</sub></th>
+					<th>Average(%)</sub></th>
+				</tr>
 			</thead>
 		</table>
 		<h4 style="text-align: center">Patient Regimen Change History</h4>
