@@ -87,7 +87,7 @@ class System_management extends MY_Controller {
         echo json_encode($answer); 
 		
 	}
-
+	
 	public function checkConnection(){//Check Internet Connection
 		$curl = new Curl();
 		$url ="http://google.com/";
@@ -98,5 +98,6 @@ class System_management extends MY_Controller {
 			echo json_encode('1');
 		}
 	}
+
 
 }
