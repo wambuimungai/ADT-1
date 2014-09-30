@@ -237,8 +237,7 @@ class Patient extends Doctrine_Record {
                         LEFT JOIN regimen r ON r.id=p.start_regimen 
                         LEFT JOIN patient_source ps ON ps.id = p.source 
                         LEFT JOIN patient_status pt ON pt.id = p.current_status 
-                        WHERE p.facility_code='$facility_code' 
-                        AND rst.name LIKE '%art%' 
+                        WHERE rst.name LIKE '%art%' 
                         AND ps.name NOT LIKE '%transfer%' 
                         AND pt.Name LIKE '%lost%'");
 		$query = $this -> db -> query($sql);

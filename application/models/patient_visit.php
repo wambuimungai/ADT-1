@@ -82,7 +82,7 @@ class Patient_Visit extends Doctrine_Record {
 				      ELSE '' END) as age FROM non_adherence_reasons na LEFT JOIN
 				(SELECT p_v.id,p_v.patient_id,p_v.dispensing_date,p_v.non_adherence_reason,p.gender,FLOOR( DATEDIFF( curdate( ) , p.dob ) /365 ) AS age FROM `patient_visit` p_v 
 				LEFT JOIN patient p ON p.patient_number_ccc=p_v.patient_id
-				WHERE p_v.dispensing_date BETWEEN '$start_date' AND '$end_date' AND p_v.active='1') as pv
+				WHERE p_v.active='1') as pv
 				ON pv.non_adherence_reason=na.id ORDER BY na.id DESC ");
 	    $query = $this -> db -> query($sql);
 		$patient_visit = $query -> result_array();
