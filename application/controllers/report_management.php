@@ -2769,6 +2769,7 @@ class report_management extends MY_Controller {
 				if ($results) {
 					foreach ($results as $result) {
 						$total_child_male = $result['total_child_male'];
+						$service_name = $result['service_name'];
 						$overall_child_male += $total_child_male;
 						if ($service_name == "ART") {
 							$overall_child_male_art += $total_child_male;

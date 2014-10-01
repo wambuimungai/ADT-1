@@ -87,7 +87,7 @@
 									<td>Unit</td><th id="drug_unit"> <?php echo @$unit ?></th>
 								</tr>
 								<tr>
-									<td>Total Stock</td><th id="stock_status" style="color:#00B831;font-weight:bold;"><?php echo $total_stock ?></th>
+									<td>Total Stock</td><th id="stock_status" style="color:#00B831;font-weight:bold;"><?php echo number_format($total_stock); ?></th>
 								</tr>
 								<tr>
 									<td>Max Stock Level</td><th id="maximum_consumption"><?php echo $maximum_consumption ?></th>
@@ -116,7 +116,7 @@
 								foreach ($batches as $batch) {
 									$drug_name=$batch['drug'];
 								?>
-								<tr><td><?php echo $batch['drug'] ?></td><td><?php echo $batch['packsize'] ?></td><td><?php echo $batch['batchno'] ?></td><td><?php echo $batch['balance'] ?></td><td><?php echo date('d-M-Y',strtotime($batch['expiry_date'])) ?></td></tr>	
+								<tr><td><?php echo $batch['drug'] ?></td><td><?php echo $batch['packsize'] ?></td><td><?php echo $batch['batchno'] ?></td><td><?php echo number_format($batch['balance']); ?></td><td><?php echo date('d-M-Y',strtotime($batch['expiry_date'])) ?></td></tr>	
 								<?php
 								}}else{
 									

@@ -72,7 +72,7 @@ if ($access_level == "nascop_staff") {
 		<div id="wrapperd">
 			
 			<div class="center-content">
-				<ul class="nav nav-tabs">  
+				<ul class="nav nav-tabs nav-pills">  
 					<li id="standard_report" class="active reports_tabs"><a  href="#">Standard Reports</a> </li>   
 					<li id="visiting_patient" class="reports_tabs"><a  href="#">Visiting Patients</a></li> 
 					<li id="early_warning_indicators" class="reports_tabs"><a  href="#">Early Warning Indicators</a> </li>   
