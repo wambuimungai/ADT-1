@@ -48,6 +48,8 @@ class auto_management extends MY_Controller {
 			$message .= $this->update_database_tables();
 			//function to create new columns into table
 			$message .= $this->update_database_columns();
+			//function to set negative batches to zero
+			$message .= $this->setBatchBalance();
 			//function to update hash value of system to nascop
 			$message .= $this->update_system_version();
 	        //finally update the log file for auto_update 
@@ -160,7 +162,7 @@ class auto_management extends MY_Controller {
 					  LEFT JOIN transaction_type t ON t.id=dsm.transaction_type
 					  SET dsm.source_destination=IF(dsm.$column=dsm.facility,'1',dsm.$column)
 				      WHERE t.name LIKE '%$transaction%'
-					  AND(dsm.source_destination IS NULL OR dsm.source_destination='' OR dsm.source_destination=0)";
+					  AND(dsm.source_destination IS NULL OR dsm.source_destination='' OR dsm.source_destination='0')";
                 $this->db->query($sql);
                 $count=$this->db->affected_rows();
                 $message.=$count." ".$transaction." transactions missing source_destination(".$column.") have been updated!<br/>";
@@ -181,6 +183,22 @@ class auto_management extends MY_Controller {
         $this->db->query($sql);
         $count=$this->db->affected_rows();
         $message="(".$count.") transactions changed from main pharmacy to main store!<br/>";
+
+        if($count<=0){
+			$message="";
+		}
+		return $message;
+	}
+	
+	public function setBatchBalance(){//Set batch balance to zero where balance is negative
+		$facility_code=$this->session->userdata("facility");
+		$sql="UPDATE drug_stock_balance dsb
+		      SET dsb.balance=0
+		      WHERE dsb.balance<0 
+		      AND dsb.facility_code='$facility_code'";
+        $this->db->query($sql);
+        $count=$this->db->affected_rows();
+        $message="(".$count.") batches with negative balance have been updated!<br/>";
 
         if($count<=0){
 			$message="";
@@ -422,23 +440,29 @@ class auto_management extends MY_Controller {
 						SET p.nextappointment=p1.appointment";
 
 			/*Change Active to Lost_to_follow_up*/
-			$sql['Change Active to Lost_to_follow_up'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
+			if(isset($state[$lost])){
+				$sql['Change Active to Lost_to_follow_up'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
 					   FROM patient p
 					   LEFT JOIN patient_status ps ON ps.id=p.current_status
 					   WHERE ps.Name LIKE '%$active%'
 					   AND (DATEDIFF(CURDATE(),nextappointment )) >=$days_to_lost_followup) as p1
 					   SET p.current_status = '$state[$lost]'";
-
+			}
+			
 			/*Change Lost_to_follow_up to Active */
-			$sql['Change Lost_to_follow_up to Active'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
+			if(isset($state[$active])){
+				$sql['Change Lost_to_follow_up to Active'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
 					   FROM patient p
 					   LEFT JOIN patient_status ps ON ps.id=p.current_status
 					   WHERE ps.Name LIKE '%$lost%'
 					   AND (DATEDIFF(CURDATE(),nextappointment )) <$days_to_lost_followup) as p1
 					   SET p.current_status = '$state[$active]' ";
+			}
+			
 
 			/*Change Active to PEP End*/
-			$sql['Change Active to PEP End'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
+			if(isset($state[$pep])){
+				$sql['Change Active to PEP End'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
 					   FROM patient p
 					   LEFT JOIN regimen_service_type rst ON rst.id=p.service
 					   LEFT JOIN patient_status ps ON ps.id=p.current_status
@@ -446,9 +470,12 @@ class auto_management extends MY_Controller {
 					   AND rst.name LIKE '%$pep%' 
 					   AND ps.Name NOT LIKE '%$pep%') as p1
 					   SET p.current_status = '$state[$pep]' ";
+			}
+			
 
 			/*Change PEP End to Active*/
-			$sql['Change PEP End to Active'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
+			if(isset($state[$active])){
+				$sql['Change PEP End to Active'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
 					   FROM patient p
 					   LEFT JOIN regimen_service_type rst ON rst.id=p.service
 					   LEFT JOIN patient_status ps ON ps.id=p.current_status
@@ -456,9 +483,12 @@ class auto_management extends MY_Controller {
 					   AND rst.name LIKE '%$pep%' 
 					   AND ps.Name NOT LIKE '%$active%') as p1
 					   SET p.current_status = '$state[$active]' ";
+			}
+			
 
 			/*Change Active to PMTCT End(children)*/
-			$sql['Change Active to PMTCT End(children)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
+			if(isset($state[$pmtct])){
+				$sql['Change Active to PMTCT End(children)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
 					   FROM patient p
 					   LEFT JOIN regimen_service_type rst ON rst.id = p.service
 					   LEFT JOIN patient_status ps ON ps.id = p.current_status
@@ -467,9 +497,12 @@ class auto_management extends MY_Controller {
 					   AND rst.name LIKE  '%$pmtct%'
 					   AND ps.Name NOT LIKE  '%$pmtct%') as p1
 					   SET p.current_status = '$state[$pmtct]'";
+			}
+			
 
 			/*Change PMTCT End to Active(Adults)*/
-			$sql['Change PMTCT End to Active(Adults)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
+			if(isset($state[$active])){
+				$sql['Change PMTCT End to Active(Adults)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
 					   FROM patient p
 					   LEFT JOIN regimen_service_type rst ON rst.id = p.service
 					   LEFT JOIN patient_status ps ON ps.id = p.current_status 
@@ -478,17 +511,18 @@ class auto_management extends MY_Controller {
 					   AND rst.name LIKE '%$pmtct%'
 					   AND ps.Name LIKE '%$pmtct%') as p1
 					   SET p.current_status = '$state[$active]'";
-
-					foreach ($sql as $i => $q) {
-						$stmt1 = "UPDATE patient p,";
-						$stmt2 = " WHERE p.patient_number_ccc=p1.patient_number_ccc;";
-						$stmt1 .= $q;
-						$stmt1 .= $stmt2;
-						$q = $this -> db -> query($stmt1);
-						if ($this -> db -> affected_rows() > 0) {
-							$message .= $i . "(<b>" . $this -> db -> affected_rows() . "</b>) rows affected<br/>";
-						}
-					}
+			}
+			
+			foreach ($sql as $i => $q) {
+				$stmt1 = "UPDATE patient p,";
+				$stmt2 = " WHERE p.patient_number_ccc=p1.patient_number_ccc;";
+				$stmt1 .= $q;
+				$stmt1 .= $stmt2;
+				$q = $this -> db -> query($stmt1);
+				if ($this -> db -> affected_rows() > 0) {
+					$message .= $i . "(<b>" . $this -> db -> affected_rows() . "</b>) rows affected<br/>";
+				}
+			}
 		}
 		return $message;
 	}

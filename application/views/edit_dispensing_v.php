@@ -157,7 +157,7 @@ foreach ($expiries as $expiry) {
 		   });
 		   
 		   //Validate quantity dispensed
-		   $(".qty_disp").keyup(function() {
+		   $(".qty_disp").blur(function() {
 				checkQtyDispense();
 			});
 			
@@ -252,7 +252,12 @@ foreach ($expiries as $expiry) {
 				    success: function(data) {	
 				    	console.log(stock_type+'');
 				    	$("#expiry").val(data[0].expiry_date);
-				    	$("#soh").val(data[0].balance);
+				    	if(data[0].balance<0){
+				    		$("#soh").val(0);
+				    	}else{
+				    		$("#soh").val(data[0].balance);
+				    	}
+				    	
 				    }
 				});
 		   }
@@ -268,14 +273,23 @@ foreach ($expiries as $expiry) {
 			function checkQtyDispense(){
 				var selected_value = $("#qty_disp").attr("value");
 				var stock_at_hand =  $("#soh").attr("value");
-				var stock_validity = stock_at_hand - selected_value;
+				var expiry_batch = Date.parse($("#expiry").attr("value"));
 				var original_qty=$("#qty_hidden").val();
 				var current_qty=$("#qty_disp").val();
-				if(stock_validity < 0 && original_qty!=current_qty) {
+				var difference = original_qty - current_qty;
+				var stock_validity = parseInt(stock_at_hand) + parseInt(difference);
+				
+				var dtToday = Date.parse(new Date());
+				$("#qty_disp").css("background-color","white");
+				$("#qty_disp").removeClass("input_error");
+				if(stock_validity < 0 && original_qty!=current_qty) {//If stock is less than value edited
 					bootbox.alert("<h4>Quantity-Stock  Alert</h4>\n\<hr/><center>Quantity Cannot Be larger Than Stock at Hand</center>");
 					$("#qty_disp").css("background-color","red");
 					$("#qty_disp").addClass("input_error");
 					return false;	
+				}else if((dtToday>expiry_batch) && original_qty!=current_qty){//If value is being edited and batch has expired, should not allow editing
+					bootbox.alert("<h4>Expiry Date  Alert</h4>\n\<hr/><center>The batch you are trying to edit has already expired</center>");
+					return false;
 				}
 				else{
 					$("#qty_disp").css("background-color","white");
@@ -300,14 +314,14 @@ foreach ($expiries as $expiry) {
 		            	var last_row=$('#drugs_table tr:last');
                                 
 		            	if(check === false){
-                                    return false;
+                            return false;
 		            	}
-                                else if(last_row.find(".qty_disp").hasClass("input_error")){ 
-                                   return false;
-				}
-				else{
-                                   return true;
-				}
+                        else if(last_row.find(".qty_disp").hasClass("input_error")){ 
+                           return false;
+						}
+						else{
+                           return true;
+						}
                                              
 		            }
 		     }

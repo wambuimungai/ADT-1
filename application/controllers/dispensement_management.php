@@ -182,6 +182,7 @@ class Dispensement_Management extends MY_Controller {
 				$batch_number = $value['batch_number'];
 				$drug_ig = $value['drug_id'];
 				$ccc_id = $value['ccc_store_sp'];
+				//echo $ccc_id;die();
 				$sql = "select expiry_date FROM drug_stock_balance WHERE batch_number='$batch_number' AND drug_id='$drug_ig' AND stock_type='$ccc_id' AND facility_code='$facility_code' LIMIT 1";
 				$expiry_sql = $this -> db -> query($sql);
 
@@ -423,10 +424,31 @@ class Dispensement_Management extends MY_Controller {
 			
 			$act_run_balance = $prev_run_balance + @$_POST["qty_disp"];//Actual running balance		
 			
-			//Update drug_stock_balance
-			$sql = "UPDATE drug_stock_balance SET balance=balance+" . @$_POST["qty_disp"] . " WHERE drug_id='" . @$_POST["original_drug"] . "' AND batch_number='" . @$_POST["batch"] . "' AND expiry_date='" . @$_POST["original_expiry_date"] . "' AND stock_type='$ccc_id' AND facility_code='$facility'";
-			//echo $sql;die();
-			$this -> db -> query($sql);
+			//If deleting previous transaction, check if batch has not expired, if not, insert in drug stock balance table
+			$today = strtotime(date("Y-m-d"));
+			$original_expiry = strtotime(@$_POST["original_expiry_date"]);
+			if($today<=$original_expiry){
+				//If balance for this batch is greater than zero, update stock, otherwise, insert in drug stock balance
+				$sql_batch_balance = "SELECT balance FROM drug_stock_balance WHERE drug_id='" . @$_POST["original_drug"] . "' AND batch_number='" . @$_POST["batch"] . "' AND expiry_date='" . @$_POST["original_expiry_date"] . "' AND stock_type='$ccc_id' AND facility_code='$facility'";
+				$query = $this -> db -> query($sql_batch_balance);
+				$res =$query->result_array();
+				$prev_batch_balance = "";
+				if($res){
+					$prev_batch_balance = $res[0]['balance'];
+				}
+				if($prev_batch_balance>0){
+					//Update drug_stock_balance
+					$sql = "UPDATE drug_stock_balance SET balance=balance+" . @$_POST["qty_disp"] . " WHERE drug_id='" . @$_POST["original_drug"] . "' AND batch_number='" . @$_POST["batch"] . "' AND expiry_date='" . @$_POST["original_expiry_date"] . "' AND stock_type='$ccc_id' AND facility_code='$facility'";
+					//echo $sql;die();
+					$this -> db -> query($sql);
+				}else{
+					
+					$sql = "INSERT INTO drug_stock_balance (balance,dug_id,batch_number,expiry_date,stock_type,facility_code) VALUES('" . @$_POST["qty_disp"] . "','" . @$_POST["original_drug"] . "','" . @$_POST["batch"] . "','" . @$_POST["original_expiry_date"] . "','$ccc_id','$facility')";
+					//echo $sql;die();
+					$this -> db -> query($sql);
+				}
+			}
+			
 
 			//Insert in drug stock movement
 			//Get balance after update
@@ -532,7 +554,21 @@ class Dispensement_Management extends MY_Controller {
 		$str="";
 		
 		$this -> load -> library('mpdf');
-		$this -> mpdf = new mPDF('c','B5');
+
+		//MPDF Config
+		$mode = 'utf-8';
+		$format = array(80,90);
+		$default_font_size = '11';
+		$default_font = 'Helvetica';
+		$margin_left = '5';
+		$margin_right = '5';
+		$margin_top = '4';
+		$margin_bottom = '4';
+		$margin_header = '';
+		$margin_footer = '';
+		$orientation = 'P';
+
+		$this -> mpdf = new mPDF($mode,$format,$default_font_size,$default_font,$margin_left,$margin_right,$margin_top,$margin_bottom,$margin_header,$margin_footer,$orientation);
 
 		if($check_if_print){
 			//loop through checkboxes check if they are selected to print
@@ -544,8 +580,7 @@ class Dispensement_Management extends MY_Controller {
 				   
 	               while($count<=$no_to_print[$counter]){
 	               	     $this -> mpdf -> addPage();
-	               	     
-		                 $str='<table border="1" align="center" width="100%" style="border-collapse:collapse; font-size:26px;">';
+	               	     $str='<table border="1"  style="border-collapse:collapse;font-size:11px;">';
 						 $str.='<tr>';
 						 $str.='<td colspan="2">Drugname: <b>'.strtoupper($drug_name[$counter]).'</b></td>';
 						 $str.='<td>Qty: <b>'.$qty[$counter].'</b></td>';
@@ -612,6 +647,14 @@ class Dispensement_Management extends MY_Controller {
 		$data['banner_text'] = "Facility Dispensing";
 		$data['link'] = "dispensements";
 		$this -> load -> view('template', $data);
+	}
+
+	public function save_session(){
+		$session_name = $this -> input -> post("session_name",TRUE);
+		$session_value = $this -> input -> post("session_value",TRUE);
+		$this -> session -> set_userdata($session_name,$session_value);
+        
+        echo $this -> session -> userdata($session_name);
 	}
 
 }

@@ -8,6 +8,7 @@ class System_management extends MY_Controller {
 		$this -> load -> helper('url');
 		$this -> load -> library('github_updater');
 		$this -> load -> library('Unzip');
+		$this -> load -> library('Curl');
 		date_default_timezone_set('Africa/Nairobi');
 
 	}
@@ -86,5 +87,17 @@ class System_management extends MY_Controller {
         echo json_encode($answer); 
 		
 	}
+	
+	public function checkConnection(){//Check Internet Connection
+		$curl = new Curl();
+		$url ="http://google.com/";
+		$curl -> get($url);
+		if ($curl -> error) {
+			echo json_encode('0');
+		} else {
+			echo json_encode('1');
+		}
+	}
+
 
 }
