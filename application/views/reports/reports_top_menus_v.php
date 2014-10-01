@@ -4,7 +4,7 @@
 	  <li class="active"><?php echo $selected_report_type.' - '.$report_title ?></li>
 	</ul>
 	
-	<ul class="nav nav-tabs">  
+	<ul class="nav nav-tabs nav-pills">  
 		<li id="standard_report" class="active reports_tabs"><a  href="#">Standard Reports</a> </li>   
 		<li id="visiting_patient" class="reports_tabs"><a  href="#">Visiting Patients</a></li> 
 		<li id="early_warning_indicators" class="reports_tabs"><a  href="#">Early Warning Indicators</a> </li>   

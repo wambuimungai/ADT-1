@@ -278,6 +278,24 @@ class Regimen_management extends MY_Controller {
 			echo json_encode($results);
 		}
 	}
+
+	public function getAllDrugs($regimen) {
+		$sql = "SELECT 
+		            rd.drugcode as drug_id,
+		            d.drug as drug_name 
+		        FROM regimen_drug rd  
+		        LEFT JOIN regimen r ON r.id=rd.regimen 
+      			LEFT JOIN drugcode d ON d.id=rd.drugcode
+		        WHERE (rd.regimen='$regimen' or r.regimen_code LIKE '%oi%') 
+		        AND (d.drug !='NULL')
+		        GROUP BY d.id 
+		        ORDER BY d.drug ASC";
+		$query = $this -> db -> query($sql);
+		$results = $query -> result_array();
+		if ($results) {
+			echo json_encode($results);
+		}
+	}
 	
 	public function getNonMappedRegimens($param='0'){
 		$data = array();
