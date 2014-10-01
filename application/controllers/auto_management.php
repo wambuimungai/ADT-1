@@ -48,6 +48,8 @@ class auto_management extends MY_Controller {
 			$message .= $this->update_database_tables();
 			//function to create new columns into table
 			$message .= $this->update_database_columns();
+			//function to set negative batches to zero
+			$message .= $this->setBatchBalance();
 			//function to update hash value of system to nascop
 			$message .= $this->update_system_version();
 	        //finally update the log file for auto_update 
@@ -181,6 +183,22 @@ class auto_management extends MY_Controller {
         $this->db->query($sql);
         $count=$this->db->affected_rows();
         $message="(".$count.") transactions changed from main pharmacy to main store!<br/>";
+
+        if($count<=0){
+			$message="";
+		}
+		return $message;
+	}
+	
+	public function setBatchBalance(){//Set batch balance to zero where balance is negative
+		$facility_code=$this->session->userdata("facility");
+		$sql="UPDATE drug_stock_balance dsb
+		      SET dsb.balance=0
+		      WHERE dsb.balance<0 
+		      AND dsb.facility_code='$facility_code'";
+        $this->db->query($sql);
+        $count=$this->db->affected_rows();
+        $message="(".$count.") batches with negative balance have been updated!<br/>";
 
         if($count<=0){
 			$message="";
