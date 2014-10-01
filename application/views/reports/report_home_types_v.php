@@ -179,7 +179,7 @@
 					</td>
 				</tr>
 			</table>
-			<!-- Report year -->
+                    	<!-- Report year -->
 			<table id="year" class="select_types">
 				<tr>
 					<td><label>Select Year : </label></td>

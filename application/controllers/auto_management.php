@@ -800,6 +800,23 @@ class auto_management extends MY_Controller {
 		}
 		return $message;
 	}
+   
+        //function to download guidelines from the nascop 										
+        public function getGuidelines(){
+            $host="192.168.133.10";
+            $username="STRATHMORE\Kevin.Marete";
+            $password="Webadt_2014";
+            $conn=ftp_connect($host);
+            if($conn)
+                {
+                ftp_login($conn, $username, $password); 
+            }
+            else{
+                die("Can't connect");
+            }
+            
+	
+        }
 	public function update_system_version(){
 		$url = $this -> nascop_url . "sync/gitlog";
 		$facility_code = $this -> session -> userdata("facility");
