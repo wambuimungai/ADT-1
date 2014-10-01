@@ -24,11 +24,15 @@ public function send_nascop_reports(){
     $facility_code = $this->session ->userdata("facility");
 
     $data=array();
-    $data['patients_list_by_regimen']=patient::get_patients_starting_by_regimen();
-    $data['non_adherence_reason']=patient_visit::getNon_adherence_reason();
-    $data['lost_to_followup']=patient::get_lost_to_followup();
-    $data['Started_on_firstline']=patient::get_patients_started_on_firstline();
-    $data['Started_on_ART']=patient::get_patients_started_on_ART();
+    $data['patients_enrolled_by_regimen']=patient::get_patients_enrolled_by_regimen();
+    //$data['non_adherence_reason']=patient_visit::getNon_adherence_reason();
+    //$data['lost_to_followup']=patient::get_lost_to_followup();
+    //$data['Started_on_firstline']=patient::get_patients_started_on_firstline();
+    //$data['Started_on_ART']=patient::get_patients_started_on_ART();
+    echo '<pre>';
+    echo json_encode($data,JSON_PRETTY_PRINT);
+    echo '</pre>';
+    die();
 
     $data['facility_code']=$facility_code;
     $json_data = json_encode($data,JSON_PRETTY_PRINT);

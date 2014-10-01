@@ -175,20 +175,21 @@ class Patient extends Doctrine_Record {
 		$patients = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $patients[0];
 	}
-	public function get_patients_starting_by_regimen(){
+	public function get_patients_enrolled_by_regimen(){
 		// number of patients starting each regimen within a period
-		$sql=("
-           SELECT  r.regimen_desc AS Regimen, CONCAT_WS(' -',MONTH(p.start_regimen_date),YEAR(p.start_regimen_date) )AS period,
-           COUNT(p.patient_number_ccc) AS Number_of_patients_by_regimen
-           FROM patient p
-           LEFT JOIN regimen r ON r.id=p.start_regimen
-           GROUP by MONTH(p.start_regimen_date),YEAR(p.start_regimen_date)
-           ORDER by p.start_regimen_date ASC");
+		// CONCAT_WS('/',MONTH(p.date_enrolled),YEAR(p.date_enrolled) )AS period,
+		$sql = "SELECT  
+		            r.regimen_desc AS regimen, 
+		            DATE_FORMAT(p.date_enrolled,'%M-%Y') as period,
+	                COUNT(p.patient_number_ccc) AS total
+	            FROM patient p
+	            LEFT JOIN regimen r ON r.id=p.start_regimen
+	            WHERE p.date_enrolled IS NOT NULL
+	            GROUP by MONTH(p.date_enrolled),YEAR(p.date_enrolled),p.start_regimen
+	            ORDER by p.date_enrolled ASC";
 	    $query = $this -> db -> query($sql);
 		$patients = $query -> result_array();
 		return $patients;
-
-
 	}
 	public function get_patients_started_on_ART(){
 		//Get total number of patients starting on ART within a period
