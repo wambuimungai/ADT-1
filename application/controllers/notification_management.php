@@ -115,7 +115,7 @@ class notification_management extends MY_Controller {
 				$message = 'Reporting Notification Failed!';
 			}
 		}
-		return $message;
+		echo $message;
 	}
 
 	public function update_notification() {

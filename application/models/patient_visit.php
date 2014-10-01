@@ -41,7 +41,6 @@ class Patient_Visit extends Doctrine_Record {
 
 	public function setUp() {
 		$this -> setTableName('patient_visit');
-		$this -> hasOne('Non_Adherence_Reason', array('local' => 'Non_Adherence_Reason', 'foreign' => 'id'));
 	}
 
 	public function getAllScheduled($timestamp) {
@@ -76,14 +75,7 @@ class Patient_Visit extends Doctrine_Record {
 		return $patient_visits;
 	}
 	public function getNon_adherence_reason(){
-        $sql=("SELECT na.id,na.name,pv.gender,
-				(CASE WHEN pv.age<=15 THEN 'Child'
-				      WHEN pv.age>15 THEN 'Adult'
-				      ELSE '' END) as age FROM non_adherence_reasons na LEFT JOIN
-				(SELECT p_v.id,p_v.patient_id,p_v.dispensing_date,p_v.non_adherence_reason,p.gender,FLOOR( DATEDIFF( curdate( ) , p.dob ) /365 ) AS age FROM `patient_visit` p_v 
-				LEFT JOIN patient p ON p.patient_number_ccc=p_v.patient_id
-				WHERE p_v.active='1') as pv
-				ON pv.non_adherence_reason=na.id ORDER BY na.id DESC ");
+        $sql=("");
 	    $query = $this -> db -> query($sql);
 		$patient_visit = $query -> result_array();
 		return $patient_visit;
