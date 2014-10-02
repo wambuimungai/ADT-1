@@ -216,21 +216,24 @@ class Order extends MY_Controller {
 			$curl -> setOpt(CURLOPT_RETURNTRANSFER, TRUE);
 		} else {
 			$url = $this -> nascop_url;
-			foreach ($lists as $facility_id) {
-				if ($type == 0) {
-					$links[] = "sync/facility/" . $facility_id . "/cdrr";
-					$links[] = "sync/facility/" . $facility_id . "/maps";
-				} else {
-					$links[] = "sync/facility/" . $facility_id . "/cdrr/" . $current_month_start;
-					$links[] = "sync/facility/" . $facility_id . "/maps/" . $current_month_start;
-					$links[] = "sync/facility/" . $facility_id . "/cdrr/" . $one_current_month_start;
-					$links[] = "sync/facility/" . $facility_id . "/maps/" . $one_current_month_start;
-					$links[] = "sync/facility/" . $facility_id . "/cdrr/" . $two_current_month_start;
-					$links[] = "sync/facility/" . $facility_id . "/maps/" . $two_current_month_start;
-				}
+			if(!empty($lists))
+			{
+				$lists = explode(",", $lists[0]);
+				foreach ($lists as $facility_id) {
+					if ($type == 0) {
+						$links[] = "sync/facility/" . $facility_id . "/cdrr";
+						$links[] = "sync/facility/" . $facility_id . "/maps";
+					} else {
+						$links[] = "sync/facility/" . $facility_id . "/cdrr/" . $current_month_start;
+						$links[] = "sync/facility/" . $facility_id . "/maps/" . $current_month_start;
+						$links[] = "sync/facility/" . $facility_id . "/cdrr/" . $one_current_month_start;
+						$links[] = "sync/facility/" . $facility_id . "/maps/" . $one_current_month_start;
+						$links[] = "sync/facility/" . $facility_id . "/cdrr/" . $two_current_month_start;
+						$links[] = "sync/facility/" . $facility_id . "/maps/" . $two_current_month_start;
+					}
+			    }
 			}
 		}
-
 
 		//clear orders if its a full sync
 		if ($type == 0) {
