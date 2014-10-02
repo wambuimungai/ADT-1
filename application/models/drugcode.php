@@ -117,13 +117,16 @@ class Drugcode extends Doctrine_Record {
 	}
 	
 	public function getDrugBatches($drug_id,$ccc_id,$facility_code,$today){
-       $sql="SELECT d.id,d.drug as drugname,du.Name AS unit,d.pack_size,dsb.batch_number,dsb.expiry_date,dsb.stock_type,dsb.balance 
+        $sql = "SELECT d.id,d.drug as drugname,du.Name AS unit,d.pack_size,dsb.batch_number,dsb.expiry_date,dsb.stock_type,dsb.balance 
 				FROM drug_stock_balance dsb 
 				LEFT JOIN drugcode d ON d.id=dsb.drug_id 
 				LEFT JOIN drug_unit du ON du.id = d.unit 
-				WHERE dsb.drug_id='$drug_id'  AND dsb.expiry_date > '$today' 
-				AND dsb.balance > 0   AND dsb.facility_code='$facility_code' 
-				AND dsb.stock_type='$ccc_id' order by dsb.expiry_date asc";
+				WHERE dsb.drug_id='$drug_id'  
+				AND dsb.expiry_date > CURDATE() 
+				AND dsb.balance > 0   
+				AND dsb.facility_code='$facility_code' 
+				AND dsb.stock_type='$ccc_id' 
+				ORDER BY dsb.expiry_date asc";
        $query=$this->db->query($sql);
        $batches=$query->result_array();
        return $batches;

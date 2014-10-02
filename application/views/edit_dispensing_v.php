@@ -118,7 +118,7 @@ foreach ($expiries as $expiry) {
 		   
 		   function getRegimenDrugs(regimen){
 		   	  var base_url="<?php echo base_url();?>";
-		   	  var link=base_url+"regimen_management/getDrugs/"+regimen;
+		   	  var link=base_url+"regimen_management/getAllDrugs/"+regimen;
 				$.ajax({
 				    url: link,
 				    type: 'POST',
@@ -157,7 +157,7 @@ foreach ($expiries as $expiry) {
 		   });
 		   
 		   //Validate quantity dispensed
-		   $(".qty_disp").keyup(function() {
+		   $(".qty_disp").blur(function() {
 				checkQtyDispense();
 			});
 			
@@ -252,7 +252,12 @@ foreach ($expiries as $expiry) {
 				    success: function(data) {	
 				    	console.log(stock_type+'');
 				    	$("#expiry").val(data[0].expiry_date);
-				    	$("#soh").val(data[0].balance);
+				    	if(data[0].balance<0){
+				    		$("#soh").val(0);
+				    	}else{
+				    		$("#soh").val(data[0].balance);
+				    	}
+				    	
 				    }
 				});
 		   }
@@ -268,14 +273,23 @@ foreach ($expiries as $expiry) {
 			function checkQtyDispense(){
 				var selected_value = $("#qty_disp").attr("value");
 				var stock_at_hand =  $("#soh").attr("value");
-				var stock_validity = stock_at_hand - selected_value;
+				var expiry_batch = Date.parse($("#expiry").attr("value"));
 				var original_qty=$("#qty_hidden").val();
 				var current_qty=$("#qty_disp").val();
-				if(stock_validity < 0 && original_qty!=current_qty) {
+				var difference = original_qty - current_qty;
+				var stock_validity = parseInt(stock_at_hand) + parseInt(difference);
+				
+				var dtToday = Date.parse(new Date());
+				$("#qty_disp").css("background-color","white");
+				$("#qty_disp").removeClass("input_error");
+				if(stock_validity < 0 && original_qty!=current_qty) {//If stock is less than value edited
 					bootbox.alert("<h4>Quantity-Stock  Alert</h4>\n\<hr/><center>Quantity Cannot Be larger Than Stock at Hand</center>");
 					$("#qty_disp").css("background-color","red");
 					$("#qty_disp").addClass("input_error");
 					return false;	
+				}else if((dtToday>expiry_batch) && original_qty!=current_qty){//If value is being edited and batch has expired, should not allow editing
+					bootbox.alert("<h4>Expiry Date  Alert</h4>\n\<hr/><center>The batch you are trying to edit has already expired</center>");
+					return false;
 				}
 				else{
 					$("#qty_disp").css("background-color","white");
@@ -300,14 +314,14 @@ foreach ($expiries as $expiry) {
 		            	var last_row=$('#drugs_table tr:last');
                                 
 		            	if(check === false){
-                                    return false;
+                            return false;
 		            	}
-                                else if(last_row.find(".qty_disp").hasClass("input_error")){ 
-                                   return false;
-				}
-				else{
-                                   return true;
-				}
+                        else if(last_row.find(".qty_disp").hasClass("input_error")){ 
+                           return false;
+						}
+						else{
+                           return true;
+						}
                                              
 		            }
 		     }
@@ -317,6 +331,18 @@ foreach ($expiries as $expiry) {
 			{
 			    overflow:auto;
 			}
+
+			table#drugs_table input{
+                height:30px;
+            }
+            table#drugs_table select{
+                height:30px;
+            }
+
+            .mid-row select {
+			    width: 100%;
+			}
+
 		</style>
 	</head>
 	<body>
@@ -357,7 +383,7 @@ foreach ($expiries as $expiry) {
 					</div>
 					<div class="mid-row">
 						<label><span class='astericks'>*</span>Purpose of Visit</label>
-						<select type="text"name="purpose" id="purpose" class="validate[required]" style="width:250px;"/>
+						<select type="text"name="purpose" id="purpose" class="validate[required]"/>
 						<option value="">--Select One--</option>
 									<?php 
 									foreach($purposes as $purpose){
@@ -391,7 +417,7 @@ foreach ($expiries as $expiry) {
 						</div>
 						<div class="mid-row">
 							<label><span class='astericks'>*</span>Current Regimen</label>
-							<select name="current_regimen" id="current_regimen"  class="validate[required]" style="width:250px;"/>
+							<select name="current_regimen" id="current_regimen"  class="validate[required]"/>
 							<option value="">-Select One--</option>
 										<?php 
 									       foreach($regimens as $regimen){
@@ -404,7 +430,7 @@ foreach ($expiries as $expiry) {
 					<div class="max-row">
 						<div style="display:none" id="regimen_change_reason_container">
 							<label>Regimen Change Reason</label>
-							<select type="text"name="regimen_change_reason" id="regimen_change_reason" style="width:250px;">
+							<select type="text"name="regimen_change_reason" id="regimen_change_reason" style="width:50%;">
 									<option value="">--Select One--</option>
 										 <?php
 										   foreach($regimen_changes as $changes){
@@ -421,7 +447,7 @@ foreach ($expiries as $expiry) {
 						</div>
 						<div class="mid-row">
 							<label> Poor/Fair Adherence Reasons </label>
-							<select type="text"name="non_adherence_reasons" id="non_adherence_reasons" style="width:250px;">
+							<select type="text"name="non_adherence_reasons" id="non_adherence_reasons">
 								<option value="">-Select One--</option>
 										<?php 
 									       foreach($non_adherence_reasons as $reasons){
@@ -464,7 +490,7 @@ foreach ($expiries as $expiry) {
 					<input type="text" id="expiry" name="expiry" class="expiry input-xlarge validate[required]" style="width:100px;" />
 					</td>
 					<td>
-					<input  name="dose" list="dose"  style="width:75%;height:25px;" class="input-small next_pill dose icondose">
+					<input  name="dose" list="dose"  style="width:75%;" class="input-small next_pill dose icondose">
                             <datalist id="dose" class="dose">
                     <select name="dose"></select></datalist>
 					</td>

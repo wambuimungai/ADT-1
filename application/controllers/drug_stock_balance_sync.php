@@ -205,7 +205,8 @@ class Drug_stock_balance_sync extends MY_Controller {
 		$this -> load -> view('running_balance_v', $data);
     }
 
-	public function getRunningBalance(){
+    public function getRunningBalance()
+    {
       	ini_set("max_execution_time", "100000");
 		ini_set("memory_limit", '2048M');
 
@@ -214,29 +215,45 @@ class Drug_stock_balance_sync extends MY_Controller {
 		$facility_code=$this->session->userdata("facility");
 
         foreach($stores as $store){
-          $store_id=$store['id'];
+            $store_id=$store['id'];
+	        $sql="SELECT d.id AS trans_id, 
+                        c.name AS trans_store, 
+                        t.name AS trans_type, 
+                        d.quantity AS trans_qty, 
+                        d.quantity_out AS trans_qty_out,
+                        IF(t.name LIKE '%physical%','1','0')as trans_desc
+					FROM drug_stock_movement d
+					LEFT JOIN ccc_store_service_point c ON d.ccc_store_sp = c.id
+					LEFT JOIN transaction_type t ON d.transaction_type = t.id
+					WHERE d.drug ='$drug_id'
+					AND d.ccc_store_sp ='$store_id'
+					ORDER BY d.id ASC";
+			$query=$this->db->query($sql);
+			$transactions=$query->result_array();
+			$balance_before=0;
+			$balance_after=0;
+			$total=0;
+			$prev_count=0;
+			$balance=array();
+            
+            /*
+		    $table="<table border='1'>";
+            $table.="<thead><tr><th>Beginning Balance</th><th>Type of Transaction</th><th>QTY Transacted</th><th>End Balance</th><th>Cumulative Balance</th></tr></thead><tbody>";
+  	        $table.="<tr><td>".$balance_before."</td><td>". $transaction['trans_type']."</td><td>".$total."</td><td>".$balance[$count]."</td><td>".$balance_after."</td></tr>";
+            $table.="</tbody></table>";
+            echo "<br/>Drug Balance:".$drug_balance."<br/>Difference:".$difference;
+            */
 
-          $sql="SELECT d.id AS trans_id, 
-                       c.name AS trans_store, 
-                       t.name AS trans_type, 
-                       d.quantity AS trans_qty, 
-                       d.quantity_out AS trans_qty_out,
-                       IF(t.name LIKE '%physical%','1','0')as trans_desc
-				FROM drug_stock_movement d
-				LEFT JOIN ccc_store_service_point c ON d.ccc_store_sp = c.id
-				LEFT JOIN transaction_type t ON d.transaction_type = t.id
-				WHERE d.drug ='$drug_id'
-				AND d.ccc_store_sp ='$store_id'
-				ORDER BY d.id ASC";
-		  $query=$this->db->query($sql);
-		  $transactions=$query->result_array();
-		  $balance_before=0;
-		  $balance_after=0;
-		  $total=0;
-		  $prev_count=0;
-		  $balance=array();
 
             foreach($transactions as $count=>$transaction){
+            	/*
+            	1.Beginning Balance
+            	2.Type of Transaction 
+            	3.Quantity Transacted (quantity-quantity_out)
+            	4.End Balance (Beginning_Balance+Quantity transacted)
+            	5.Cumulative Balance (+=End Balance)
+            	*/
+            
           	 	$prev_count=$count-1;
                 $total=$transaction['trans_qty']-$transaction['trans_qty_out'];
                 if($prev_count>=0){
@@ -267,14 +284,16 @@ class Drug_stock_balance_sync extends MY_Controller {
               	$record_id=$transaction['trans_id'];
               	$sql="UPDATE drug_stock_movement SET machine_code='$balance_after' WHERE id='$record_id'";
               	$this->db->query($sql);
-
-            }      
+            } 
+            
+               
             //get drug balance in drug stock balance
-            $sql="SELECT SUM(dsb.balance) as total,dsb.batch_number as batch_no
+            $sql="SELECT SUM(dsb.balance) as total,dsb.batch_number as batch_no,dsb.expiry_date
 				  FROM drug_stock_balance dsb
 				  WHERE dsb.drug_id ='$drug_id'
 				  AND dsb.stock_type ='$store_id'
 				  AND facility_code='$facility_code'
+				  AND dsb.expiry_date > CURDATE()
 				  AND dsb.balance >0";
 			$query=$this->db->query($sql);
 			$balances=$query->result_array();
@@ -282,18 +301,20 @@ class Drug_stock_balance_sync extends MY_Controller {
 			if($balances){
                $drug_balance=$balances[0]['total'];
                $batch_no=$balances[0]['batch_no'];
+               $expiry_date=$balances[0]['expiry_date'];
 			}
 
 			//compare last balance after with balance in drug stock balance
 		    $difference=$drug_balance-$balance_after;
+
 			if($difference !=0){
 				if($difference>0){
 	               //positive adjustment
-	               $column="quantity";
+	               $column = "quantity";
 	               $sql="SELECT id FROM transaction_type WHERE name LIKE '%adjustment (+)%'";
 				}else{
 				   //negative adjustment
-				   $column="quantity_out";
+				   $column = "quantity_out";
 				   $sql="SELECT id FROM transaction_type WHERE name LIKE '%adjustment (-)%'";
 				}
 
@@ -302,8 +323,9 @@ class Drug_stock_balance_sync extends MY_Controller {
 				$results=$query->result_array();
 				$transaction_type_id=$results[0]['id'];
 
-				//make difference as int
-				$difference=(int)$difference;
+				//make difference absolute(positive)
+				$difference = abs($difference);
+
                 
                 //source/destination (pharmacy)
                 $source=$facility_code;
@@ -315,8 +337,20 @@ class Drug_stock_balance_sync extends MY_Controller {
                 }
 
 				//insert record into drug_stock_movement
-		 		$sql="INSERT INTO drug_stock_movement(drug,transaction_date,batch_number,transaction_type,source,destination,$column,facility,ccc_store_sp)VALUES('$drug_id',CURDATE(),'$batch_no','$transaction_type_id','$source','$destination','$difference','$facility_code','$store_id')";
-			    $query=$this->db->query($sql);
+			    $insert_data = array(
+			    	            'drug'=> $drug_id,
+			    	            'transaction_date'=> date("Y-m-d"),
+			    	            'batch_number' => $batch_no,
+			    	            'expiry_date' => $expiry_date,
+			    	            'transaction_type' =>$transaction_type_id,
+			    	            'source' =>$source,
+			    	            'destination' =>$destination,
+			    	             $column => $difference,
+			    	            'facility' => $facility_code,
+			    	            'ccc_store_sp' => $store_id
+			    	            );
+
+			    $this->db->insert('drug_stock_movement', $insert_data); 
 			    $last_insert_id=$this -> db -> insert_id();
 
 			    //update running_balance in machine code column
@@ -327,6 +361,6 @@ class Drug_stock_balance_sync extends MY_Controller {
 
         return true;
     }
-
+    
 }
 ?>

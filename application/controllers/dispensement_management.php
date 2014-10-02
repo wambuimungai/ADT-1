@@ -182,6 +182,7 @@ class Dispensement_Management extends MY_Controller {
 				$batch_number = $value['batch_number'];
 				$drug_ig = $value['drug_id'];
 				$ccc_id = $value['ccc_store_sp'];
+				//echo $ccc_id;die();
 				$sql = "select expiry_date FROM drug_stock_balance WHERE batch_number='$batch_number' AND drug_id='$drug_ig' AND stock_type='$ccc_id' AND facility_code='$facility_code' LIMIT 1";
 				$expiry_sql = $this -> db -> query($sql);
 
@@ -423,10 +424,31 @@ class Dispensement_Management extends MY_Controller {
 			
 			$act_run_balance = $prev_run_balance + @$_POST["qty_disp"];//Actual running balance		
 			
-			//Update drug_stock_balance
-			$sql = "UPDATE drug_stock_balance SET balance=balance+" . @$_POST["qty_disp"] . " WHERE drug_id='" . @$_POST["original_drug"] . "' AND batch_number='" . @$_POST["batch"] . "' AND expiry_date='" . @$_POST["original_expiry_date"] . "' AND stock_type='$ccc_id' AND facility_code='$facility'";
-			//echo $sql;die();
-			$this -> db -> query($sql);
+			//If deleting previous transaction, check if batch has not expired, if not, insert in drug stock balance table
+			$today = strtotime(date("Y-m-d"));
+			$original_expiry = strtotime(@$_POST["original_expiry_date"]);
+			if($today<=$original_expiry){
+				//If balance for this batch is greater than zero, update stock, otherwise, insert in drug stock balance
+				$sql_batch_balance = "SELECT balance FROM drug_stock_balance WHERE drug_id='" . @$_POST["original_drug"] . "' AND batch_number='" . @$_POST["batch"] . "' AND expiry_date='" . @$_POST["original_expiry_date"] . "' AND stock_type='$ccc_id' AND facility_code='$facility'";
+				$query = $this -> db -> query($sql_batch_balance);
+				$res =$query->result_array();
+				$prev_batch_balance = "";
+				if($res){
+					$prev_batch_balance = $res[0]['balance'];
+				}
+				if($prev_batch_balance>0){
+					//Update drug_stock_balance
+					$sql = "UPDATE drug_stock_balance SET balance=balance+" . @$_POST["qty_disp"] . " WHERE drug_id='" . @$_POST["original_drug"] . "' AND batch_number='" . @$_POST["batch"] . "' AND expiry_date='" . @$_POST["original_expiry_date"] . "' AND stock_type='$ccc_id' AND facility_code='$facility'";
+					//echo $sql;die();
+					$this -> db -> query($sql);
+				}else{
+					
+					$sql = "INSERT INTO drug_stock_balance (balance,dug_id,batch_number,expiry_date,stock_type,facility_code) VALUES('" . @$_POST["qty_disp"] . "','" . @$_POST["original_drug"] . "','" . @$_POST["batch"] . "','" . @$_POST["original_expiry_date"] . "','$ccc_id','$facility')";
+					//echo $sql;die();
+					$this -> db -> query($sql);
+				}
+			}
+			
 
 			//Insert in drug stock movement
 			//Get balance after update

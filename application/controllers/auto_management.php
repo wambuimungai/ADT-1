@@ -48,8 +48,12 @@ class auto_management extends MY_Controller {
 			$message .= $this->update_database_tables();
 			//function to create new columns into table
 			$message .= $this->update_database_columns();
+			//function to set negative batches to zero
+			$message .= $this->setBatchBalance();
 			//function to update hash value of system to nascop
 			$message .= $this->update_system_version();
+			//function to update facility admin that reporting deadline is close
+			$message .= $this->update_reporting();
 	        //finally update the log file for auto_update 
 	        if ($this -> session -> userdata("curl_error") != 1) {
 	        	$sql="UPDATE migration_log SET last_index='$today' WHERE source='auto_update'";
@@ -160,7 +164,7 @@ class auto_management extends MY_Controller {
 					  LEFT JOIN transaction_type t ON t.id=dsm.transaction_type
 					  SET dsm.source_destination=IF(dsm.$column=dsm.facility,'1',dsm.$column)
 				      WHERE t.name LIKE '%$transaction%'
-					  AND(dsm.source_destination IS NULL OR dsm.source_destination='' OR dsm.source_destination=0)";
+					  AND(dsm.source_destination IS NULL OR dsm.source_destination='' OR dsm.source_destination='0')";
                 $this->db->query($sql);
                 $count=$this->db->affected_rows();
                 $message.=$count." ".$transaction." transactions missing source_destination(".$column.") have been updated!<br/>";
@@ -181,6 +185,22 @@ class auto_management extends MY_Controller {
         $this->db->query($sql);
         $count=$this->db->affected_rows();
         $message="(".$count.") transactions changed from main pharmacy to main store!<br/>";
+
+        if($count<=0){
+			$message="";
+		}
+		return $message;
+	}
+	
+	public function setBatchBalance(){//Set batch balance to zero where balance is negative
+		$facility_code=$this->session->userdata("facility");
+		$sql="UPDATE drug_stock_balance dsb
+		      SET dsb.balance=0
+		      WHERE dsb.balance<0 
+		      AND dsb.facility_code='$facility_code'";
+        $this->db->query($sql);
+        $count=$this->db->affected_rows();
+        $message="(".$count.") batches with negative balance have been updated!<br/>";
 
         if($count<=0){
 			$message="";
@@ -420,23 +440,29 @@ class auto_management extends MY_Controller {
 						SET p.nextappointment=p1.appointment";
 
 			/*Change Active to Lost_to_follow_up*/
-			$sql['Change Active to Lost_to_follow_up'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
+			if(isset($state[$lost])){
+				$sql['Change Active to Lost_to_follow_up'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
 					   FROM patient p
 					   LEFT JOIN patient_status ps ON ps.id=p.current_status
 					   WHERE ps.Name LIKE '%$active%'
 					   AND (DATEDIFF(CURDATE(),nextappointment )) >=$days_to_lost_followup) as p1
 					   SET p.current_status = '$state[$lost]'";
-
+			}
+			
 			/*Change Lost_to_follow_up to Active */
-			$sql['Change Lost_to_follow_up to Active'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
+			if(isset($state[$active])){
+				$sql['Change Lost_to_follow_up to Active'] = "(SELECT patient_number_ccc,nextappointment,DATEDIFF(CURDATE(),nextappointment) as days
 					   FROM patient p
 					   LEFT JOIN patient_status ps ON ps.id=p.current_status
 					   WHERE ps.Name LIKE '%$lost%'
 					   AND (DATEDIFF(CURDATE(),nextappointment )) <$days_to_lost_followup) as p1
 					   SET p.current_status = '$state[$active]' ";
+			}
+			
 
 			/*Change Active to PEP End*/
-			$sql['Change Active to PEP End'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
+			if(isset($state[$pep])){
+				$sql['Change Active to PEP End'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
 					   FROM patient p
 					   LEFT JOIN regimen_service_type rst ON rst.id=p.service
 					   LEFT JOIN patient_status ps ON ps.id=p.current_status
@@ -444,9 +470,12 @@ class auto_management extends MY_Controller {
 					   AND rst.name LIKE '%$pep%' 
 					   AND ps.Name NOT LIKE '%$pep%') as p1
 					   SET p.current_status = '$state[$pep]' ";
+			}
+			
 
 			/*Change PEP End to Active*/
-			$sql['Change PEP End to Active'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
+			if(isset($state[$active])){
+				$sql['Change PEP End to Active'] = "(SELECT patient_number_ccc,rst.name as Service,ps.Name as Status,DATEDIFF(CURDATE(),date_enrolled) as days_enrolled
 					   FROM patient p
 					   LEFT JOIN regimen_service_type rst ON rst.id=p.service
 					   LEFT JOIN patient_status ps ON ps.id=p.current_status
@@ -454,9 +483,12 @@ class auto_management extends MY_Controller {
 					   AND rst.name LIKE '%$pep%' 
 					   AND ps.Name NOT LIKE '%$active%') as p1
 					   SET p.current_status = '$state[$active]' ";
+			}
+			
 
 			/*Change Active to PMTCT End(children)*/
-			$sql['Change Active to PMTCT End(children)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
+			if(isset($state[$pmtct])){
+				$sql['Change Active to PMTCT End(children)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
 					   FROM patient p
 					   LEFT JOIN regimen_service_type rst ON rst.id = p.service
 					   LEFT JOIN patient_status ps ON ps.id = p.current_status
@@ -465,9 +497,12 @@ class auto_management extends MY_Controller {
 					   AND rst.name LIKE  '%$pmtct%'
 					   AND ps.Name NOT LIKE  '%$pmtct%') as p1
 					   SET p.current_status = '$state[$pmtct]'";
+			}
+			
 
 			/*Change PMTCT End to Active(Adults)*/
-			$sql['Change PMTCT End to Active(Adults)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
+			if(isset($state[$active])){
+				$sql['Change PMTCT End to Active(Adults)'] = "(SELECT patient_number_ccc,rst.name AS Service,ps.Name AS Status,DATEDIFF(CURDATE(),dob) AS days
 					   FROM patient p
 					   LEFT JOIN regimen_service_type rst ON rst.id = p.service
 					   LEFT JOIN patient_status ps ON ps.id = p.current_status 
@@ -476,17 +511,18 @@ class auto_management extends MY_Controller {
 					   AND rst.name LIKE '%$pmtct%'
 					   AND ps.Name LIKE '%$pmtct%') as p1
 					   SET p.current_status = '$state[$active]'";
-
-					foreach ($sql as $i => $q) {
-						$stmt1 = "UPDATE patient p,";
-						$stmt2 = " WHERE p.patient_number_ccc=p1.patient_number_ccc;";
-						$stmt1 .= $q;
-						$stmt1 .= $stmt2;
-						$q = $this -> db -> query($stmt1);
-						if ($this -> db -> affected_rows() > 0) {
-							$message .= $i . "(<b>" . $this -> db -> affected_rows() . "</b>) rows affected<br/>";
-						}
-					}
+			}
+			
+			foreach ($sql as $i => $q) {
+				$stmt1 = "UPDATE patient p,";
+				$stmt2 = " WHERE p.patient_number_ccc=p1.patient_number_ccc;";
+				$stmt1 .= $q;
+				$stmt1 .= $stmt2;
+				$q = $this -> db -> query($stmt1);
+				if ($this -> db -> affected_rows() > 0) {
+					$message .= $i . "(<b>" . $this -> db -> affected_rows() . "</b>) rows affected<br/>";
+				}
+			}
 		}
 		return $message;
 	}
@@ -812,12 +848,102 @@ class auto_management extends MY_Controller {
 		curl_setopt($ch, CURLOPT_POSTFIELDS, array('json_data' => $json_data));
 		$json_data = curl_exec($ch);
 		if (empty($json_data)) {
-			$message = "cURL Error: " . curl_error($ch);
+			$message = "cURL Error: " . curl_error($ch)."<br/>";
 		} else {
 			$messages = json_decode($json_data, TRUE);
-			$message = $messages[0];
+			$message = $messages[0]."<br/>";
 		}
 		curl_close($ch);
+		return $message;
+	}
+
+	public function update_reporting() {
+		$deadline = date('Y-m-10');
+		$today = date('Y-m-d');
+		$notification_days = 10;
+		$notification = "";
+		$message = "";
+		$notification_link = site_url('order');
+		if ($deadline > $today) {
+			$diff = abs(strtotime($deadline) - strtotime($today));
+			$years = floor($diff / (365 * 60 * 60 * 24));
+			$months = floor(($diff - $years * 365 * 60 * 60 * 24) / (30 * 60 * 60 * 24));
+			$period = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
+			if ($notification_days >= $period) {
+				$notification = "Dear webADT User,<br/>";
+				$notification .= "The order reporting deadline is in " . $period . " days.<br/>";
+				$notification .= "The Satellites List is below: <br/>";
+			}
+			//get reporting satellites
+			$start_date = date('Y-m-01', strtotime("-1 month"));
+			$facility_code = $this -> session -> userdata("facility");
+			$central_site = Sync_Facility::getId($facility_code, 0);
+			$central_site = $central_site['id'];
+
+			$sql = "SELECT sf.name as facility_name,sf.code as facility_code,IF(c.id,'reported','not reported') as status
+			        FROM sync_facility sf
+			        LEFT JOIN cdrr c ON c.facility_id=sf.id AND c.period_begin='$start_date' 
+			        WHERE sf.parent_id='$central_site'
+			        AND sf.category LIKE '%satellite%'
+			        AND sf.name NOT LIKE '%dispensing%'
+			        GROUP BY sf.id";
+			$query = $this -> db -> query($sql);
+			$satellites = $query -> result_array();
+
+			$notification .= "<table border='1'>";
+			$notification .= "<thead><tr><th>Name</th><th>Code</th><th>Status</th></tr></thead><tbody>";
+			if ($satellites) {
+				foreach ($satellites as $satellite) {
+					$notification .= "<tr><td>" . $satellite['facility_name'] . "</td><td>" . $satellite['facility_code'] . "</td><td>" . $satellite['status'] . "</td></tr>";
+				}
+			}
+			$notification .= "</tbody></table>";
+
+			//send notification via email 
+			ini_set("SMTP", "ssl://smtp.gmail.com");
+			ini_set("smtp_port", "465");
+
+			$sql = "SELECT DISTINCT(Email_Address) as email 
+			        FROM users u
+			        LEFT JOIN access_level al ON al.id=u.Access_Level
+			        WHERE al.Level_Name LIKE '%facility%' 
+                    AND u.Facility_Code = '$facility_code'
+			        AND Email_Address !=''";
+			$query = $this -> db -> query($sql);
+			$emails = $query -> result_array();
+			if ($emails) {
+				foreach($emails as $email)
+				{
+					$mail_list[] = $email['email'];
+				}
+			}
+			if(!empty($mail_list))
+			{
+				$mail_list = implode(",", $mail_list);
+
+				$config['mailtype'] = "html";
+				$config['protocol'] = 'smtp';
+				$config['smtp_host'] = 'ssl://smtp.googlemail.com';
+				$config['smtp_port'] = 465;
+				$config['smtp_user'] = stripslashes('webadt.chai@gmail.com');
+				$config['smtp_pass'] = stripslashes('WebAdt_052013');
+
+				$this -> load -> library('email', $config);
+
+				$this -> email -> set_newline("\r\n");
+				$this -> email -> from('webadt.chai@gmail.com', "WEB_ADT CHAI");
+				$this -> email -> to("$mail_list");
+				$this -> email -> subject("ORDER REPORTING NOTIFICATION");
+				$this -> email -> message("$notification");
+
+				if ($this -> email -> send()) {
+					$message = 'Reporting Notification was sent!<br/>';
+					$this -> email -> clear(TRUE);
+				} else {
+					$message = 'Reporting Notification Failed!<br/>';
+				}
+			}
+		}
 		return $message;
 	}
 }

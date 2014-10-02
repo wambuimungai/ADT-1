@@ -1259,6 +1259,7 @@ class Order extends MY_Controller {
 			echo "cURL Error: " . curl_error($ch);
 		}
 		curl_close($ch);
+
 		return $json_data;
 	}
 

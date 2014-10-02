@@ -253,8 +253,6 @@
 				
 			}
 			
-			
-			
 		})
 		
 		$("#select_destination").change(function(){

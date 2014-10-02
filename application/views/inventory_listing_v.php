@@ -155,7 +155,7 @@ if ($access_level == "facility_administrator") {
 				?>
 		</div>
 		
-		<ul class="nav nav-tabs">
+		<ul class="nav nav-tabs nav-pills">
 			<?php
 				$x = 0;
 				$class = 'store_inventory ';
