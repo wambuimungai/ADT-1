@@ -848,10 +848,10 @@ class auto_management extends MY_Controller {
 		curl_setopt($ch, CURLOPT_POSTFIELDS, array('json_data' => $json_data));
 		$json_data = curl_exec($ch);
 		if (empty($json_data)) {
-			$message = "cURL Error: " . curl_error($ch);
+			$message = "cURL Error: " . curl_error($ch)."<br/>";
 		} else {
 			$messages = json_decode($json_data, TRUE);
-			$message = $messages[0];
+			$message = $messages[0]."<br/>";
 		}
 		curl_close($ch);
 		return $message;
@@ -937,10 +937,10 @@ class auto_management extends MY_Controller {
 				$this -> email -> message("$notification");
 
 				if ($this -> email -> send()) {
-					$message = 'Reporting Notification was sent!';
+					$message = 'Reporting Notification was sent!<br/>';
 					$this -> email -> clear(TRUE);
 				} else {
-					$message = 'Reporting Notification Failed!';
+					$message = 'Reporting Notification Failed!<br/>';
 				}
 			}
 		}
