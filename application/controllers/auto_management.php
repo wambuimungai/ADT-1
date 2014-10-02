@@ -52,6 +52,8 @@ class auto_management extends MY_Controller {
 			$message .= $this->setBatchBalance();
 			//function to update hash value of system to nascop
 			$message .= $this->update_system_version();
+                        //function to download guidelines from nascop
+                        $message .=$this->get_guidelines();
 	        //finally update the log file for auto_update 
 	        if ($this -> session -> userdata("curl_error") != 1) {
 	        	$sql="UPDATE migration_log SET last_index='$today' WHERE source='auto_update'";
@@ -835,23 +837,31 @@ class auto_management extends MY_Controller {
 		return $message;
 	}
    
-        //function to download guidelines from the nascop 										
-        public function getGuidelines(){
-            $host="192.168.133.10";
-            $username="STRATHMORE\Kevin.Marete";
-            $password="Webadt_2014";
-            $conn=ftp_connect($host);
-            if($conn)
-                {
-                ftp_login($conn, $username, $password); 
-            }
-            else{
-                die("Can't connect");
-            }
-            
-	
+        //function to download guidelines from the nascop 
+        public function get_guidelines(){
+         $this->load->library('ftp');
+
+        $config['hostname'] = '192.168.133.10';
+        $config['username'] = 'demo';
+        $config['password'] = 'demo';
+        $config['port']     = 21;
+        $config['passive']  = FALSE;
+        $config['debug']    = TRUE;
+
+        $this->ftp->connect($config);
+        $server_file="/";
+        $dir = realpath($_SERVER['DOCUMENT_ROOT']);
+       
+        
+        $files = $this->ftp->list_files($server_file);
+        foreach($files as $file){
+             $local_file = $dir . "/ADT/assets/Guidelines". $file;
+             $downloadfile= $this->ftp->download($file,$local_file , 'ascii');
         }
-	public function update_system_version(){
+      
+        }
+   
+        public function update_system_version(){
 		$url = $this -> nascop_url . "sync/gitlog";
 		$facility_code = $this -> session -> userdata("facility");
 		$hash=Git_Log::getLatestHash();
@@ -873,5 +883,7 @@ class auto_management extends MY_Controller {
 		curl_close($ch);
 		return $message;
 	}
+	
+	
 }
 ?>

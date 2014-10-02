@@ -78,28 +78,8 @@ if ($access_level == "nascop_staff") {
 					<li id="early_warning_indicators" class="reports_tabs"><a  href="#">Early Warning Indicators</a> </li>   
 					<li id="drug_inventory" class="reports_tabs"><a  href="#">Drug Inventory</a></li>   
 					<li id="moh_forms" class="reports_tabs"><a  href="#">MOH Forms</a></li> 
-                                        <li id="guidelines" class="dropdown" ><a  class="dropdown-toggle" data-toggle="dropdown" href="#">Guidelines
-                                            <span class="caret"></span>
-                                            </a>  
-                                            <ul class="dropdown-menu" role="menu">
-                                              <?php
-                                              $count = 0; 
-                                               $dir='assets/Guidelines';
-                                                if ($fGuides= opendir($dir)) { 
-                                                    while (false !== ($file = readdir($fGuides))) { 
-                                                        if ($file != "." && $file != "..") {
-                                                            $count++;
-                       
-                                                     print("<li><a href=\"assets/Guidelines/".$file."\" target='_blank'>".$file."</a></li>"); 
-                                                    }
-                                                   }
-                                                    closedir($fGuides); 
-                                                }  
-                                                ?>
-                                                
-                                                 
-                                            </ul>
-                                        </li>
+                                        <li id="guidelines" class="reports_tabs" ><a href="<?php echo base_url().'report_management/load_guidelines_view'?>">Guidelines </a></li>
+                                       
                                          </ul> 
 				
 				<div id="report_container">

@@ -111,7 +111,7 @@ class Settings extends MY_Controller {
 			if($table=="transaction_type"){
 			  $array_param = array('id' => $source -> id, 'role' => 'button', 'class' => 'edit_user', 'data-toggle' => 'modal', 'name' => $name,'desc'=>$source->desc,'effect'=>$source->effect);
 			}else{
-              $array_param = array('id' => $source -> id, 'role' => 'button', 'class' => 'edit_user', 'data-toggle' => 'modal', 'name' => $name);
+                          $array_param = array('id' => $source -> id, 'role' => 'button', 'class' => 'edit_user', 'data-toggle' => 'modal', 'name' => $name);
 			}
 
 			$links = "";
