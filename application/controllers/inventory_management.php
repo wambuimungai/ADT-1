@@ -474,14 +474,28 @@ class Inventory_Management extends MY_Controller {
 		$facility_code = $this -> session -> userdata('facility');
 		$stock_type = $this -> input -> post("stock_type");
 		$selected_drug = $this -> input -> post("selected_drug");
-		$batch_sql = $this -> db -> query("SELECT DISTINCT d.pack_size,d.comment,d.duration,d.quantity,u.Name,dsb.batch_number,dsb.expiry_date,d.dose as dose,do.Name as dose_id 
-											FROM drugcode d 
-											LEFT JOIN drug_stock_balance dsb ON d.id=dsb.drug_id 
-											LEFT JOIN drug_unit u ON u.id=d.unit 
-											LEFT JOIN dose do ON d.dose=do.id  
-											WHERE d.enabled=1 AND dsb.facility_code='$facility_code' 
-											AND dsb.stock_type='$stock_type' AND dsb.drug_id='$selected_drug' 
-											AND dsb.balance>0 AND dsb.expiry_date>=CURDATE() ORDER BY dsb.expiry_date ASC");
+		$sql = "SELECT  
+		            DISTINCT d.pack_size,
+		            d.comment,
+		            d.duration,
+		            d.quantity,
+		            u.Name,
+		            dsb.batch_number,
+		            dsb.expiry_date,
+		            d.dose as dose,
+		            do.Name as dose_id 
+				FROM drugcode d 
+				LEFT JOIN drug_stock_balance dsb ON d.id=dsb.drug_id 
+				LEFT JOIN drug_unit u ON u.id=d.unit 
+				LEFT JOIN dose do ON d.dose=do.id  
+				WHERE d.enabled=1 
+				AND dsb.facility_code='$facility_code' 
+				AND dsb.stock_type='$stock_type' 
+				AND dsb.drug_id='$selected_drug' 
+				AND dsb.balance > 0 
+				AND dsb.expiry_date > CURDATE() 
+				ORDER BY dsb.expiry_date ASC";
+		$batch_sql = $this -> db -> query($sql);
 		$batches_array = $batch_sql -> result_array();
 		echo json_encode($batches_array);
 	}
@@ -491,7 +505,19 @@ class Inventory_Management extends MY_Controller {
 		$stock_type = $this -> input -> post("stock_type");
 		$selected_drug = $this -> input -> post("selected_drug");
 		$batch_selected = $this -> input -> post("batch_selected");
-		$batch_sql = $this -> db -> query("SELECT dsb.balance, dsb.expiry_date FROM drug_stock_balance dsb  WHERE dsb.facility_code='$facility_code' AND dsb.stock_type='$stock_type' AND dsb.drug_id='$selected_drug' AND dsb.batch_number='$batch_selected' AND dsb.balance>0 AND dsb.expiry_date>=CURDATE() ORDER BY dsb.expiry_date ASC LIMIT 1");
+		$sql = "SELECT 
+		            dsb.balance, 
+		            dsb.expiry_date 
+		        FROM drug_stock_balance dsb  
+		        WHERE dsb.facility_code = '$facility_code' 
+		        AND dsb.stock_type = '$stock_type' 
+		        AND dsb.drug_id = '$selected_drug' 
+		        AND dsb.batch_number = '$batch_selected' 
+		        AND dsb.balance > 0 
+		        AND dsb.expiry_date > CURDATE() 
+		        ORDER BY dsb.expiry_date ASC
+		        LIMIT 1";
+		$batch_sql = $this -> db -> query($sql);
 		$batches_array = $batch_sql -> result_array();
 		echo json_encode($batches_array);
 	}
@@ -501,7 +527,17 @@ class Inventory_Management extends MY_Controller {
 		$stock_type = $this -> input -> post("stock_type");
 		$selected_drug = $this -> input -> post("selected_drug");
 		$batch_selected = $this -> input -> post("batch_selected");
-		$batch_sql = $this -> db -> query("SELECT dsb.balance, dsb.expiry_date FROM drug_stock_balance dsb  WHERE dsb.facility_code='$facility_code' AND dsb.stock_type='$stock_type' AND dsb.drug_id='$selected_drug' AND dsb.batch_number='$batch_selected'  ORDER BY last_update DESC , dsb.expiry_date ASC LIMIT 1");
+		$sql = "SELECT 
+		            dsb.balance, 
+		            dsb.expiry_date 
+		        FROM drug_stock_balance dsb  
+		        WHERE dsb.facility_code='$facility_code' 
+		        AND dsb.stock_type='$stock_type' 
+		        AND dsb.drug_id='$selected_drug' 
+		        AND dsb.batch_number='$batch_selected'  
+		        ORDER BY last_update DESC,dsb.expiry_date ASC 
+		        LIMIT 1";
+		$batch_sql = $this -> db -> query($sql);
 		$batches_array = $batch_sql -> result_array();
 		echo json_encode($batches_array);
 	}
@@ -513,21 +549,39 @@ class Inventory_Management extends MY_Controller {
 		$selected_drug = $this -> input -> post("selected_drug");
 		$batch_selected = $this -> input -> post("batch_selected");
 		$expiry_date = $this -> input -> post("expiry_date");
-		$batch_sql = $this -> db -> query("SELECT dsb.balance, dsb.expiry_date FROM drug_stock_balance dsb  WHERE dsb.facility_code='$facility_code' AND dsb.stock_type='$stock_type' AND dsb.drug_id='$selected_drug' AND dsb.batch_number='$batch_selected' AND dsb.balance>0 AND dsb.expiry_date>=CURDATE() AND dsb.expiry_date='$expiry_date' ORDER BY last_update DESC , dsb.expiry_date ASC LIMIT 1");
+		$sql = "SELECT 
+		            dsb.balance, 
+		            dsb.expiry_date 
+		        FROM drug_stock_balance dsb  
+		        WHERE dsb.facility_code = '$facility_code' 
+		        AND dsb.stock_type = '$stock_type' 
+		        AND dsb.drug_id = '$selected_drug' 
+		        AND dsb.batch_number = '$batch_selected' 
+		        AND dsb.balance > 0 
+		        AND dsb.expiry_date > CURDATE() 
+		        AND dsb.expiry_date='$expiry_date' 
+		        ORDER BY last_update DESC,dsb.expiry_date ASC 
+		        LIMIT 1";
+		$batch_sql = $this -> db -> query($sql);
 		$batches_array = $batch_sql -> result_array();
 		echo json_encode($batches_array);
 	}
 
 	public function getDrugDetails() {
-
 		$selected_drug = $this -> input -> post("selected_drug");
-		$drug_details_sql = $this -> db -> query("SELECT d.pack_size,u.Name FROM drugcode d LEFT JOIN drug_unit u ON u.id=d.unit WHERE d.enabled=1 AND d.id='$selected_drug' ");
+		$sql = "SELECT 
+		            d.pack_size,
+		            u.Name 
+		        FROM drugcode d 
+		        LEFT JOIN drug_unit u ON u.id=d.unit 
+		        WHERE d.enabled=1 
+		        AND d.id='$selected_drug'";
+		$drug_details_sql = $this -> db -> query($sql);
 		$drug_details_array = $drug_details_sql -> result_array();
 		echo json_encode($drug_details_array);
 	}
 
 	public function save() {
-
 		/*
 		 * Get posted data from the client
 		 */
