@@ -6499,7 +6499,7 @@ class report_management extends MY_Controller {
             $this->load->helper('directory');
             
             $dir = realpath($_SERVER['DOCUMENT_ROOT']);
-            $files = directory_map($dir.'/ADT/assets/Guidelines/');
+            $files = directory_map($dir.'/ADT/assets/guidelines/');
            
             $columns=array('#','File Name','Action');
             $tmpl = array('table_open' => '<table class="table table-bordered table-hover table-condensed table-striped dataTables" >');
@@ -6514,6 +6514,11 @@ class report_management extends MY_Controller {
             $this -> table -> add_row("",$file, $links);    
             }
             $data['guidelines_list'] = $this -> table -> generate();
+            $data['hide_side_menu'] = 1;
+            $data['selected_report_type_link'] = "guidelines_report_row";
+            $data['selected_report_type'] = "List of Guidelines";
+            $data['report_title'] = "List of Guidelines";
+            $data['facility_name'] = $this -> session -> userdata('facility_name');
 	    $data['content_view']='guidelines_listing_v';
             $this -> base_params($data);
         }

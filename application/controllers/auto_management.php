@@ -858,7 +858,7 @@ class auto_management extends MY_Controller {
         
         $files = $this->ftp->list_files($server_file);
         foreach($files as $file){
-             $local_file = $dir . "/ADT/assets/Guidelines". $file;
+             $local_file = $dir . "/ADT/assets/guidelines". $file;
              $downloadfile= $this->ftp->download($file,$local_file , 'ascii');
         }
       

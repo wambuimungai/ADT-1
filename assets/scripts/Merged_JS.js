@@ -1032,6 +1032,12 @@ $(document).ready(function() {
 			$("#default").hide();
 			$(".reports_types").css("display", "none");
 			$("#moh_forms_report_row").css("display", "block");
+		}else if($(this).attr("id") == 'guidelines') {
+			$(".active").removeClass();
+			$(this).addClass("active");
+			$(".reports_types").css("display", "none");
+                        var report_url = base_url + "report_management/load_guidelines_view";
+                        window.location = report_url;
 		}
 	});
 	//Features to select
