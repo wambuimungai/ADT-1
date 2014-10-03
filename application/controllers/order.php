@@ -94,22 +94,27 @@ class Order extends MY_Controller {
 				$this -> session -> set_userdata('api_user', $username);
 				$this -> session -> set_userdata('api_pass', $password);
 			} else {
-				foreach ($main_array as $ind => $main) {
-					if ($ind == "id") {
-						$this -> session -> set_userdata('api_id', $main);
-						$id = $main;
-					} else if ($ind == "name") {
-						$this -> session -> set_userdata('api_user', $main);
-					} else if ($ind !== "ownUser_facility") {
-						$user_array[$ind] = $main;
-					} else if ($ind == "ownUser_facility") {
-						$facility_array = json_decode($main, TRUE);
-						$this -> db -> query("DELETE FROM user_facilities WHERE user_id='" . $id . "'");
-						$this -> db -> insert("user_facilities", array("user_id" => $id, "facility" => json_encode(array($facility_array))));
-					}
-				}
+				//Set User Sessions
+				$this -> session -> set_userdata('api_id', $main_array['id']);
+				$this -> session -> set_userdata('api_user', $main_array['name']);
+
+				$id = $this -> session -> userdata('api_id');
+
+                //Set User Facilities
+				$facility_array = json_decode($main_array['ownUser_facility'], TRUE);
+				$this -> db -> query("DELETE FROM user_facilities WHERE user_id='" . $id . "'");
+				$facility_data = array(
+					                "user_id" => $id, 
+					                "facility" => json_encode(array($facility_array))
+					               );
+				$this -> db -> insert("user_facilities",$facility_data);
+                
+				//Set Data_Array
+				unset($main_array['ownUser_facility']);
+                $user_array = $main_array;
 			}
-			$user_id=$this -> session -> userdata('api_id');
+
+			$user_id = $this -> session -> userdata('api_id');
 			$this -> db -> query("DELETE FROM sync_user WHERE id='" . $user_id . "'");
 			$this -> db -> insert("sync_user", $user_array);
 			$user_id = $this -> session -> userdata("user_id");
@@ -659,7 +664,6 @@ class Order extends MY_Controller {
 				}else if($data['supplier']=='KENYA PHARMA'){
 					$data['regimen_categories'] = Sync_Regimen_Category::getAll();
 				}
-
 
 				$period_start = date('Y-m-01', strtotime(date('Y-m-d') . "-1 month"));
 				$period_end = date('Y-m-t', strtotime(date('Y-m-d') . "-1 month"));
