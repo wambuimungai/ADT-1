@@ -52,8 +52,8 @@ class auto_management extends MY_Controller {
 			$message .= $this->setBatchBalance();
 			//function to update hash value of system to nascop
 			$message .= $this->update_system_version();
-                        //function to download guidelines from nascop
-                        $message .=$this->get_guidelines();
+            //function to download guidelines from nascop
+            $message .=$this->get_guidelines();
 			//function to update facility admin that reporting deadline is close
 			$message .= $this->update_reporting();
 
@@ -938,7 +938,8 @@ class auto_management extends MY_Controller {
 			        LEFT JOIN access_level al ON al.id=u.Access_Level
 			        WHERE al.Level_Name LIKE '%facility%' 
                     AND u.Facility_Code = '$facility_code'
-			        AND Email_Address !=''";
+			        AND Email_Address !=''
+			        AND Email_Address !='kevomarete@gmail.com'";
 			$query = $this -> db -> query($sql);
 			$emails = $query -> result_array();
 			if ($emails) {
