@@ -152,6 +152,10 @@
 				<option class="month_period_report" value="getMOHForm/731">GET MOH 731 </option>
 			</select></td>
 		</tr>
+                <!-- guidelines-->
+                <tr id="guidelines_report_row" class="reports_types">
+		</tr>
+                
 		<tr>
 			<!-- Select report range donors -->
 			<table id="donor_date_range_report" class="select_types">
@@ -180,7 +184,7 @@
 					</td>
 				</tr>
 			</table>
-			<!-- Report year -->
+                    	<!-- Report year -->
 			<table id="year" class="select_types">
 				<tr>
 					<td><label>Select Year : </label></td>

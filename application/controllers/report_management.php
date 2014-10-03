@@ -2769,7 +2769,7 @@ class report_management extends MY_Controller {
 				if ($results) {
 					foreach ($results as $result) {
 						$total_child_male = $result['total_child_male'];
-						$service_name = $result['service_name'];
+                                                $service_name = $result['service_name'];
 						$overall_child_male += $total_child_male;
 						if ($service_name == "ART") {
 							$overall_child_male_art += $total_child_male;
@@ -6494,7 +6494,34 @@ class report_management extends MY_Controller {
 			redirect($filename);
 		}
 	}
-
+            //loading guidelines
+            public function load_guidelines_view() {
+            $this->load->helper('directory');
+            
+            $dir = realpath($_SERVER['DOCUMENT_ROOT']);
+            $files = directory_map($dir.'/ADT/assets/guidelines/');
+           
+            $columns=array('#','File Name','Action');
+            $tmpl = array('table_open' => '<table class="table table-bordered table-hover table-condensed table-striped dataTables" >');
+            $this -> table -> set_template($tmpl);
+            $this -> table -> set_heading($columns);
+             
+            foreach($files as $file){
+           
+            $links = "<a href='".base_url()."assets/Guidelines/".$file."'target='_blank'>View</a>";
+            
+            
+            $this -> table -> add_row("",$file, $links);    
+            }
+            $data['guidelines_list'] = $this -> table -> generate();
+            $data['hide_side_menu'] = 1;
+            $data['selected_report_type_link'] = "guidelines_report_row";
+            $data['selected_report_type'] = "List of Guidelines";
+            $data['report_title'] = "List of Guidelines";
+            $data['facility_name'] = $this -> session -> userdata('facility_name');
+	    $data['content_view']='guidelines_listing_v';
+            $this -> base_params($data);
+        }
 	public function base_params($data) {
 		$data['reports'] = true;
 		$data['title'] = "webADT | Reports";

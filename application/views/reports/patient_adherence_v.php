@@ -68,8 +68,6 @@
 		var missed_1_female_85 = 0;
 		var missed_1_male_80 = 0;
 		var missed_1_female_80 = 0;
-		var missed_2_male_100 = 0;
-		var missed_2_female_100 = 0;
 		var missed_2_male_95 = 0;
 		var missed_2_female_95 = 0;
 		var missed_2_male_85 = 0;
@@ -680,6 +678,7 @@
 						<th class="_age" width="45">15-24</th>
 						<th class="_age">&gt;24</th>
 						<th class="_age">(1x + 2x)/2</th>
+                                                
 					</tr>
 				</thead>
 				<tbody>
@@ -690,7 +689,7 @@
 						<td>85 - 94%</td><td>2 -4 Doses</td><td class="_total" id="missed_total_85"></td><td id="missed_1_male_85"></td><td id="missed_1_female_85"></td><td id="missed_1_lt14_85"></td><td id="missed_1_15-24_85"></td><td id="missed_1_gt25_85"></td><td>4 - 8 Doses</td><td id="missed_2_total_85"></td><td id="missed_2_male_85"></td><td id="missed_2_female_85"></td><td id="missed_2_lt14_85"></td><td id="missed_2_15-24_85"></td><td id="missed_2_gt25_85"></td><td class="_total" id="missed_2_gt25_85avg"></td>
 					</tr>
 					<tr>
-						<td>&lt; 85%</td><td>&gt;= 5 Doses</td><td class="_total" id="missed_total_80"></td><td id="missed_1_male_80"></td><td id="missed_1_female_80"></td><td id="missed_1_lt14_80"></td><td id="missed_1_15-24_80"></td><td id="missed_1_gt25_80"></td><td>&gt; =9 Doses</td><td id="missed_2_total_80"></td><td id="missed_2_male_80"></td><td id="missed_2_female_80"></td><td id="missed_2_lt14_80"></td><td id="missed_2_15-24_80"></td><td  id="missed_2_gt25_80"></td><td class="_total" id="missed_2_gt25_80avg"></td>
+                                            <td>&lt; 85%</td><td>&gt;= 5 Doses</td><td class="_total" id="missed_total_80"></td><td id="missed_1_male_80"></td><td id="missed_1_female_80"></td><td id="missed_1_lt14_80"></td><td id="missed_1_15-24_80"></td><td id="missed_1_gt25_80"></td><td>&gt; =9 Doses</td><td id="missed_2_total_80"></td><td id="missed_2_male_80"></td><td id="missed_2_female_80"></td><td id="missed_2_lt14_80"></td><td id="missed_2_15-24_80"></td><td  id="missed_2_gt25_80"></td><td class="_total" id="missed_2_gt25_80avg"></td>
 					</tr>
 				</tbody>
 			</table>
