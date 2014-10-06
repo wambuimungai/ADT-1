@@ -544,7 +544,7 @@ class Order extends MY_Controller {
 				$duplicate = $this -> check_duplicate($code, $period_start, $period_end, $facilities['id'], $type);
 				$data['commodities'] = Sync_Drug::getActiveList();
 				if ($duplicate == true) {
-					redirect("order");
+					//redirect("order");
 				}
 			}
 
@@ -672,7 +672,7 @@ class Order extends MY_Controller {
 				$facilities = Sync_Facility::getId($facility_code, $order_type);
 				$duplicate = $this -> check_duplicate($code, $period_start, $period_end, $facilities['id'], $type);
 				if ($duplicate == true) {
-					redirect("order");
+					//redirect("order");
 				}
 			}
 			$facilities = Sync_Facility::getId($facility_code, $order_type);
@@ -3703,7 +3703,7 @@ class Order extends MY_Controller {
 			}
 		}else if($code == "F-CDRR_packs"){
             foreach ($row as $i => $v) {
-				if ($i != "expiry_month" && $i != "dispensed_to_patients") {
+				if ($i != "expiry_month" && $i != "dispensed_to_patients" && $i !="beginning_balance") {
 					$row[$i] = round(@$v / @$pack_size);
 				}
 			}
