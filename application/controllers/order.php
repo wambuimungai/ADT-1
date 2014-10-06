@@ -426,7 +426,7 @@ class Order extends MY_Controller {
 		$link_values = "";
 		foreach ($data as $mydata) {
 			$status_name = strtolower(@$mydata['status_name']);
-			if ($status_name == "prepared") {
+			if ($status_name == "prepared" || $status_name == "review") {
 				$links = array("order/view_order/" . $table => "view", "order/update_order/" . $table => "update", "order/read_order/" . $table => "delete", "order/download_order/" . $table => "download");
 			} else {
 				$links = array("order/view_order/" . $table => "view", "order/download_order/" . $table => "download");
@@ -512,7 +512,7 @@ class Order extends MY_Controller {
 				$data['cdrr_id'] = $cdrr_id;
 				$data['logs'] = Cdrr_Log::getLogs($cdrr_id);
 				if ($data['options'] == "view" || $data['options'] == "update") {
-					if ($data['status_name'] == "prepared") {
+					if ($data['status_name'] == "prepared" || $data['status_name'] == "review") {
 						$data['option_links'] = "<li class='active'><a href='" . site_url("order/view_order/cdrr/" . $cdrr_id) . "'>view</a></li><li><a href='" . site_url("order/update_order/cdrr/" . $cdrr_id) . "'>update</a></li><li><a class='delete' href='" . site_url("order/delete_order/cdrr/" . $cdrr_id) . "'>delete</a></li>";
 					} else {
 						$data['option_links'] = "<li class='active'><a href='" . site_url("order/view_order/cdrr/" . $cdrr_id) . "'>view</a></li>";
