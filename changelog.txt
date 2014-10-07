@@ -1,3 +1,13 @@
+Version 2.17 7/10/2014
+==============================================
+- Added: Changed NASCOP URL
+- Added: Guidelines Summary 
+- Added: Different colors for tabs in reports and inventory
+- Added: Edit Dispensing fixed not showing selected drugs
+- Added: htaccess link .ini variales ssize increased
+- Fixed: ordering links e.g view,update during review status 
+- Fixed: Bincard fix for batches without expiry date
+
 Version 2.16 10/09/2014
 ==============================================
 - Added: Manual Auto Update in settings
