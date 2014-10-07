@@ -102,7 +102,13 @@ class Order extends MY_Controller {
 
                 //Set User Facilities
 				$facility_array = json_decode($main_array['ownUser_facility'], TRUE);
-				$this -> db -> query("DELETE FROM user_facilities WHERE user_id='" . $id . "'");
+				//Remove User Facilities
+				$sql = "DELETE FROM user_facilities WHERE user_id='$id'";
+				$this -> db -> query($sql);
+				//Remove Sync User
+				$sql = "DELETE FROM sync_user WHERE id = '$id' OR username = '".$main_array['username']."'";
+				$this -> db -> query($sql);
+
 				$facility_data = array(
 					                "user_id" => $id, 
 					                "facility" => json_encode(array($facility_array))
@@ -114,8 +120,6 @@ class Order extends MY_Controller {
                 $user_array = $main_array;
 			}
 
-			$user_id = $this -> session -> userdata('api_id');
-			$this -> db -> query("DELETE FROM sync_user WHERE id='" . $user_id . "'");
 			$this -> db -> insert("sync_user", $user_array);
 			$user_id = $this -> session -> userdata("user_id");
 			$api_id = $this -> session -> userdata("api_id");
