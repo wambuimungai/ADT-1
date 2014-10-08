@@ -354,7 +354,7 @@
 					?>
 					<tr class="ordered_drugs" drug_id="<?php echo $commodity -> id;?>">
 						<td class="col_drug"><?php echo $commodity -> Drug;?>
-							<input type="hidden" name="pack_size[]" id="pack_size_<?php echo $commodity -> id;?>" value="<?php echo $commodity ->Pack_Size;?>"/>
+							<input type="hidden" class="pack_size" name="pack_size[]" id="pack_size_<?php echo $commodity -> id;?>" value="<?php echo $commodity ->Pack_Size;?>"/>
 							<?php 
 							if($options=="update" || $options=="view"){
 							?>
@@ -521,9 +521,19 @@
 		});
 		$(".quantity_dispensed_packs").live('change',function() {
 			calculateResupply($(this));
+			var code = "<?php echo $code; ?>";
+			if(code == "F-CDRR_packs")
+			{
+				calculateUnits($(this));
+			}
 		});
 		$(".quantity_dispensed").live('change',function() {
 			calculateResupply($(this));
+			var code = "<?php echo $code; ?>";
+			if(code == "F-CDRR_packs")
+			{
+				calculatePacks($(this));
+			}
 		});
 		$(".losses").live('change',function() {
 			calculateResupply($(this));
@@ -697,6 +707,27 @@
         	$(".btn").attr("disabled","disabled");
         	return true;
         }
+   }
+
+   function calculateUnits(element)
+   {
+        var row_element = element.closest("tr");
+		var pack_size = parseInt(row_element.find(".pack_size").attr("value"));
+		var packs = parseInt(row_element.find(".quantity_dispensed_packs").attr("value"));
+
+		var units = (packs * pack_size);
+		row_element.find(".quantity_dispensed").attr("value",units.toFixed());
+   }
+
+   function calculatePacks(element)
+   {
+   	    var row_element = element.closest("tr");
+		var pack_size = parseInt(row_element.find(".pack_size").attr("value"));
+		var units = parseInt(row_element.find(".quantity_dispensed").attr("value"));
+
+		var packs = (units / pack_size);
+		row_element.find(".quantity_dispensed_packs").attr("value",packs.toFixed());
+
    }
 </script>
 <style>
