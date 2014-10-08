@@ -26,6 +26,10 @@ class auto_management extends MY_Controller {
 
 		//if not updated today
 		if ($today != $last_update || $manual==TRUE) {
+			//Function to create stored procedures
+			//$message .= $this->createStoredProcedures();
+			//Function to add table indexes
+			$message .= $this->addIndex();
 			//function to update destination column to 1 in drug_stock_movement table for issued transactions that have name 'pharm'
 			$message .= $this->updateIssuedTo();
 			//function to update source_destination column in drug_stock_movement table where it is zero
@@ -973,6 +977,77 @@ class auto_management extends MY_Controller {
 				} else {
 					$message = 'Reporting Notification Failed!<br/>';
 				}
+			}
+		}
+		return $message;
+	}
+	
+	function createStoredProcedures(){
+		$data =array();
+		
+		$data["MAPS: Patient Revisit OC CM Stored Procedure"] ="
+			DROP procedure IF EXISTS `sp_GetRevisitCMOC`;
+			
+			DELIMITER $$
+			CREATE PROCEDURE `sp_GetRevisitCMOC` (IN start_date DATE, IN end_date DATE)
+			BEGIN
+				SELECT IF(temp2.other_illnesses LIKE '%cryptococcal%','revisit_cm','revisit_oc') as OI,COUNT(temp2.ccc_number) as total
+				FROM (SELECT DISTINCT(pv.patient_id) as ccc_number,oi.name as opportunistic_infection FROM patient_visit pv
+								INNER JOIN  opportunistic_infection oi ON oi.indication = pv.indication
+							) as temp1
+				INNER JOIN (
+						SELECT DISTINCT(p.patient_number_ccc) as ccc_number,other_illnesses FROM patient p
+						INNER JOIN patient_status ps ON ps.id = p.current_status
+						WHERE p.date_enrolled < start_date
+						AND ps.name LIKE '%active%'
+				) as temp2 ON temp2.ccc_number = temp1.ccc_number
+				WHERE temp2.other_illnesses LIKE '%cryptococcal%' OR temp1.opportunistic_infection LIKE '%oesophageal%';
+			END$$
+			
+			DELIMITER ;";
+		
+		$data["MAPS: Revisit Patient By Gender Stored Procedure"] ="
+			DROP procedure IF EXISTS `sp_GetRevisitPatient`;
+			
+			DELIMITER $$
+			CREATE  PROCEDURE `sp_GetRevisitPatient`(IN start_date DATE, IN end_date DATE)
+			BEGIN
+			        SELECT COUNT(DISTINCT(p.id)) as total,IF(p.gender=1,'new_male','new_female') as  gender 
+							FROM patient p
+							LEFT JOIN patient_visit pv ON pv.patient_id = p.patient_number_ccc
+							INNER JOIN patient_status ps ON ps.id=p.current_status
+							WHERE p.date_enrolled < start_date 
+							AND ( pv.dispensing_date BETWEEN start_date AND end_date)
+							AND ps.name LIKE '%active%'
+							GROUP BY p.gender;
+			END$$
+			
+			DELIMITER ;";
+			$message = "";	
+			foreach ($data as $key => $value) {
+				echo $value;$this ->db ->query($value);
+				if($this->db->affected_rows() >0){
+					$message.=$key. " successfully created ! <br>";
+				}else{
+					$message.=$key. " could not be created ! ".$this->db->_error_message()." <br>";
+				}
+			}
+		return $message;
+	}
+	
+	public function addIndex(){//Create indexes on columns in table;
+		$data = array();
+		$this ->db ->query("ALTER TABLE  `patient_visit` DROP INDEX (  `dispensing_date` )");
+		$this ->db ->query("ALTER TABLE  `patient_visit` DROP INDEX (  `date_enrolled` )");
+		$data["Dispensing date index (Patient Visit) "] = "ALTER TABLE  `patient_visit` ADD INDEX (  `dispensing_date` )";
+		$data["Date Enrolled (Patient)"] = "ALTER TABLE  `patient` ADD INDEX (  `date_enrolled` )";
+		$message = "";	
+		foreach ($data as $key => $value) {
+			$this ->db ->query($value);
+			if($this->db->affected_rows() >0){
+				$message.=$key. " successfully created ! <br>";
+			}else{
+				$message.=$key. " could not be created ! ".$this->db->_error_message()." <br>";
 			}
 		}
 		return $message;

@@ -778,8 +778,10 @@ class Order extends MY_Controller {
 
 				//insert cdrr_items
 				$commodity_counter = 0;
-				$cdrr_array = array();
+				
 				foreach ($commodities as $commodity) {
+					$cdrr_array = array();
+					echo json_encode($resupply)." --1<br>";
 					if (trim($resupply[$commodity_counter]) != '') {
 						if ($id == "") {
 							$cdrr_array[$commodity_counter]['id'] = "";
@@ -814,11 +816,11 @@ class Order extends MY_Controller {
 						}
 						$cdrr_array[$commodity_counter]['cdrr_id'] = $id;
 						$cdrr_array[$commodity_counter]['drug_id'] = $commodity;
-
+						
 						$commodity_counter++;
 					}
 				}
-
+				echo json_encode($cdrr_array);die();
 				$main_array['ownCdrr_item'] = $cdrr_array;
 				//Insert Logs
 
@@ -2840,15 +2842,15 @@ class Order extends MY_Controller {
 				$data['new_patient'] = $results;
 			}else if($data_type=='revisit_patient'){
 				//revisit
-				$sql_clients = 'SELECT COUNT(DISTINCT(pv.id)) as total,IF(pv.gender=1,"revisit_male","revisit_female") as gender 
-								FROM v_patient_visits pv
-								INNER JOIN patient_status ps ON ps.id=pv.current_status
-								WHERE pv.date_enrolled < "' . $start_date . '" 
-								AND pv.dispensing_date>= "' . $start_date . '"
-								AND pv.dispensing_date <= "' . $end_date . '"
-								AND ps.name LIKE "%active%"
-								GROUP BY pv.gender
-								';
+				$sql_clients = "SELECT COUNT(DISTINCT(p.id)) as total,IF(p.gender=1,'revisit_male','revisit_female') as  gender 
+								FROM patient p
+								LEFT JOIN patient_visit pv ON pv.patient_id = p.patient_number_ccc
+								INNER JOIN patient_status ps ON ps.id=p.current_status
+								WHERE p.date_enrolled < '$start_date' 
+								AND ( pv.dispensing_date BETWEEN '$start_date' AND '$end_date')
+								AND ps.name LIKE '%active%'
+								GROUP BY p.gender;
+								";
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
 				$data['revisit_patient'] = $results;
@@ -2955,17 +2957,17 @@ class Order extends MY_Controller {
 			else if($data_type=='revisit_cm_oc'){
 
 				//Revisit
-				$sql_clients="SELECT IF(temp.other_illnesses LIKE '%cryptococcal%','revisit_cm','revisit_oc') as OI,COUNT(temp.patient_number_ccc) as total
-							  FROM(
-								  	SELECT pv.patient_number_ccc,pv.current_status,pv.date_enrolled,oi.name AS OI,pv.other_illnesses
-									FROM v_patient_visits pv
-									LEFT JOIN opportunistic_infection oi ON oi.indication = pv.indication
-									WHERE (pv.other_illnesses LIKE '%cryptococcal%' OR oi.name LIKE '%oesophageal%')
-									GROUP BY pv.patient_number_ccc) as temp
-							  LEFT JOIN patient_status ps ON ps.id=temp.current_status
-							  WHERE ps.name LIKE '%active%'
-							  AND temp.date_enrolled<'$start_date'
-							  GROUP BY temp.OI";			
+				$sql_clients="SELECT IF(temp2.other_illnesses LIKE '%cryptococcal%','revisit_cm','revisit_oc') as OI,COUNT(temp2.ccc_number) as total
+								FROM (SELECT DISTINCT(pv.patient_id) as ccc_number,oi.name as opportunistic_infection FROM patient_visit pv
+												INNER JOIN  opportunistic_infection oi ON oi.indication = pv.indication
+											) as temp1
+								INNER JOIN (
+										SELECT DISTINCT(p.patient_number_ccc) as ccc_number,other_illnesses FROM patient p
+										INNER JOIN patient_status ps ON ps.id = p.current_status
+										WHERE p.date_enrolled < '$start_date'
+										AND ps.name LIKE '%active%'
+								) as temp2 ON temp2.ccc_number = temp1.ccc_number
+								WHERE temp2.other_illnesses LIKE '%cryptococcal%' OR temp1.opportunistic_infection LIKE '%oesophageal%';";			
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
 				$data['revisit_cm_oc'] = $results;
