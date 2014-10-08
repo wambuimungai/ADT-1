@@ -57,7 +57,7 @@ class auto_management extends MY_Controller {
 			//function to update hash value of system to nascop
 			$message .= $this->update_system_version();
             //function to download guidelines from nascop
-            $message .=$this->get_guidelines();
+            $message .= $this->get_guidelines();
 			//function to update facility admin that reporting deadline is close
 			$message .= $this->update_reporting();
 
