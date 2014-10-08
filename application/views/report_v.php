@@ -50,6 +50,10 @@ if ($access_level == "nascop_staff") {
 					});
 					$(".dataTables").wrap('<div class="dataTables_scroll" />');
 				});
+
+				$(window).resize(function(){
+				   $(".hasDatepicker").datepicker("hide");
+				});
 			});
 		</script>
 		

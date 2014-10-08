@@ -47,7 +47,11 @@
 		});
 		$(".reports_tabs").click(function() {
 			$('#standard_report_sub').show();
-		})
+		});
+
+		$(window).resize(function(){
+		   $(".hasDatepicker").datepicker("hide");
+		});
 	});
 	function LastDayOfMonth(Year, Month) {
 		return (new Date((new Date(Year, Month, 1)) - 1)).getDate();
