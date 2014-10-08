@@ -857,11 +857,13 @@ class auto_management extends MY_Controller {
        
         
         $files = $this->ftp->list_files($server_file);
-        foreach($files as $file){
-             $local_file = $dir . "/ADT/assets/guidelines". $file;
-             $downloadfile= $this->ftp->download($file,$local_file , 'ascii');
-        }
-      
+	        if(!empty($files))
+	        {
+		        foreach($files as $file){
+		             $local_file = $dir . "/ADT/assets/guidelines". $file;
+		             $downloadfile= $this->ftp->download($file,$local_file , 'ascii');
+		        }
+	        }
         }
    
         public function update_system_version(){

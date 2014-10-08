@@ -704,7 +704,7 @@
         if(!validated) {
            return false;
         }else{
-        	$(".btn").attr("disabled","disabled");
+        	//$(".btn").attr("disabled","disabled");
         	return true;
         }
    }

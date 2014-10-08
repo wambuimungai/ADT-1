@@ -6,13 +6,20 @@ $(document).ready(function() {
 
 	$(".actual").on('click',function(e) { 
             var parentForm = $(".actual").closest("form").attr("name");
-             e.preventDefault(); 
+            e.preventDefault(); 
             if(processData(parentForm)){
               bootbox.confirm("<h4>Save</h4>\n\<hr/><center>Are you sure?</center>",
                 function(res){
                     if(res===true){
                       $("#"+parentForm).submit();
-                     }
+	                    if(parentForm == "fmPostCdrr")
+	                    {
+	                        $(".btn").attr("disabled","disabled");
+	                    }
+                    }
+                    else{
+                    	$(this).removeAttr("disabled");
+                    }
                 });
             }
 	});
