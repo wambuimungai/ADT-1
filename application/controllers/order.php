@@ -734,6 +734,7 @@ class Order extends MY_Controller {
 				$sponsors = $this -> input -> post("sponsor");
 				$none_arv = $this -> input -> post("non_arv");
 				$commodities = $this -> input -> post('commodity');
+
 				$pack_size = $this -> input -> post('pack_size');
 				$opening_balances = $this -> input -> post('opening_balance');
 				$quantities_received = $this -> input -> post('quantity_received');
@@ -779,6 +780,7 @@ class Order extends MY_Controller {
 				//insert cdrr_items
 				$commodity_counter = 0;
 				$cdrr_array = array();
+
 				foreach ($commodities as $commodity) {
 					if (trim($resupply[$commodity_counter]) != '') {
 						if ($id == "") {
@@ -820,9 +822,8 @@ class Order extends MY_Controller {
 						}
 						$cdrr_array[$commodity_counter]['cdrr_id'] = $id;
 						$cdrr_array[$commodity_counter]['drug_id'] = $commodity;
-
-						$commodity_counter++;
 					}
+					$commodity_counter++;
 				}
 
 				$main_array['ownCdrr_item'] = $cdrr_array;
@@ -1260,7 +1261,7 @@ class Order extends MY_Controller {
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_POST, 1);
-        
+
 		if ($supplier != "KEMSA") {
 			$username = $this -> session -> userdata('api_user');
 			$password = $this -> session -> userdata('api_pass');

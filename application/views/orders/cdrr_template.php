@@ -568,13 +568,20 @@
 		  $("#opening_balance_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['balance']; ?>");
 		  $("#received_in_period_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['received']; ?>");
 		  $("#dispensed_in_period_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['dispensed_units']; ?>"); 
-			<?php  
-			if($cdrr_array[0]['code']=="F-CDRR_packs"){
-			?>
+		<?php	
+		if($cdrr_array[0]['code']=="D-CDRR"){
+		?>
+ 		  $("#dispensed_in_period_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['dispensed_packs']; ?>"); 
+		<?php	
+		}
+		?>
+		<?php  
+		if($cdrr_array[0]['code']=="F-CDRR_packs"){
+		?>
 		  $("#dispensed_in_period_packs_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['dispensed_packs']; ?>"); 	
-			<?php	
-			}
-			?>
+		<?php	
+		}
+		?>
 		  $("#losses_in_period_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['losses']; ?>");
 		  $("#adjustments_in_period_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['adjustments']; ?>");
 		  $("#physical_in_period_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['count']; ?>");
