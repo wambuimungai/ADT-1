@@ -57,7 +57,7 @@ class auto_management extends MY_Controller {
 			//function to update hash value of system to nascop
 			$message .= $this->update_system_version();
             //function to download guidelines from nascop
-            $message .=$this->get_guidelines();
+            $message .= $this->get_guidelines();
 			//function to update facility admin that reporting deadline is close
 			$message .= $this->update_reporting();
 
@@ -861,11 +861,13 @@ class auto_management extends MY_Controller {
        
         
         $files = $this->ftp->list_files($server_file);
-        foreach($files as $file){
-             $local_file = $dir . "/ADT/assets/guidelines". $file;
-             $downloadfile= $this->ftp->download($file,$local_file , 'ascii');
-        }
-      
+	        if(!empty($files))
+	        {
+		        foreach($files as $file){
+		             $local_file = $dir . "/ADT/assets/guidelines". $file;
+		             $downloadfile= $this->ftp->download($file,$local_file , 'ascii');
+		        }
+	        }
         }
    
         public function update_system_version(){
