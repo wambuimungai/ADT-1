@@ -778,10 +778,8 @@ class Order extends MY_Controller {
 
 				//insert cdrr_items
 				$commodity_counter = 0;
-				
+				$cdrr_array = array();
 				foreach ($commodities as $commodity) {
-					$cdrr_array = array();
-					echo json_encode($resupply)." --1<br>";
 					if (trim($resupply[$commodity_counter]) != '') {
 						if ($id == "") {
 							$cdrr_array[$commodity_counter]['id'] = "";
@@ -822,11 +820,11 @@ class Order extends MY_Controller {
 						}
 						$cdrr_array[$commodity_counter]['cdrr_id'] = $id;
 						$cdrr_array[$commodity_counter]['drug_id'] = $commodity;
-						
+
 						$commodity_counter++;
 					}
 				}
-				echo json_encode($cdrr_array);die();
+
 				$main_array['ownCdrr_item'] = $cdrr_array;
 				//Insert Logs
 
