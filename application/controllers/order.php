@@ -2632,7 +2632,6 @@ class Order extends MY_Controller {
                     AND sf.category = 'satellite'
                     AND m.period_begin='$period_start'  ORDER BY m.code DESC
 					";
-		
 		$query = $this -> db -> query($sql_maps);
 		$results = $query -> result_array();
 		$maps_array = array();
@@ -2698,7 +2697,12 @@ class Order extends MY_Controller {
 		}
 		
 		//Get maps items
-		$sql_items = 'SELECT regimen_id,maps_id,SUM(total) as total FROM maps_item WHERE (maps_id=' . $map_id . ') GROUP BY regimen_id';
+		$sql_items = '
+			SELECT temp.regimen_id,temp.maps_id,SUM(temp.total) as total FROM
+					(
+					SELECT DISTINCT regimen_id,maps_id,total FROM maps_item WHERE (maps_id=' . $map_id . ')
+					) as temp  GROUP BY temp.regimen_id';
+		
 		$query_items = $this -> db -> query($sql_items);
 		$maps_items_array = $query_items -> result_array();
 
@@ -2998,6 +3002,32 @@ class Order extends MY_Controller {
 		}
 		
 		
+	}
+	public function actualReports($facility_code="13050",$period_begin="2014-09-01",$type="cdrr"){
+		if($facility_code!=''){
+			$filter = "";
+			if($type=="cdrr"){
+				$filter = "F-CDRR";
+			}else if($type=="maps"){
+				$filter = "F-MAPS";
+			} 
+			$sql = "
+			SELECT COUNT(m.id) as total FROM $type m LEFT JOIN sync_facility sf ON sf.id=m.facility_id 
+                    WHERE  m.status ='approved' 
+                    AND m.code LIKE '%$filter%'
+                    AND sf.category = 'satellite'
+                    AND m.period_begin='$period_begin'  ORDER BY m.code DESC
+                    ";
+			$query = $this -> db -> query($sql);
+			$results = $query -> result_array();
+			if($results){
+				return $results[0]['total'];
+			}else{
+				return 0;
+			}
+		}else{
+			return 0;
+		}
 	}
 
 	public function base_params($data) {
@@ -3858,6 +3888,16 @@ class Order extends MY_Controller {
 			}
 		}
 		return $row;
+	}
+	
+	public function getExpectedActualReport(){
+		$data =  array();
+		$facility_code = $this ->input ->post("facility_code");
+		$period_begin = $this ->input ->post("period_begin");
+		$type = $this ->input ->post("type");
+		$data["expected"] = $this ->expectedReports($facility_code);
+		$data["actual"] =  $this ->actualReports($facility_code,$period_begin,$type);
+		echo json_encode($data);
 	}
 
 }

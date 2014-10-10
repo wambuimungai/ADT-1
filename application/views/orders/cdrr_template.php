@@ -491,6 +491,7 @@
            	 if(i==(total-1)){
            	   var period_start = $("#period_start").attr("value");
 	           var facility_id= $("#facility_id").attr("value");
+	           var facility_code =$("#facility_code").attr("value");
 	           //set the code
 	           <?php
 	            if($hide_generate==2){
@@ -504,6 +505,11 @@
 			   var code = "<?php echo $code; ?>";
 	           //run function
     	       getPeriodDrugBalance(count,period_start, facility_id,code,total,drugs,stores);
+    	       //If Report is D-CDRR, get Expected and actual reports
+    	       if(code=="D-CDRR"){
+    	       		//getExpectedACtualReports(facility_code,period_start,"cdrr");
+    	       }
+    	       
            	 }
            });
            
