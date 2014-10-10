@@ -2620,20 +2620,19 @@ class Order extends MY_Controller {
 		echo json_encode($row);
 	}
 
-	public function get_aggregated_fmaps($period_start = '', $period_end = '') {//Generate aggregated fmaps
+	public function get_aggregated_fmaps($period_start = '2014-09-01', $period_end = '2014-09-30') {//Generate aggregated fmaps
 		$map_id = '"NOTTHERE"';
 		$facility_code = $this -> session -> userdata("facility");
-		//Get maps
-		$sql_maps = 'SELECT m.id, m.code, m.status, m.period_begin,m.period_end,m.reports_expected,m.reports_actual,m.services,m.sponsors,m.art_adult,
-					m.art_child,m.new_male,m.revisit_male,m.new_female,m.revisit_female,m.new_pmtct,m.revisit_pmtct,m.total_infant,m.pep_adult,m.pep_child,m.total_adult,m.total_child,
-					m.diflucan_adult,m.diflucan_child,m.new_cm,m.revisit_cm,m.new_oc,m.revisit_oc,m.comments
-					FROM maps m 
-					LEFT JOIN sync_facility sf ON sf.id=m.facility_id
-					LEFT JOIN facilities f ON f.facilitycode=sf.code
-					WHERE (f.facilitycode="' .$facility_code. '" OR f.parent="' .$facility_code. '")
-					AND m.status ="approved"
-					AND m.period_begin="' .$period_start. '" AND m.period_end="' .$period_end. '" ORDER BY m.code DESC';
-
+		//Get only F-MAPS
+		$sql_maps = "
+					SELECT m.id, m.code, m.status, m.period_begin,m.period_end,m.reports_expected,m.reports_actual,m.services,m.sponsors,m.art_adult, m.art_child,m.new_male,m.revisit_male,m.new_female,m.revisit_female,m.new_pmtct,m.revisit_pmtct,m.total_infant,m.pep_adult,m.pep_child,m.total_adult,m.total_child, m.diflucan_adult,m.diflucan_child,m.new_cm,m.revisit_cm,m.new_oc,m.revisit_oc,m.comments 
+					FROM maps m LEFT JOIN sync_facility sf ON sf.id=m.facility_id 
+                    WHERE  m.status ='approved' 
+                    AND m.code='F-MAPS'
+                    AND sf.category = 'satellite'
+                    AND m.period_begin='$period_start'  ORDER BY m.code DESC
+					";
+		
 		$query = $this -> db -> query($sql_maps);
 		$results = $query -> result_array();
 		$maps_array = array();
@@ -2697,9 +2696,9 @@ class Order extends MY_Controller {
 			$maps_array['comments'] = $maps_array['comments'] . ' - ' . $value['comments'];
 
 		}
-
+		
 		//Get maps items
-		$sql_items = 'SELECT regimen_id,maps_id,SUM(total) as total FROM maps_item WHERE maps_id=' . $map_id . ' GROUP BY regimen_id';
+		$sql_items = 'SELECT regimen_id,maps_id,SUM(total) as total FROM maps_item WHERE (maps_id=' . $map_id . ') GROUP BY regimen_id';
 		$query_items = $this -> db -> query($sql_items);
 		$maps_items_array = $query_items -> result_array();
 
@@ -2983,10 +2982,22 @@ class Order extends MY_Controller {
 	}
 
 	public function expectedReports($facility_code) {//Get number of total expected reports
-		$sql = 'SELECT COUNT(id) as total FROM facilities WHERE facilitycode = "' . $facility_code . '" OR parent="' . $facility_code . '" ';
-		$query = $this -> db -> query($sql);
-		$results = $query -> result_array();
-		return $results[0]['total'];
+		if($facility_code!=''){
+			$sql = "SELECT COUNT(sf.id) as total FROM sync_facility sf 
+												INNER JOIN sync_facility sf1 ON sf1.parent_id = sf.id
+												WHERE sf.code ='$facility_code'";
+			$query = $this -> db -> query($sql);
+			$results = $query -> result_array();
+			if($results){
+				return $results[0]['total'];
+			}else{
+				return 0;
+			}
+		}else{
+			return 0;
+		}
+		
+		
 	}
 
 	public function base_params($data) {
