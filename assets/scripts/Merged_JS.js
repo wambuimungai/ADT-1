@@ -320,6 +320,26 @@ function getPeriodDrugBalance(count,start_date, facility_id, code,total,drugs,st
 	});
 }
 
+function getExpectedACtualReports(facility_code,period_start,type){
+	var base_url = getbaseurl();
+	var drug=drugs[count];
+	var link = base_url + 'order/getExpectedActualReport';
+	
+	$.ajax({
+		url : link,
+		type : 'POST',
+		dataType : 'json',
+		data:{
+			"period_begin":start_date,
+			"facility_code":facility_code,
+			"type":type,
+		},
+		success : function(data) {
+			
+		}
+	});
+}
+
 function convertDate(stringdate) {
 	// Internet Explorer does not like dashes in dates when converting,
 	// so lets use a regular expression to get the year, month, and day
