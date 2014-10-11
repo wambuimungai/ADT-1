@@ -273,7 +273,7 @@ function auto_logout() {
 //Function to get data for ordering(Cdrr)
 function getPeriodDrugBalance(count,start_date, facility_id, code,total,drugs,stores) {
 	var base_url = getbaseurl();
-	var drug=drugs[count];
+	var drug = drugs[count];
 	var link = base_url + 'order/getItems';
 	
 	$.ajax({
@@ -320,9 +320,8 @@ function getPeriodDrugBalance(count,start_date, facility_id, code,total,drugs,st
 	});
 }
 
-function getExpectedACtualReports(facility_code,period_start,type){
+function getExpectedActualReports(facility_code,period_start,type){
 	var base_url = getbaseurl();
-	var drug=drugs[count];
 	var link = base_url + 'order/getExpectedActualReport';
 	
 	$.ajax({
@@ -330,12 +329,13 @@ function getExpectedACtualReports(facility_code,period_start,type){
 		type : 'POST',
 		dataType : 'json',
 		data:{
-			"period_begin":start_date,
+			"period_begin":period_start,
 			"facility_code":facility_code,
 			"type":type,
 		},
 		success : function(data) {
-			
+			$("#central_rate").attr("value",data.expected);
+			$("#actual_report").attr("value",data.actual);
 		}
 	});
 }

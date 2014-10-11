@@ -848,7 +848,7 @@ class auto_management extends MY_Controller {
         public function get_guidelines(){
          $this->load->library('ftp');
 
-        $config['hostname'] = '192.168.133.10';
+        $config['hostname'] = '41.89.6.210';
         $config['username'] = 'demo';
         $config['password'] = 'demo';
         $config['port']     = 21;
