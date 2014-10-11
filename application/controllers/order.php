@@ -2638,7 +2638,7 @@ class Order extends MY_Controller {
                     AND sf.category = 'satellite'
                     AND m.period_begin='$period_start'  ORDER BY m.code DESC
 					";
-		
+					
 		$query = $this -> db -> query($sql_maps);
 		$results = $query -> result_array();
 		$maps_array = array();
@@ -2704,7 +2704,12 @@ class Order extends MY_Controller {
 		}
 		
 		//Get maps items
-		$sql_items = 'SELECT regimen_id,maps_id,SUM(total) as total FROM maps_item WHERE (maps_id=' . $map_id . ') GROUP BY regimen_id';
+		$sql_items = '
+			SELECT temp.regimen_id,temp.maps_id,SUM(temp.total) as total FROM
+					(
+					SELECT DISTINCT regimen_id,maps_id,total FROM maps_item WHERE (maps_id=' . $map_id . ')
+					) as temp  GROUP BY temp.regimen_id';
+		
 		$query_items = $this -> db -> query($sql_items);
 		$maps_items_array = $query_items -> result_array();
 
