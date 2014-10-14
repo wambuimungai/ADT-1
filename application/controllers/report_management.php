@@ -11,6 +11,8 @@ class report_management extends MY_Controller {
 		parent::__construct();
 		ini_set("max_execution_time", "1000000");
 		ini_set("memory_limit", '2048M');
+		$this -> load -> library(array('mpdf'));
+		$this -> load -> helper(array("file","download"));
 	}
 
 	public function index() {
@@ -6494,34 +6496,97 @@ class report_management extends MY_Controller {
 			redirect($filename);
 		}
 	}
-            //loading guidelines
-            public function load_guidelines_view() {
-            $this->load->helper('directory');
-            
-            $dir = realpath($_SERVER['DOCUMENT_ROOT']);
-            $files = directory_map($dir.'/ADT/assets/guidelines/');
-           
-            $columns=array('#','File Name','Action');
-            $tmpl = array('table_open' => '<table class="table table-bordered table-hover table-condensed table-striped dataTables" >');
-            $this -> table -> set_template($tmpl);
-            $this -> table -> set_heading($columns);
-             
-            foreach($files as $file){
-           
-            $links = "<a href='".base_url()."assets/Guidelines/".$file."'target='_blank'>View</a>";
-            
-            
-            $this -> table -> add_row("",$file, $links);    
-            }
-            $data['guidelines_list'] = $this -> table -> generate();
-            $data['hide_side_menu'] = 1;
-            $data['selected_report_type_link'] = "guidelines_report_row";
-            $data['selected_report_type'] = "List of Guidelines";
-            $data['report_title'] = "List of Guidelines";
-            $data['facility_name'] = $this -> session -> userdata('facility_name');
-	    $data['content_view']='guidelines_listing_v';
-            $this -> base_params($data);
-        }
+
+	public function dispensingReport($start_date="",$end_date=""){
+		$filter = "";
+		if($start_date!="" && $end_date!=""){
+			$start_date = date("Y-m-d",strtotime($start_date));
+			$end_date = date("Y-m-d",strtotime($end_date));
+			$filter = " WHERE dispensing_date BETWEEN '$start_date' AND '$end_date' ";
+		}
+		$sql = "SELECT pv.patient_id as 'CCC No', p.first_name as 'First Name', p.last_name as 'Last Name',pv.current_weight as 'Current Weight',pv.dispensing_date as 'Date of Visit',r.regimen_desc as 'Regimen', d.drug as 'Drug Name',pv.quantity as 'Quantity',pv.batch_number as 'Batch Number', IF(b.brand IS NULL,'',b.brand) as 'Brand Name',pv.dose as 'Dose',pv.duration as 'Duration',pv.user as 'Operator'
+				FROM patient_visit pv
+				LEFT JOIN patient p ON p.patient_number_ccc = pv.patient_id
+				LEFT JOIN drugcode d ON d.id = pv.drug_id
+				LEFT JOIN brand b ON b.id = pv.brand
+				LEFT JOIN regimen r ON r.id = pv.regimen
+				$filter
+				ORDER BY dispensing_date DESC LIMIT 100";	
+		//echo $sql;die();
+		$query = $this ->db ->query($sql);
+		$result = $query->result_array();
+		$counter = 0;
+		$table = "<table border='1' cellpadding='2' cellspacing='0' ><thead><tr style='background-color:aliceblue; font-size:16px;font-weight:700'>";
+		foreach ($query->list_fields() as $field){
+		   $table.="<td>".$field."</td>";
+		}
+		$table .= "</tr></thead><tbody>";
+		foreach ($result as $key => $value) {
+			$table.="<tr><td>".$value['CCC No']."</td>
+					  <td>".$value['First Name']."</td>
+					  <td>".$value['Last Name']."</td>
+					  <td>".$value['Current Weight']."</td>
+					  <td>".$value['Date of Visit']."</td>
+					  <td>".$value['Regimen']."</td>
+					  <td>".$value['Drug Name']."</td>
+					  <td>".$value['Quantity']."</td>
+					  <td>".$value['Batch Number']."</td>
+					  <td>".$value['Brand Name']."</td>
+					  <td>".$value['Dose']."</td>
+					  <td>".$value['Duration']."</td>
+					  <td>".$value['Operator']."</td>
+					  </tr>";
+		}
+		$table.= "</tbody></table>";
+		$this->mpdf = new mPDF('C', 'A3-L', 0, '', 5, 5, 5, 5, 7, 9, '');
+		$this->mpdf->WriteHTML($table);
+		$this->mpdf->ignore_invalid_utf8 = true;
+		$name = "Dispensing History as of ".date("Y_m_d").".pdf";
+		$this ->deleteAllFiles("./assets/download/");//Delete all files in folder first
+		write_file("./assets/download/$name", $this->mpdf->Output($name,'D'));
+		
+	}
+
+	function deleteAllFiles($directory=""){
+		if($directory!=""){
+			foreach(glob("{$directory}/*") as $file)
+		    {
+		        if(is_dir($file)) { 
+		            deleteAllFiles($file);
+		        } else {
+		            unlink($file);
+		        }
+		    }
+		}
+	}
+    //loading guidelines
+    public function load_guidelines_view() {
+	    $this->load->helper('directory');
+	    
+	    $dir = realpath($_SERVER['DOCUMENT_ROOT']);
+	    $files = directory_map($dir.'/ADT/assets/guidelines/');
+	   
+	    $columns=array('#','File Name','Action');
+	    $tmpl = array('table_open' => '<table class="table table-bordered table-hover table-condensed table-striped dataTables" >');
+	    $this -> table -> set_template($tmpl);
+	    $this -> table -> set_heading($columns);
+	     
+	    foreach($files as $file){
+	   
+	    $links = "<a href='".base_url()."assets/Guidelines/".$file."'target='_blank'>View</a>";
+	    
+	    
+	    $this -> table -> add_row("",$file, $links);    
+	    }
+	    $data['guidelines_list'] = $this -> table -> generate();
+	    $data['hide_side_menu'] = 1;
+	    $data['selected_report_type_link'] = "guidelines_report_row";
+	    $data['selected_report_type'] = "List of Guidelines";
+	    $data['report_title'] = "List of Guidelines";
+	    $data['facility_name'] = $this -> session -> userdata('facility_name');
+		$data['content_view']='guidelines_listing_v';
+	    $this -> base_params($data);
+    }
 	public function base_params($data) {
 		$data['reports'] = true;
 		$data['title'] = "webADT | Reports";

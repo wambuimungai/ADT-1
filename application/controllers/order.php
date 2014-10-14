@@ -936,7 +936,6 @@ class Order extends MY_Controller {
 				$main_array['comments'] = $comments;
 				$main_array['report_id'] = $report_id;
 				$main_array['facility_id'] = $facility_id;
-
 				//Insert maps_item
 				$maps_item = array();
 				$regimen_counter = 0;
