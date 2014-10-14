@@ -3906,6 +3906,5 @@ class Order extends MY_Controller {
 		$data["actual"] =  $this ->actualReports($facility_code,$period_begin,$type);
 		echo json_encode($data);
 	}
-
 }
 ?>

@@ -477,42 +477,45 @@
 			}
 		});
 		$("#generate").on('click',function() {
-		   //display generating modal
-		   $.blockUI({ message: '<h3><img width="30" height="30" src="<?php echo asset_url().'images/loading_spin.gif' ?>" /> Generating...</h3>' }); 
-           //parameters
-           var count = 0;
-		   var total =$(".ordered_drugs").length;
-           //get drug_id's
-           var drugs=[];
-           var stores=$('#stores').val();
+		    //display generating modal
+		    $.blockUI({ message: '<h3><img width="30" height="30" src="<?php echo asset_url().'images/loading_spin.gif' ?>" /> Generating...</h3>' }); 
+            //parameters
+            var count = 0;
+		    var total =$(".ordered_drugs").length;
+            //get drug_id's
+            var drugs=[];
+            var stores=$('#stores').val();
 
-           $(".ordered_drugs").each(function(i,v){ 
-           	 drugs.push($(this).attr("drug_id")); 
-           	 if(i==(total-1)){
-           	   var period_start = $("#period_start").attr("value");
-	           var facility_id= $("#facility_id").attr("value");
-	           var facility_code =$("#facility_code").attr("value");
-	           //set the code
-	           <?php
-	            if($hide_generate==2){
-	               $code="D-CDRR";
-				}else if($stand_alone==1){
-	               $code="F-CDRR_packs";
-				}else{
-					$code="F-CDRR_units";
-				}
-			   ?>
-			   var code = "<?php echo $code; ?>";
-	           //run function
-    	       getPeriodDrugBalance(count,period_start, facility_id,code,total,drugs,stores);
-    	       //If Report is D-CDRR, get Expected and actual reports
-    	       if(code=="D-CDRR"){
-    	       		//getExpectedACtualReports(facility_code,period_start,"cdrr");
-    	       }
-    	       
-           	 }
-           });
-           
+            $(".ordered_drugs").each(function(i,v){ 
+           	    drugs.push($(this).attr("drug_id")); 
+	           	if(i==(total-1)){
+	           	    var period_start = $("#period_start").attr("value");
+		            var facility_id= $("#facility_id").attr("value");
+		            var facility_code =$("#facility_code").attr("value");
+		            //set the code
+		            <?php
+		            if($hide_generate==2){
+		               $code="D-CDRR";
+					}else if($stand_alone==1){
+		               $code="F-CDRR_packs";
+					}else{
+						$code="F-CDRR_units";
+					}
+				   ?>
+				   var code = "<?php echo $code; ?>";
+		           //run function
+	    	       getPeriodDrugBalance(count,period_start, facility_id,code,total,drugs,stores); 
+	           	}
+            });
+
+            //If Report is D-CDRR, get Expected and actual reports
+            var code = "<?php echo $code; ?>";
+            var facility_code =$("#facility_code").attr("value");
+            var period_start = $("#period_start").attr("value");
+
+    	    if(code=="D-CDRR"){
+    	       getExpectedActualReports(facility_code,period_start,"cdrr");
+    	    }
 
 		});
 			
