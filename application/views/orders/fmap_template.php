@@ -379,7 +379,7 @@ if ($facility_object -> service_pep == "1") {
 						<td>Revisit <input type="text"  class="validate[requied] tbl_header_input f_right" name="revisit_oc" id="revisit_oc" value="<?php echo @$fmaps_array[0]['revisit_oc'];?>" /></td>
 					</tr>
 					<?php
-					if(isset($is_aggregate)){
+					if(isset($hide_generate) && $hide_generate==2){
 						?>
 						<tr>
 							<th colspan="4" style="text-align: center">Central site Reporting rate</th>
