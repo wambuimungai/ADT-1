@@ -547,6 +547,7 @@ class Order extends MY_Controller {
 				$facilities = Sync_Facility::getId($facility, $order_type);
 				$duplicate = $this -> check_duplicate($code, $period_start, $period_end, $facilities['id'], $type);
 				$data['commodities'] = Sync_Drug::getActiveList();
+				$data['duplicate'] = $duplicate;
 				if ($duplicate == true) {
 					//redirect("order");
 				}
@@ -675,6 +676,7 @@ class Order extends MY_Controller {
 				$code = $this -> getActualCode($order_type, $type);
 				$facilities = Sync_Facility::getId($facility_code, $order_type);
 				$duplicate = $this -> check_duplicate($code, $period_start, $period_end, $facilities['id'], $type);
+				$data['duplicate'] = $duplicate;
 				if ($duplicate == true) {
 					//redirect("order");
 				}

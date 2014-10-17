@@ -468,6 +468,14 @@
 </div>
 <script type="text/javascript">
 	$(document).ready(function(){
+
+		//Check if report is a duplicate
+		var duplicate = "<?=$duplicate?>";
+		if(duplicate == true)
+		{ 
+		   bootbox.alert("<h4>Duplicate</h4>\n\<hr/><center>This Report already exists!</center>");
+		}
+
 		$("#non_arv").click(function(){
 			var selected_value=$(this).val();
 			if(selected_value==0){
@@ -476,6 +484,7 @@
 				$(this).val(0);
 			}
 		});
+		
 		$("#generate").on('click',function() {
 		    //display generating modal
 		    $.blockUI({ message: '<h3><img width="30" height="30" src="<?php echo asset_url().'images/loading_spin.gif' ?>" /> Generating...</h3>' }); 
