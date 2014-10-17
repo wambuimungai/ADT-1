@@ -1038,15 +1038,26 @@ class auto_management extends MY_Controller {
 	}
 	
 	public function addIndex(){//Create indexes on columns in table;
+		$column = "dispensing_date";
+		$column1 = "date_enrolled";
+		$sql ="SHOW INDEX FROM patient_visit WHERE KEY_NAME =  '$column'";
+		$sql1 ="SHOW INDEX FROM patient WHERE KEY_NAME =  '$column1'";
+		$res = $this ->db ->query($sql);
+		if($result = $res->result_array()){
+			$index_to_drop = $result[0]['Key_name'];
+			$this ->db ->query("ALTER TABLE  `patient_visit` DROP INDEX `$index_to_drop`");
+		}
+		$res1 = $this ->db ->query($sql1);
+		if($result = $res1->result_array()){
+			$index_to_drop = $result[0]['Key_name'];
+			$this ->db ->query("ALTER TABLE  `patient` DROP INDEX `$index_to_drop`");
+		}
 		$data = array();
-		$this ->db ->query("ALTER TABLE  `patient_visit` DROP INDEX (  `dispensing_date` )");
-		$this ->db ->query("ALTER TABLE  `patient_visit` DROP INDEX (  `date_enrolled` )");
 		$data["Dispensing date index (Patient Visit) "] = "ALTER TABLE  `patient_visit` ADD INDEX (  `dispensing_date` )";
-		$data["Date Enrolled (Patient)"] = "ALTER TABLE  `patient` ADD INDEX (  `date_enrolled` )";
+		$data["Date Enrolled index (Patient)"] = "ALTER TABLE  `patient` ADD INDEX (  `date_enrolled` )";
 		$message = "";	
 		foreach ($data as $key => $value) {
-			$this ->db ->query($value);
-			if($this->db->affected_rows() >0){
+			if($this ->db ->query($value)){
 				$message.=$key. " successfully created ! <br>";
 			}else{
 				$message.=$key. " could not be created ! ".$this->db->_error_message()." <br>";

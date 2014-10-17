@@ -111,6 +111,7 @@
 				<option class="date_range_report" value="getPatientsStartedonDate">List of Patients Started (on a Particular Date)</option>
 				<option class="date_range_report" value="getPatientsforRefill">List of Patients Visited For Refill</option>
 				<option class="date_range_report" value="getPatientMissingAppointments">Patients Missing Appointments</option>
+				<option class="date_range_report" value="dispensingReport">Patients Visit Summary</option>
 			</select></td>
 		</tr>
 		<!-- Early warning reports -->
