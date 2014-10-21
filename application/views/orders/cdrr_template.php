@@ -354,7 +354,7 @@
 					?>
 					<tr class="ordered_drugs" drug_id="<?php echo $commodity -> id;?>">
 						<td class="col_drug"><?php echo $commodity -> Drug;?>
-							<input type="hidden" name="pack_size[]" id="pack_size_<?php echo $commodity -> id;?>" value="<?php echo $commodity ->Pack_Size;?>"/>
+							<input type="hidden" class="pack_size" name="pack_size[]" id="pack_size_<?php echo $commodity -> id;?>" value="<?php echo $commodity ->Pack_Size;?>"/>
 							<?php 
 							if($options=="update" || $options=="view"){
 							?>
@@ -468,6 +468,14 @@
 </div>
 <script type="text/javascript">
 	$(document).ready(function(){
+
+		//Check if report is a duplicate
+		var duplicate = "<?=$duplicate?>";
+		if(duplicate == true)
+		{ 
+		   bootbox.alert("<h4>Duplicate</h4>\n\<hr/><center>This Report already exists!</center>");
+		}
+
 		$("#non_arv").click(function(){
 			var selected_value=$(this).val();
 			if(selected_value==0){
@@ -476,37 +484,47 @@
 				$(this).val(0);
 			}
 		});
+		
 		$("#generate").on('click',function() {
-		   //display generating modal
-		   $.blockUI({ message: '<h3><img width="30" height="30" src="<?php echo asset_url().'images/loading_spin.gif' ?>" /> Generating...</h3>' }); 
-           //parameters
-           var count = 0;
-		   var total =$(".ordered_drugs").length;
-           //get drug_id's
-           var drugs=[];
-           var stores=$('#stores').val();
+		    //display generating modal
+		    $.blockUI({ message: '<h3><img width="30" height="30" src="<?php echo asset_url().'images/loading_spin.gif' ?>" /> Generating...</h3>' }); 
+            //parameters
+            var count = 0;
+		    var total =$(".ordered_drugs").length;
+            //get drug_id's
+            var drugs=[];
+            var stores=$('#stores').val();
 
-           $(".ordered_drugs").each(function(i,v){ 
-           	 drugs.push($(this).attr("drug_id")); 
-           	 if(i==(total-1)){
-           	   var period_start = $("#period_start").attr("value");
-	           var facility_id= $("#facility_id").attr("value");
-	           //set the code
-	           <?php
-	            if($hide_generate==2){
-	               $code="D-CDRR";
-				}else if($stand_alone==1){
-	               $code="F-CDRR_packs";
-				}else{
-					$code="F-CDRR_units";
-				}
-			   ?>
-			   var code = "<?php echo $code; ?>";
-	           //run function
-    	       getPeriodDrugBalance(count,period_start, facility_id,code,total,drugs,stores);
-           	 }
-           });
-           
+            $(".ordered_drugs").each(function(i,v){ 
+           	    drugs.push($(this).attr("drug_id")); 
+	           	if(i==(total-1)){
+	           	    var period_start = $("#period_start").attr("value");
+		            var facility_id= $("#facility_id").attr("value");
+		            var facility_code =$("#facility_code").attr("value");
+		            //set the code
+		            <?php
+		            if($hide_generate==2){
+		               $code="D-CDRR";
+					}else if($stand_alone==1){
+		               $code="F-CDRR_packs";
+					}else{
+						$code="F-CDRR_units";
+					}
+				   ?>
+				   var code = "<?php echo $code; ?>";
+		           //run function
+	    	       getPeriodDrugBalance(count,period_start, facility_id,code,total,drugs,stores); 
+	           	}
+            });
+
+            //If Report is D-CDRR, get Expected and actual reports
+            var code = "<?php echo $code; ?>";
+            var facility_code =$("#facility_code").attr("value");
+            var period_start = $("#period_start").attr("value");
+
+    	    if(code=="D-CDRR"){
+    	       getExpectedActualReports(facility_code,period_start,"cdrr");
+    	    }
 
 		});
 			
@@ -521,9 +539,19 @@
 		});
 		$(".quantity_dispensed_packs").live('change',function() {
 			calculateResupply($(this));
+			var code = "<?php echo $code; ?>";
+			if(code == "F-CDRR_packs")
+			{
+				calculateUnits($(this));
+			}
 		});
 		$(".quantity_dispensed").live('change',function() {
 			calculateResupply($(this));
+			var code = "<?php echo $code; ?>";
+			if(code == "F-CDRR_packs")
+			{
+				calculatePacks($(this));
+			}
 		});
 		$(".losses").live('change',function() {
 			calculateResupply($(this));
@@ -558,13 +586,20 @@
 		  $("#opening_balance_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['balance']; ?>");
 		  $("#received_in_period_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['received']; ?>");
 		  $("#dispensed_in_period_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['dispensed_units']; ?>"); 
-			<?php  
-			if($cdrr_array[0]['code']=="F-CDRR_packs"){
-			?>
+		<?php	
+		if($cdrr_array[0]['code']=="D-CDRR"){
+		?>
+ 		  $("#dispensed_in_period_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['dispensed_packs']; ?>"); 
+		<?php	
+		}
+		?>
+		<?php  
+		if($cdrr_array[0]['code']=="F-CDRR_packs"){
+		?>
 		  $("#dispensed_in_period_packs_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['dispensed_packs']; ?>"); 	
-			<?php	
-			}
-			?>
+		<?php	
+		}
+		?>
 		  $("#losses_in_period_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['losses']; ?>");
 		  $("#adjustments_in_period_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['adjustments']; ?>");
 		  $("#physical_in_period_<?php echo $cdrr['drug_id']; ?>").val("<?php echo $cdrr['count']; ?>");
@@ -694,9 +729,30 @@
         if(!validated) {
            return false;
         }else{
-        	$(".btn").attr("disabled","disabled");
+        	//$(".btn").attr("disabled","disabled");
         	return true;
         }
+   }
+
+   function calculateUnits(element)
+   {
+        var row_element = element.closest("tr");
+		var pack_size = parseInt(row_element.find(".pack_size").attr("value"));
+		var packs = parseInt(row_element.find(".quantity_dispensed_packs").attr("value"));
+
+		var units = (packs * pack_size);
+		row_element.find(".quantity_dispensed").attr("value",units.toFixed());
+   }
+
+   function calculatePacks(element)
+   {
+   	    var row_element = element.closest("tr");
+		var pack_size = parseInt(row_element.find(".pack_size").attr("value"));
+		var units = parseInt(row_element.find(".quantity_dispensed").attr("value"));
+
+		var packs = (units / pack_size);
+		row_element.find(".quantity_dispensed_packs").attr("value",packs.toFixed());
+
    }
 </script>
 <style>

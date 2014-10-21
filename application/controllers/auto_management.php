@@ -26,6 +26,10 @@ class auto_management extends MY_Controller {
 
 		//if not updated today
 		if ($today != $last_update || $manual==TRUE) {
+			//Function to create stored procedures
+			//$message .= $this->createStoredProcedures();
+			//Function to add table indexes
+			$message .= $this->addIndex();
 			//function to update destination column to 1 in drug_stock_movement table for issued transactions that have name 'pharm'
 			$message .= $this->updateIssuedTo();
 			//function to update source_destination column in drug_stock_movement table where it is zero
@@ -52,8 +56,11 @@ class auto_management extends MY_Controller {
 			$message .= $this->setBatchBalance();
 			//function to update hash value of system to nascop
 			$message .= $this->update_system_version();
+            //function to download guidelines from nascop
+            $message .= $this->get_guidelines();
 			//function to update facility admin that reporting deadline is close
 			$message .= $this->update_reporting();
+
 	        //finally update the log file for auto_update 
 	        if ($this -> session -> userdata("curl_error") != 1) {
 	        	$sql="UPDATE migration_log SET last_index='$today' WHERE source='auto_update'";
@@ -423,7 +430,9 @@ class auto_management extends MY_Controller {
 			$rs = $q -> result_array();
 			if($rs){
 			    $state[$status] = $rs[0]['id'];
-			}	
+			}  else {
+                            $state[$status]='NAN'; //If non existant
+                        }	
 		}
 
 		if(!empty($state)){
@@ -834,7 +843,34 @@ class auto_management extends MY_Controller {
 		}
 		return $message;
 	}
-	public function update_system_version(){
+   
+        //function to download guidelines from the nascop 
+        public function get_guidelines(){
+         $this->load->library('ftp');
+
+        $config['hostname'] = '41.89.6.210';
+        $config['username'] = 'demo';
+        $config['password'] = 'demo';
+        $config['port']     = 21;
+        $config['passive']  = FALSE;
+        $config['debug']    = TRUE;
+
+        $this->ftp->connect($config);
+        $server_file="/";
+        $dir = realpath($_SERVER['DOCUMENT_ROOT']);
+       
+        
+        $files = $this->ftp->list_files($server_file);
+	        if(!empty($files))
+	        {
+		        foreach($files as $file){
+		             $local_file = $dir . "/ADT/assets/guidelines". $file;
+		             $downloadfile= $this->ftp->download($file,$local_file , 'ascii');
+		        }
+	        }
+        }
+   
+        public function update_system_version(){
 		$url = $this -> nascop_url . "sync/gitlog";
 		$facility_code = $this -> session -> userdata("facility");
 		$hash=Git_Log::getLatestHash();
@@ -848,10 +884,10 @@ class auto_management extends MY_Controller {
 		curl_setopt($ch, CURLOPT_POSTFIELDS, array('json_data' => $json_data));
 		$json_data = curl_exec($ch);
 		if (empty($json_data)) {
-			$message = "cURL Error: " . curl_error($ch);
+			$message = "cURL Error: " . curl_error($ch)."<br/>";
 		} else {
 			$messages = json_decode($json_data, TRUE);
-			$message = $messages[0];
+			$message = $messages[0]."<br/>";
 		}
 		curl_close($ch);
 		return $message;
@@ -908,7 +944,8 @@ class auto_management extends MY_Controller {
 			        LEFT JOIN access_level al ON al.id=u.Access_Level
 			        WHERE al.Level_Name LIKE '%facility%' 
                     AND u.Facility_Code = '$facility_code'
-			        AND Email_Address !=''";
+			        AND Email_Address !=''
+			        AND Email_Address !='kevomarete@gmail.com'";
 			$query = $this -> db -> query($sql);
 			$emails = $query -> result_array();
 			if ($emails) {
@@ -937,11 +974,93 @@ class auto_management extends MY_Controller {
 				$this -> email -> message("$notification");
 
 				if ($this -> email -> send()) {
-					$message = 'Reporting Notification was sent!';
+					$message = 'Reporting Notification was sent!<br/>';
 					$this -> email -> clear(TRUE);
 				} else {
-					$message = 'Reporting Notification Failed!';
+					$message = 'Reporting Notification Failed!<br/>';
 				}
+			}
+		}
+		return $message;
+	}
+	
+	function createStoredProcedures(){
+		$data =array();
+		
+		$data["MAPS: Patient Revisit OC CM Stored Procedure"] ="
+			DROP procedure IF EXISTS `sp_GetRevisitCMOC`;
+			
+			DELIMITER $$
+			CREATE PROCEDURE `sp_GetRevisitCMOC` (IN start_date DATE, IN end_date DATE)
+			BEGIN
+				SELECT IF(temp2.other_illnesses LIKE '%cryptococcal%','revisit_cm','revisit_oc') as OI,COUNT(temp2.ccc_number) as total
+				FROM (SELECT DISTINCT(pv.patient_id) as ccc_number,oi.name as opportunistic_infection FROM patient_visit pv
+								INNER JOIN  opportunistic_infection oi ON oi.indication = pv.indication
+							) as temp1
+				INNER JOIN (
+						SELECT DISTINCT(p.patient_number_ccc) as ccc_number,other_illnesses FROM patient p
+						INNER JOIN patient_status ps ON ps.id = p.current_status
+						WHERE p.date_enrolled < start_date
+						AND ps.name LIKE '%active%'
+				) as temp2 ON temp2.ccc_number = temp1.ccc_number
+				WHERE temp2.other_illnesses LIKE '%cryptococcal%' OR temp1.opportunistic_infection LIKE '%oesophageal%';
+			END$$
+			
+			DELIMITER ;";
+		
+		$data["MAPS: Revisit Patient By Gender Stored Procedure"] ="
+			DROP procedure IF EXISTS `sp_GetRevisitPatient`;
+			
+			DELIMITER $$
+			CREATE  PROCEDURE `sp_GetRevisitPatient`(IN start_date DATE, IN end_date DATE)
+			BEGIN
+			        SELECT COUNT(DISTINCT(p.id)) as total,IF(p.gender=1,'new_male','new_female') as  gender 
+							FROM patient p
+							LEFT JOIN patient_visit pv ON pv.patient_id = p.patient_number_ccc
+							INNER JOIN patient_status ps ON ps.id=p.current_status
+							WHERE p.date_enrolled < start_date 
+							AND ( pv.dispensing_date BETWEEN start_date AND end_date)
+							AND ps.name LIKE '%active%'
+							GROUP BY p.gender;
+			END$$
+			
+			DELIMITER ;";
+			$message = "";	
+			foreach ($data as $key => $value) {
+				echo $value;$this ->db ->query($value);
+				if($this->db->affected_rows() >0){
+					$message.=$key. " successfully created ! <br>";
+				}else{
+					$message.=$key. " could not be created ! ".$this->db->_error_message()." <br>";
+				}
+			}
+		return $message;
+	}
+	
+	public function addIndex(){//Create indexes on columns in table;
+		$column = "dispensing_date";
+		$column1 = "date_enrolled";
+		$sql ="SHOW INDEX FROM patient_visit WHERE KEY_NAME =  '$column'";
+		$sql1 ="SHOW INDEX FROM patient WHERE KEY_NAME =  '$column1'";
+		$res = $this ->db ->query($sql);
+		if($result = $res->result_array()){
+			$index_to_drop = $result[0]['Key_name'];
+			$this ->db ->query("ALTER TABLE  `patient_visit` DROP INDEX `$index_to_drop`");
+		}
+		$res1 = $this ->db ->query($sql1);
+		if($result = $res1->result_array()){
+			$index_to_drop = $result[0]['Key_name'];
+			$this ->db ->query("ALTER TABLE  `patient` DROP INDEX `$index_to_drop`");
+		}
+		$data = array();
+		$data["Dispensing date index (Patient Visit) "] = "ALTER TABLE  `patient_visit` ADD INDEX (  `dispensing_date` )";
+		$data["Date Enrolled index (Patient)"] = "ALTER TABLE  `patient` ADD INDEX (  `date_enrolled` )";
+		$message = "";	
+		foreach ($data as $key => $value) {
+			if($this ->db ->query($value)){
+				$message.=$key. " successfully created ! <br>";
+			}else{
+				$message.=$key. " could not be created ! ".$this->db->_error_message()." <br>";
 			}
 		}
 		return $message;

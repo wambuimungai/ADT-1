@@ -147,8 +147,8 @@ if (isset($styles)) {
         }
 	    ?>
 		/*Perform auto update when online*/
-	    var online = navigator.onLine;
-	  	if(online==true){
+	    var status = navigator.onLine;
+	  	if(status){
 		  autoUpdate();
 	    }
 	    //Load scripts for system search

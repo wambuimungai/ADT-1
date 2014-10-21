@@ -379,7 +379,7 @@ if ($facility_object -> service_pep == "1") {
 						<td>Revisit <input type="text"  class="validate[requied] tbl_header_input f_right" name="revisit_oc" id="revisit_oc" value="<?php echo @$fmaps_array[0]['revisit_oc'];?>" /></td>
 					</tr>
 					<?php
-					if(isset($is_aggregate)){
+					if(isset($hide_generate) && $hide_generate==2){
 						?>
 						<tr>
 							<th colspan="4" style="text-align: center">Central site Reporting rate</th>
@@ -432,6 +432,14 @@ if ($facility_object -> service_pep == "1") {
 	</div>
 <script type="text/javascript">
 	$(document).ready(function(){
+
+		//Check if report is a duplicate
+		var duplicate = "<?=$duplicate?>";
+		if(duplicate == true)
+		{ 
+		   bootbox.alert("<h4>Duplicate</h4>\n\<hr/><center>This Report already exists!</center>");
+		}
+
 		//function to disable button on click
 		$("#fmPostMaps").on('submit',function(){
              $(".btn").attr("disabled","disabled");
@@ -553,10 +561,15 @@ if ($facility_object -> service_pep == "1") {
 				var total_patients = 0;
 				var total_patients_div = "";
 				$.each(data, function(i, jsondata) {
-					$("#other_regimen").append(" ||  ");
+					
 					var total_patients = jsondata.patients;
 					var regimen_desc = jsondata.regimen_desc;
-					$("#other_regimen").append(""+regimen_desc+ " : "+total_patients);
+					if(regimen_desc.toLowerCase().search("oi") == -1)
+					{   
+					    $("#other_regimen").append(""+regimen_desc+ " : "+total_patients);
+					    $("#other_regimen").append(" ||  ");
+					}
+					
 				});
 			}
 		});

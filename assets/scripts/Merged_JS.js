@@ -6,13 +6,20 @@ $(document).ready(function() {
 
 	$(".actual").on('click',function(e) { 
             var parentForm = $(".actual").closest("form").attr("name");
-             e.preventDefault(); 
+            e.preventDefault(); 
             if(processData(parentForm)){
               bootbox.confirm("<h4>Save</h4>\n\<hr/><center>Are you sure?</center>",
                 function(res){
                     if(res===true){
                       $("#"+parentForm).submit();
-                     }
+	                    if(parentForm == "fmPostCdrr")
+	                    {
+	                        $(".btn").attr("disabled","disabled");
+	                    }
+                    }
+                    else{
+                    	$(this).removeAttr("disabled");
+                    }
                 });
             }
 	});
@@ -266,7 +273,7 @@ function auto_logout() {
 //Function to get data for ordering(Cdrr)
 function getPeriodDrugBalance(count,start_date, facility_id, code,total,drugs,stores) {
 	var base_url = getbaseurl();
-	var drug=drugs[count];
+	var drug = drugs[count];
 	var link = base_url + 'order/getItems';
 	
 	$.ajax({
@@ -309,6 +316,26 @@ function getPeriodDrugBalance(count,start_date, facility_id, code,total,drugs,st
 	    		//recursive function to continue
 	    		getPeriodDrugBalance(count,start_date, facility_id, code,total,drugs,stores);
 	    	}
+		}
+	});
+}
+
+function getExpectedActualReports(facility_code,period_start,type){
+	var base_url = getbaseurl();
+	var link = base_url + 'order/getExpectedActualReport';
+	
+	$.ajax({
+		url : link,
+		type : 'POST',
+		dataType : 'json',
+		data:{
+			"period_begin":period_start,
+			"facility_code":facility_code,
+			"type":type,
+		},
+		success : function(data) {
+			$("#central_rate").attr("value",data.expected);
+			$("#actual_report").attr("value",data.actual);
 		}
 	});
 }
@@ -1032,6 +1059,12 @@ $(document).ready(function() {
 			$("#default").hide();
 			$(".reports_types").css("display", "none");
 			$("#moh_forms_report_row").css("display", "block");
+		}else if($(this).attr("id") == 'guidelines') {
+			$(".active").removeClass();
+			$(this).addClass("active");
+			$(".reports_types").css("display", "none");
+                        var report_url = base_url + "report_management/load_guidelines_view";
+                        window.location = report_url;
 		}
 	});
 	//Features to select

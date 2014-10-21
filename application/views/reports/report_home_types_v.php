@@ -47,7 +47,11 @@
 		});
 		$(".reports_tabs").click(function() {
 			$('#standard_report_sub').show();
-		})
+		});
+
+		$(window).resize(function(){
+		   $(".hasDatepicker").datepicker("hide");
+		});
 	});
 	function LastDayOfMonth(Year, Month) {
 		return (new Date((new Date(Year, Month, 1)) - 1)).getDate();
@@ -107,6 +111,7 @@
 				<option class="date_range_report" value="getPatientsStartedonDate">List of Patients Started (on a Particular Date)</option>
 				<option class="date_range_report" value="getPatientsforRefill">List of Patients Visited For Refill</option>
 				<option class="date_range_report" value="getPatientMissingAppointments">Patients Missing Appointments</option>
+				<option class="date_range_report" value="dispensingReport">Patients Visit Summary</option>
 			</select></td>
 		</tr>
 		<!-- Early warning reports -->
@@ -152,6 +157,10 @@
 				<option class="month_period_report" value="getMOHForm/731">GET MOH 731 </option>
 			</select></td>
 		</tr>
+                <!-- guidelines-->
+                <tr id="guidelines_report_row" class="reports_types">
+		</tr>
+                
 		<tr>
 			<!-- Select report range donors -->
 			<table id="donor_date_range_report" class="select_types">
@@ -180,7 +189,7 @@
 					</td>
 				</tr>
 			</table>
-			<!-- Report year -->
+                    	<!-- Report year -->
 			<table id="year" class="select_types">
 				<tr>
 					<td><label>Select Year : </label></td>

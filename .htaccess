@@ -24,3 +24,4 @@ AddType text/cache-manifest .appcache
     </filesMatch>
 </IfModule>
 
+php_value max_input_vars 10000

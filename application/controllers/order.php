@@ -94,23 +94,32 @@ class Order extends MY_Controller {
 				$this -> session -> set_userdata('api_user', $username);
 				$this -> session -> set_userdata('api_pass', $password);
 			} else {
-				foreach ($main_array as $ind => $main) {
-					if ($ind == "id") {
-						$this -> session -> set_userdata('api_id', $main);
-						$id = $main;
-					} else if ($ind == "name") {
-						$this -> session -> set_userdata('api_user', $main);
-					} else if ($ind !== "ownUser_facility") {
-						$user_array[$ind] = $main;
-					} else if ($ind == "ownUser_facility") {
-						$facility_array = json_decode($main, TRUE);
-						$this -> db -> query("DELETE FROM user_facilities WHERE user_id='" . $id . "'");
-						$this -> db -> insert("user_facilities", array("user_id" => $id, "facility" => json_encode(array($facility_array))));
-					}
-				}
+				//Set User Sessions
+				$this -> session -> set_userdata('api_id', $main_array['id']);
+				$this -> session -> set_userdata('api_user', $main_array['name']);
+
+				$id = $this -> session -> userdata('api_id');
+
+                //Set User Facilities
+				$facility_array = json_decode($main_array['ownUser_facility'], TRUE);
+				//Remove User Facilities
+				$sql = "DELETE FROM user_facilities WHERE user_id='$id'";
+				$this -> db -> query($sql);
+				//Remove Sync User
+				$sql = "DELETE FROM sync_user WHERE id = '$id' OR username = '".$main_array['username']."'";
+				$this -> db -> query($sql);
+
+				$facility_data = array(
+					                "user_id" => $id, 
+					                "facility" => json_encode(array($facility_array))
+					               );
+				$this -> db -> insert("user_facilities",$facility_data);
+                
+				//Set Data_Array
+				unset($main_array['ownUser_facility']);
+                $user_array = $main_array;
 			}
-			$user_id=$this -> session -> userdata('api_id');
-			$this -> db -> query("DELETE FROM sync_user WHERE id='" . $user_id . "'");
+
 			$this -> db -> insert("sync_user", $user_array);
 			$user_id = $this -> session -> userdata("user_id");
 			$api_id = $this -> session -> userdata("api_id");
@@ -216,21 +225,24 @@ class Order extends MY_Controller {
 			$curl -> setOpt(CURLOPT_RETURNTRANSFER, TRUE);
 		} else {
 			$url = $this -> nascop_url;
-			foreach ($lists as $facility_id) {
-				if ($type == 0) {
-					$links[] = "sync/facility/" . $facility_id . "/cdrr";
-					$links[] = "sync/facility/" . $facility_id . "/maps";
-				} else {
-					$links[] = "sync/facility/" . $facility_id . "/cdrr/" . $current_month_start;
-					$links[] = "sync/facility/" . $facility_id . "/maps/" . $current_month_start;
-					$links[] = "sync/facility/" . $facility_id . "/cdrr/" . $one_current_month_start;
-					$links[] = "sync/facility/" . $facility_id . "/maps/" . $one_current_month_start;
-					$links[] = "sync/facility/" . $facility_id . "/cdrr/" . $two_current_month_start;
-					$links[] = "sync/facility/" . $facility_id . "/maps/" . $two_current_month_start;
-				}
+			if(!empty($lists))
+			{
+				$lists = explode(",", $lists[0]);
+				foreach ($lists as $facility_id) {
+					if ($type == 0) {
+						$links[] = "sync/facility/" . $facility_id . "/cdrr";
+						$links[] = "sync/facility/" . $facility_id . "/maps";
+					} else {
+						$links[] = "sync/facility/" . $facility_id . "/cdrr/" . $current_month_start;
+						$links[] = "sync/facility/" . $facility_id . "/maps/" . $current_month_start;
+						$links[] = "sync/facility/" . $facility_id . "/cdrr/" . $one_current_month_start;
+						$links[] = "sync/facility/" . $facility_id . "/maps/" . $one_current_month_start;
+						$links[] = "sync/facility/" . $facility_id . "/cdrr/" . $two_current_month_start;
+						$links[] = "sync/facility/" . $facility_id . "/maps/" . $two_current_month_start;
+					}
+			    }
 			}
 		}
-
 
 		//clear orders if its a full sync
 		if ($type == 0) {
@@ -418,7 +430,7 @@ class Order extends MY_Controller {
 		$link_values = "";
 		foreach ($data as $mydata) {
 			$status_name = strtolower(@$mydata['status_name']);
-			if ($status_name == "prepared") {
+			if ($status_name == "prepared" || $status_name == "review") {
 				$links = array("order/view_order/" . $table => "view", "order/update_order/" . $table => "update", "order/read_order/" . $table => "delete", "order/download_order/" . $table => "download");
 			} else {
 				$links = array("order/view_order/" . $table => "view", "order/download_order/" . $table => "download");
@@ -504,7 +516,7 @@ class Order extends MY_Controller {
 				$data['cdrr_id'] = $cdrr_id;
 				$data['logs'] = Cdrr_Log::getLogs($cdrr_id);
 				if ($data['options'] == "view" || $data['options'] == "update") {
-					if ($data['status_name'] == "prepared") {
+					if ($data['status_name'] == "prepared" || $data['status_name'] == "review") {
 						$data['option_links'] = "<li class='active'><a href='" . site_url("order/view_order/cdrr/" . $cdrr_id) . "'>view</a></li><li><a href='" . site_url("order/update_order/cdrr/" . $cdrr_id) . "'>update</a></li><li><a class='delete' href='" . site_url("order/delete_order/cdrr/" . $cdrr_id) . "'>delete</a></li>";
 					} else {
 						$data['option_links'] = "<li class='active'><a href='" . site_url("order/view_order/cdrr/" . $cdrr_id) . "'>view</a></li>";
@@ -535,8 +547,9 @@ class Order extends MY_Controller {
 				$facilities = Sync_Facility::getId($facility, $order_type);
 				$duplicate = $this -> check_duplicate($code, $period_start, $period_end, $facilities['id'], $type);
 				$data['commodities'] = Sync_Drug::getActiveList();
+				$data['duplicate'] = $duplicate;
 				if ($duplicate == true) {
-					redirect("order");
+					//redirect("order");
 				}
 			}
 
@@ -657,15 +670,15 @@ class Order extends MY_Controller {
 					$data['regimen_categories'] = Sync_Regimen_Category::getAll();
 				}
 
-
 				$period_start = date('Y-m-01', strtotime(date('Y-m-d') . "-1 month"));
 				$period_end = date('Y-m-t', strtotime(date('Y-m-d') . "-1 month"));
 
 				$code = $this -> getActualCode($order_type, $type);
 				$facilities = Sync_Facility::getId($facility_code, $order_type);
 				$duplicate = $this -> check_duplicate($code, $period_start, $period_end, $facilities['id'], $type);
+				$data['duplicate'] = $duplicate;
 				if ($duplicate == true) {
-					redirect("order");
+					//redirect("order");
 				}
 			}
 			$facilities = Sync_Facility::getId($facility_code, $order_type);
@@ -723,6 +736,7 @@ class Order extends MY_Controller {
 				$sponsors = $this -> input -> post("sponsor");
 				$none_arv = $this -> input -> post("non_arv");
 				$commodities = $this -> input -> post('commodity');
+
 				$pack_size = $this -> input -> post('pack_size');
 				$opening_balances = $this -> input -> post('opening_balance');
 				$quantities_received = $this -> input -> post('quantity_received');
@@ -768,6 +782,7 @@ class Order extends MY_Controller {
 				//insert cdrr_items
 				$commodity_counter = 0;
 				$cdrr_array = array();
+
 				foreach ($commodities as $commodity) {
 					if (trim($resupply[$commodity_counter]) != '') {
 						if ($id == "") {
@@ -777,11 +792,17 @@ class Order extends MY_Controller {
 						}
 						$cdrr_array[$commodity_counter]['balance'] = $opening_balances[$commodity_counter];
 						$cdrr_array[$commodity_counter]['received'] = $quantities_received[$commodity_counter];
-						$cdrr_array[$commodity_counter]['dispensed_units'] = $quantities_dispensed[$commodity_counter];
-						if ($code == "F-CDRR_packs") {
+						if ($code == "F-CDRR_units") {
+						    $cdrr_array[$commodity_counter]['dispensed_units'] = $quantities_dispensed[$commodity_counter];
+					        $cdrr_array[$commodity_counter]['dispensed_packs'] = ceil(@$quantities_dispensed[$commodity_counter] / @$pack_size[$commodity_counter]);
+					    }
+						else if ($code == "F-CDRR_packs") {
+							$cdrr_array[$commodity_counter]['dispensed_units'] = (@$quantities_dispensed_packs[$commodity_counter] * @$pack_size[$commodity_counter]);
 							$cdrr_array[$commodity_counter]['dispensed_packs'] = $quantities_dispensed_packs[$commodity_counter];
-						} else {
-							$cdrr_array[$commodity_counter]['dispensed_packs'] = ceil(@$quantities_dispensed[$commodity_counter] / @$pack_size[$commodity_counter]);
+						} 
+						else if ($code == "D-CDRR") {
+							$cdrr_array[$commodity_counter]['dispensed_units'] = (@$quantities_dispensed[$commodity_counter] * @$pack_size[$commodity_counter]);
+							$cdrr_array[$commodity_counter]['dispensed_packs'] = $quantities_dispensed[$commodity_counter];
 						}
 						$cdrr_array[$commodity_counter]['losses'] = $losses[$commodity_counter];
 						$cdrr_array[$commodity_counter]['adjustments'] = $adjustments[$commodity_counter];
@@ -803,9 +824,8 @@ class Order extends MY_Controller {
 						}
 						$cdrr_array[$commodity_counter]['cdrr_id'] = $id;
 						$cdrr_array[$commodity_counter]['drug_id'] = $commodity;
-
-						$commodity_counter++;
 					}
+					$commodity_counter++;
 				}
 
 				$main_array['ownCdrr_item'] = $cdrr_array;
@@ -918,7 +938,6 @@ class Order extends MY_Controller {
 				$main_array['comments'] = $comments;
 				$main_array['report_id'] = $report_id;
 				$main_array['facility_id'] = $facility_id;
-
 				//Insert maps_item
 				$maps_item = array();
 				$regimen_counter = 0;
@@ -1259,6 +1278,7 @@ class Order extends MY_Controller {
 			echo "cURL Error: " . curl_error($ch);
 		}
 		curl_close($ch);
+
 		return $json_data;
 	}
 
@@ -2068,13 +2088,13 @@ class Order extends MY_Controller {
 									$objPHPExcel -> getActiveSheet() -> SetCellValue('L' . $i, $cdrr_item['out_of_stock']);
 									$objPHPExcel -> getActiveSheet() -> SetCellValue('M' . $i, $cdrr_item['resupply']);
 								} else {
-									$objPHPExcel -> getActiveSheet() -> SetCellValue('C' . $i, $cdrr_item['balance']);
-									$objPHPExcel -> getActiveSheet() -> SetCellValue('D' . $i, $cdrr_item['received']);
-									$objPHPExcel -> getActiveSheet() -> SetCellValue('E' . $i, $cdrr_item['dispensed_units']);
-									$objPHPExcel -> getActiveSheet() -> SetCellValue('F' . $i, $cdrr_item['losses']);
-									$objPHPExcel -> getActiveSheet() -> SetCellValue('G' . $i, $cdrr_item['adjustments']);
-									$objPHPExcel -> getActiveSheet() -> SetCellValue('H' . $i, $cdrr_item['count']);
 									if ($cdrr_array[0]['code'] == "D-CDRR") {
+										$objPHPExcel -> getActiveSheet() -> SetCellValue('C' . $i, $cdrr_item['balance']);
+										$objPHPExcel -> getActiveSheet() -> SetCellValue('D' . $i, $cdrr_item['received']);
+										$objPHPExcel -> getActiveSheet() -> SetCellValue('E' . $i, $cdrr_item['dispensed_packs']);
+										$objPHPExcel -> getActiveSheet() -> SetCellValue('F' . $i, $cdrr_item['losses']);
+										$objPHPExcel -> getActiveSheet() -> SetCellValue('G' . $i, $cdrr_item['adjustments']);
+										$objPHPExcel -> getActiveSheet() -> SetCellValue('H' . $i, $cdrr_item['count']);
 										$objPHPExcel -> getActiveSheet() -> SetCellValue('I' . $i, $cdrr_item['aggr_consumed']);
 										$objPHPExcel -> getActiveSheet() -> SetCellValue('J' . $i, $cdrr_item['aggr_on_hand']);
 										$objPHPExcel -> getActiveSheet() -> SetCellValue('K' . $i, $cdrr_item['expiry_quant']);
@@ -2082,6 +2102,12 @@ class Order extends MY_Controller {
 										$objPHPExcel -> getActiveSheet() -> SetCellValue('M' . $i, $cdrr_item['out_of_stock']);
 										$objPHPExcel -> getActiveSheet() -> SetCellValue('N' . $i, $cdrr_item['resupply']);
 									} else {
+										$objPHPExcel -> getActiveSheet() -> SetCellValue('C' . $i, $cdrr_item['balance']);
+										$objPHPExcel -> getActiveSheet() -> SetCellValue('D' . $i, $cdrr_item['received']);
+										$objPHPExcel -> getActiveSheet() -> SetCellValue('E' . $i, $cdrr_item['dispensed_units']);
+										$objPHPExcel -> getActiveSheet() -> SetCellValue('F' . $i, $cdrr_item['losses']);
+										$objPHPExcel -> getActiveSheet() -> SetCellValue('G' . $i, $cdrr_item['adjustments']);
+										$objPHPExcel -> getActiveSheet() -> SetCellValue('H' . $i, $cdrr_item['count']);
 										$objPHPExcel -> getActiveSheet() -> SetCellValue('I' . $i, $cdrr_item['expiry_quant']);
 										$objPHPExcel -> getActiveSheet() -> SetCellValue('J' . $i, $cdrr_item['expiry_date']);
 										$objPHPExcel -> getActiveSheet() -> SetCellValue('K' . $i, $cdrr_item['out_of_stock']);
@@ -2601,20 +2627,19 @@ class Order extends MY_Controller {
 		echo json_encode($row);
 	}
 
-	public function get_aggregated_fmaps($period_start = '', $period_end = '') {//Generate aggregated fmaps
+	public function get_aggregated_fmaps($period_start = '2014-09-01', $period_end = '2014-09-30') {//Generate aggregated fmaps
 		$map_id = '"NOTTHERE"';
 		$facility_code = $this -> session -> userdata("facility");
-		//Get maps
-		$sql_maps = 'SELECT m.id, m.code, m.status, m.period_begin,m.period_end,m.reports_expected,m.reports_actual,m.services,m.sponsors,m.art_adult,
-					m.art_child,m.new_male,m.revisit_male,m.new_female,m.revisit_female,m.new_pmtct,m.revisit_pmtct,m.total_infant,m.pep_adult,m.pep_child,m.total_adult,m.total_child,
-					m.diflucan_adult,m.diflucan_child,m.new_cm,m.revisit_cm,m.new_oc,m.revisit_oc,m.comments
-					FROM maps m 
-					LEFT JOIN sync_facility sf ON sf.id=m.facility_id
-					LEFT JOIN facilities f ON f.facilitycode=sf.code
-					WHERE (f.facilitycode="' .$facility_code. '" OR f.parent="' .$facility_code. '")
-					AND m.status ="approved"
-					AND m.period_begin="' .$period_start. '" AND m.period_end="' .$period_end. '" ORDER BY m.code DESC';
-
+		//Get only F-MAPS
+		$sql_maps = "
+					SELECT m.id, m.code, m.status, m.period_begin,m.period_end,m.reports_expected,m.reports_actual,m.services,m.sponsors,m.art_adult, m.art_child,m.new_male,m.revisit_male,m.new_female,m.revisit_female,m.new_pmtct,m.revisit_pmtct,m.total_infant,m.pep_adult,m.pep_child,m.total_adult,m.total_child, m.diflucan_adult,m.diflucan_child,m.new_cm,m.revisit_cm,m.new_oc,m.revisit_oc,m.comments 
+					FROM maps m LEFT JOIN sync_facility sf ON sf.id=m.facility_id 
+                    WHERE  m.status ='approved' 
+                    AND m.code='F-MAPS'
+                    AND sf.category = 'satellite'
+                    AND m.period_begin='$period_start'  ORDER BY m.code DESC
+					";
+					
 		$query = $this -> db -> query($sql_maps);
 		$results = $query -> result_array();
 		$maps_array = array();
@@ -2678,9 +2703,14 @@ class Order extends MY_Controller {
 			$maps_array['comments'] = $maps_array['comments'] . ' - ' . $value['comments'];
 
 		}
-
+		
 		//Get maps items
-		$sql_items = 'SELECT regimen_id,maps_id,SUM(total) as total FROM maps_item WHERE maps_id=' . $map_id . ' GROUP BY regimen_id';
+		$sql_items = '
+			SELECT temp.regimen_id,temp.maps_id,SUM(temp.total) as total FROM
+					(
+					SELECT DISTINCT regimen_id,maps_id,total FROM maps_item WHERE (maps_id=' . $map_id . ')
+					) as temp  GROUP BY temp.regimen_id';
+		
 		$query_items = $this -> db -> query($sql_items);
 		$maps_items_array = $query_items -> result_array();
 
@@ -2828,15 +2858,15 @@ class Order extends MY_Controller {
 				$data['new_patient'] = $results;
 			}else if($data_type=='revisit_patient'){
 				//revisit
-				$sql_clients = 'SELECT COUNT(DISTINCT(pv.id)) as total,IF(pv.gender=1,"revisit_male","revisit_female") as gender 
-								FROM v_patient_visits pv
-								INNER JOIN patient_status ps ON ps.id=pv.current_status
-								WHERE pv.date_enrolled < "' . $start_date . '" 
-								AND pv.dispensing_date>= "' . $start_date . '"
-								AND pv.dispensing_date <= "' . $end_date . '"
-								AND ps.name LIKE "%active%"
-								GROUP BY pv.gender
-								';
+				$sql_clients = "SELECT COUNT(DISTINCT(p.id)) as total,IF(p.gender=1,'revisit_male','revisit_female') as  gender 
+								FROM patient p
+								LEFT JOIN patient_visit pv ON pv.patient_id = p.patient_number_ccc
+								INNER JOIN patient_status ps ON ps.id=p.current_status
+								WHERE p.date_enrolled < '$start_date' 
+								AND ( pv.dispensing_date BETWEEN '$start_date' AND '$end_date')
+								AND ps.name LIKE '%active%'
+								GROUP BY p.gender;
+								";
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
 				$data['revisit_patient'] = $results;
@@ -2943,17 +2973,17 @@ class Order extends MY_Controller {
 			else if($data_type=='revisit_cm_oc'){
 
 				//Revisit
-				$sql_clients="SELECT IF(temp.other_illnesses LIKE '%cryptococcal%','revisit_cm','revisit_oc') as OI,COUNT(temp.patient_number_ccc) as total
-							  FROM(
-								  	SELECT pv.patient_number_ccc,pv.current_status,pv.date_enrolled,oi.name AS OI,pv.other_illnesses
-									FROM v_patient_visits pv
-									LEFT JOIN opportunistic_infection oi ON oi.indication = pv.indication
-									WHERE (pv.other_illnesses LIKE '%cryptococcal%' OR oi.name LIKE '%oesophageal%')
-									GROUP BY pv.patient_number_ccc) as temp
-							  LEFT JOIN patient_status ps ON ps.id=temp.current_status
-							  WHERE ps.name LIKE '%active%'
-							  AND temp.date_enrolled<'$start_date'
-							  GROUP BY temp.OI";			
+				$sql_clients="SELECT IF(temp2.other_illnesses LIKE '%cryptococcal%','revisit_cm','revisit_oc') as OI,COUNT(temp2.ccc_number) as total
+								FROM (SELECT DISTINCT(pv.patient_id) as ccc_number,oi.name as opportunistic_infection FROM patient_visit pv
+												INNER JOIN  opportunistic_infection oi ON oi.indication = pv.indication
+											) as temp1
+								INNER JOIN (
+										SELECT DISTINCT(p.patient_number_ccc) as ccc_number,other_illnesses FROM patient p
+										INNER JOIN patient_status ps ON ps.id = p.current_status
+										WHERE p.date_enrolled < '$start_date'
+										AND ps.name LIKE '%active%'
+								) as temp2 ON temp2.ccc_number = temp1.ccc_number
+								WHERE temp2.other_illnesses LIKE '%cryptococcal%' OR temp1.opportunistic_infection LIKE '%oesophageal%';";			
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
 				$data['revisit_cm_oc'] = $results;
@@ -2964,10 +2994,48 @@ class Order extends MY_Controller {
 	}
 
 	public function expectedReports($facility_code) {//Get number of total expected reports
-		$sql = 'SELECT COUNT(id) as total FROM facilities WHERE facilitycode = "' . $facility_code . '" OR parent="' . $facility_code . '" ';
-		$query = $this -> db -> query($sql);
-		$results = $query -> result_array();
-		return $results[0]['total'];
+		if($facility_code!=''){
+			$sql = "SELECT COUNT(sf.id) as total FROM sync_facility sf 
+												INNER JOIN sync_facility sf1 ON sf1.parent_id = sf.id
+												WHERE sf.code ='$facility_code'";
+			$query = $this -> db -> query($sql);
+			$results = $query -> result_array();
+			if($results){
+				return $results[0]['total'];
+			}else{
+				return 0;
+			}
+		}else{
+			return 0;
+		}
+		
+		
+	}
+	public function actualReports($facility_code="13050",$period_begin="2014-09-01",$type="cdrr"){
+		if($facility_code!=''){
+			$filter = "";
+			if($type=="cdrr"){
+				$filter = "F-CDRR";
+			}else if($type=="maps"){
+				$filter = "F-MAPS";
+			} 
+			$sql = "
+			SELECT COUNT(m.id) as total FROM $type m LEFT JOIN sync_facility sf ON sf.id=m.facility_id 
+                    WHERE  m.status ='approved' 
+                    AND m.code LIKE '%$filter%'
+                    AND sf.category = 'satellite'
+                    AND m.period_begin='$period_begin'  ORDER BY m.code DESC
+                    ";
+			$query = $this -> db -> query($sql);
+			$results = $query -> result_array();
+			if($results){
+				return $results[0]['total'];
+			}else{
+				return 0;
+			}
+		}else{
+			return 0;
+		}
 	}
 
 	public function base_params($data) {
@@ -3695,7 +3763,7 @@ class Order extends MY_Controller {
 			}
 		}else if($code == "F-CDRR_packs"){
             foreach ($row as $i => $v) {
-				if ($i != "expiry_month" && $i != "dispensed_to_patients") {
+				if ($i != "expiry_month" && $i != "dispensed_to_patients" && $i !="beginning_balance") {
 					$row[$i] = round(@$v / @$pack_size);
 				}
 			}
@@ -3829,6 +3897,15 @@ class Order extends MY_Controller {
 		}
 		return $row;
 	}
-
+	
+	public function getExpectedActualReport(){
+		$data =  array();
+		$facility_code = $this ->input ->post("facility_code");
+		$period_begin = $this ->input ->post("period_begin");
+		$type = $this ->input ->post("type");
+		$data["expected"] = $this ->expectedReports($facility_code);
+		$data["actual"] =  $this ->actualReports($facility_code,$period_begin,$type);
+		echo json_encode($data);
+	}
 }
 ?>

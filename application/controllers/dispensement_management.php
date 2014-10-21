@@ -30,23 +30,41 @@ class Dispensement_Management extends MY_Controller {
 			$age=@$results[0]['age'];
 			$data['results'] = $results;
 		}
-		$sql = "SELECT r.id, "
-                        . "r.regimen_desc,"
-                        . "r.regimen_code, "
-                        . "dispensing_date, "
-                        . "pv.current_weight, "
-                        . "pv.current_height "
-                        . "FROM patient_visit pv, "
-                        . "regimen r "
-                        . "WHERE pv.patient_id =  '$patient_no' "
-                        . "AND pv.regimen = r.id "
-                        . "ORDER BY pv.dispensing_date DESC LIMIT 1";
-		//die($sql);
+		$sql = "SELECT r.id,
+		               r.regimen_desc,
+                       r.regimen_code,
+                       pv.dispensing_date,
+                       pv.current_weight,
+                       pv.current_height,
+                       v.name as visit_purpose_name
+                FROM patient_visit pv
+                LEFT JOIN regimen r ON r.id = pv.regimen
+                LEFT JOIN visit_purpose v ON v.id = pv.visit_purpose
+                WHERE pv.patient_id =  '$patient_no'
+                ORDER BY pv.dispensing_date DESC";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
 			$data['last_regimens'] = $results[0];
 			$dispensing_date = $results[0]['dispensing_date'];
+
+			//Check if patient had startART or enrollment purpose in previous visits
+			$enrollment_check = 0;
+			$start_art_check = 0;
+			foreach($results as $result)
+			{ 
+				$visit_purpose = strtolower($result['visit_purpose_name']);
+				
+				if (strpos($visit_purpose,'startart') !== false)
+				{
+                   $start_art_check = 1;
+				} 
+				if(strpos($visit_purpose,'enrollment') !== false) {
+				    $enrollment_check = 1;
+				}
+			}
+
+			$data['purposes'] = Visit_Purpose::getFiltered($enrollment_check,$start_art_check);
 		}
 
 		$sql = "SELECT DISTINCT(d.drug),
@@ -104,7 +122,6 @@ class Dispensement_Management extends MY_Controller {
 
 		$data['non_adherence_reasons'] = Non_Adherence_Reasons::getAllHydrated();
 		$data['regimen_changes'] = Regimen_Change_Purpose::getAllHydrated();
-		$data['purposes'] = Visit_Purpose::getAll();
 		$data['content_view'] = "dispense_v";
 		$data['hide_side_menu'] = 1;
 		$this -> base_params($data);

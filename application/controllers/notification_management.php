@@ -560,7 +560,7 @@ class notification_management extends MY_Controller {
         	unset($patient['id']);
         	$this -> table -> add_row($patient);
         }
-		$data['followup_patients']=$this -> table -> generate();;
+		$data['followup_patients']=$this -> table -> generate();
 		$data['content_view'] = "followup_listing_v";
 		$this -> base_params($data);
 	}

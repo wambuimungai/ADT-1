@@ -93,7 +93,8 @@ class Regimen_management extends MY_Controller {
 
 		$data['regimen_categories'] = Regimen_Category::getAll();
 		$data['regimen_service_types'] = Regimen_Service_Type::getAll();
-
+        
+        /*
 		$query = $this -> db -> query("SELECT s.id,s.code,s.name,sr.Name as category_name,s.category_id
                                        FROM sync_regimen s 
                                        LEFT JOIN sync_regimen_category sr ON sr.id = s.category_id
@@ -102,8 +103,10 @@ class Regimen_management extends MY_Controller {
                                                          WHERE r.map !='0')
                                                          OR s.name LIKE '%other%'
                                        ORDER BY s.category_id,s.code asc");
-		$data['edit_mappings'] = $query -> result_array();
-		$data['mappings'] = Sync_Regimen::getActive();
+                                       */
+        $sync_regimens = Sync_Regimen::getActive();
+		$data['edit_mappings'] = $sync_regimens;
+		$data['mappings'] = $sync_regimens;
 
 		$this -> base_params($data);
 	}
