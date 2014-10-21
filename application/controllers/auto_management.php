@@ -831,6 +831,7 @@ class auto_management extends MY_Controller {
 		$statements['tb_category']='ALTER TABLE patient ADD tb_category varchar(2)';
 		$statements['spouses']='ALTER TABLE `spouses` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT';
 		$statements['dependants']='ALTER TABLE `dependants` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT';
+		$statements['source_destination'] = "ALTER TABLE  `drug_stock_movement` CHANGE  `Source_Destination`  `Source_Destination` VARCHAR( 50 )";
 		if ($statements) {
 			foreach ($statements as $column => $statement) {
 				if ($statement != null) {
@@ -1038,31 +1039,41 @@ class auto_management extends MY_Controller {
 	}
 	
 	public function addIndex(){//Create indexes on columns in table;
-		$column = "dispensing_date";
-		$column1 = "date_enrolled";
-		$sql ="SHOW INDEX FROM patient_visit WHERE KEY_NAME =  '$column'";
-		$sql1 ="SHOW INDEX FROM patient WHERE KEY_NAME =  '$column1'";
-		$res = $this ->db ->query($sql);
-		if($result = $res->result_array()){
-			$index_to_drop = $result[0]['Key_name'];
-			$this ->db ->query("ALTER TABLE  `patient_visit` DROP INDEX `$index_to_drop`");
-		}
-		$res1 = $this ->db ->query($sql1);
-		if($result = $res1->result_array()){
-			$index_to_drop = $result[0]['Key_name'];
-			$this ->db ->query("ALTER TABLE  `patient` DROP INDEX `$index_to_drop`");
-		}
-		$data = array();
-		$data["Dispensing date index (Patient Visit) "] = "ALTER TABLE  `patient_visit` ADD INDEX (  `dispensing_date` )";
-		$data["Date Enrolled index (Patient)"] = "ALTER TABLE  `patient` ADD INDEX (  `date_enrolled` )";
-		$message = "";	
-		foreach ($data as $key => $value) {
-			if($this ->db ->query($value)){
-				$message.=$key. " successfully created ! <br>";
-			}else{
-				$message.=$key. " could not be created ! ".$this->db->_error_message()." <br>";
+		$columns = array(
+						array(
+							"table"=>"patient_visit",
+							"column"=>"dispensing_date",
+							"message"=>"Dispensing date index (Patient Visit) "
+								),
+						array(
+							"table"=>"patient",
+							"column"=>"date_enrolled",
+							"message"=>"Date Enrolled index (Patient)"
+								),
+						array(
+							"table"=>"drug_stock_movement",
+							"column"=>"Source_Destination",
+							"message"=>"Transaction Date index (Drug Stock Movement)"
+								)
+								);
+		$message = "";
+		foreach ($columns as $value) {
+			$sql ="SHOW INDEX FROM ".$value['table']." WHERE KEY_NAME =  '".$value['column']."'";
+			$res = $this ->db ->query($sql);
+			if($result = $res->result_array()){
+				$index_to_drop = $result[0]['Key_name'];
+				$this ->db ->query("ALTER TABLE  ".$value['table']." DROP INDEX `$index_to_drop`");
 			}
+			$sql = "ALTER TABLE ".$value['table']." ADD INDEX (`".$value['column']."`)";
+				
+			if($this ->db ->query($sql)){
+				$message.=$value['message']. " successfully created ! <br>";
+			}else{
+				$message.=$value['message']. " could not be created ! ".$this->db->_error_message()." <br>";
+			}
+			
 		}
+		
 		return $message;
 	}
 }

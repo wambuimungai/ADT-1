@@ -1,3 +1,8 @@
+
+<?php
+$ccc_stores = $this ->session ->userdata("ccc_store");
+?>
+
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#reporting_period").datepicker({
@@ -227,8 +232,9 @@
 					<td class="show_report_type">
 					<select name="commodity_summary_report_type" id="commodity_summary_report_type" class="report_type input-large">
 						<option value="0">-- Select Report Type --</option>
-						<option value="1">Main Store</option>
-						<option value="2">Pharmacy</option>
+						<?php foreach ($ccc_stores as $key => $value) {
+							echo "<option value='".$value['id']."'>".$value['Name']."</option>";
+						}?>
 					</select></td>
 					<td><label >From: </label></td>
 					<td>
@@ -250,8 +256,9 @@
 					<td class="show_report_type">
 					<select name="commodity_summary_report_type" id="commodity_summary_report_type" class="report_type input-large">
 						<!--<option value="0">-- Select Report Type --</option>-->
-						<option value="1" selected="selected">Main Store</option>
-						<option value="2">Pharmacy</option>
+						<?php foreach ($ccc_stores as $key => $value) {
+							echo "<option value='".$value['id']."'>".$value['Name']."</option>";
+						}?>
 					</select></td>
 					<td>
 					<input class="_green" name="reporting_period" id="reporting_period" type="text" placeholder="Select Period">
@@ -284,8 +291,9 @@
 					<td class="show_report_type">
 					<select name="commodity_summary_report_type_1" id="commodity_summary_report_type_1" class="report_type input-large">
 						<option value="0">-- Select Report Type --</option>
-						<option value="1">Main Store</option>
-						<option value="2">Pharmacy</option>
+						<?php foreach ($ccc_stores as $key => $value) {
+							echo "<option value='".$value['id']."'>".$value['Name']."</option>";
+						}?>
 					</select></td>
 					<td>
 					<input type="button" id="generate_no_filter_report" class="btn btn-warning generate_btn" value="Generate Report">
