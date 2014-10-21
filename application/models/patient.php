@@ -186,10 +186,22 @@ class Patient extends Doctrine_Record {
 	            LEFT JOIN regimen r ON r.id=p.start_regimen
 	            WHERE p.date_enrolled IS NOT NULL
 	            GROUP by MONTH(p.date_enrolled),YEAR(p.date_enrolled),p.start_regimen
-	            ORDER by p.date_enrolled ASC";
+	            ORDER by p.date_enrolled ASC
+	            ";
+
+
+
 	    $query = $this -> db -> query($sql);
 		$patients = $query -> result_array();
-		return $patients;
+
+
+		foreach($patients as $patient)
+		{
+			$data[$patient['period']][]=array('regimen'=>$patient['regimen'],'total'=>(int)$patient['total']);
+
+		}
+
+		return $data;
 	}
 	public function get_patients_started_on_ART(){
 		//Get total number of patients starting on ART within a period
