@@ -902,9 +902,16 @@ $(document).ready(function() {
 					var report = $(".select_report:visible").attr("value");
 					var from = $("#date_range_from").attr("value");
 					var to = $("#date_range_to").attr("value");
+					//If adherence report, get adherence report type
+					if(report=="graphical_adherence"){
+						var adherence_type = $("#adherence_type_report").val();
+						report = report + "/"+adherence_type;
+					}
+					
 					if($(".report_type").is(":visible")) {
 						report = report + "/" + $(".report_type:visible").attr("value");
 					}
+					
 					var report_url = base_url + "report_management/" + report + "/" + from + "/" + to;
 					window.location = report_url;
 				} else if(id == "generate_month_range_report") {
@@ -1095,6 +1102,12 @@ $(document).ready(function() {
 		} else if(get_type == "date_range_report") {
 			$(".select_types").css("display", "none");
 			$("#date_range_report").css("display", "block");
+			var selected = $("option:selected", this).val();
+			if(selected == "graphical_adherence"){//If adherence report is selected, show  select adherence report type
+				$(".adherence_report_type_title").css("display","block");
+			}else{
+				$(".adherence_report_type_title").css("display","none");
+			}
 			//If report is drug_consumption report, display select report type
 			if(get_id == 'drug_stock_on_hand' || get_id == 'expiring_drugs' || get_id == 'expired_drugs' || get_id == 'getDrugsIssued' || get_id == 'getDrugsReceived' || get_id == 'commodity_summary') {
 				$(".show_report_type").show();

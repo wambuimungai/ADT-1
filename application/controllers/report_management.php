@@ -11,11 +11,14 @@ class report_management extends MY_Controller {
 		parent::__construct();
 		ini_set("max_execution_time", "1000000");
 		ini_set("memory_limit", '2048M');
+		
 		$this -> load -> library(array('mpdf'));
 		$this -> load -> helper(array("file","download"));
 	}
 
 	public function index() {
+		$ccc_stores = CCC_store_service_point::getAllActive();
+		$this -> session -> set_userdata('ccc_store',$ccc_stores);
 		$this -> listing();
 	}
 
@@ -1691,15 +1694,8 @@ class report_management extends MY_Controller {
 			/*
 			 * Outer Loop through all active drugs
 			 */
-			if ($stock_type == 1) {
-				//Main Store
-				$first_value = "AND source != destination";
-				$second_value = "AND dst.source != dst.destination";
-			} else if ($stock_type == 2) {
-				//Pharmacy
-				$first_value = "AND source=destination";
-				$second_value = "AND dst.source=dst.destination";
-			}
+			$first_value = "AND ccc_store_sp = $stock_type";
+			$second_value = "AND dst.ccc_store_sp = $stock_type";
 			// Select Data
 			$this -> db -> select('SQL_CALC_FOUND_ROWS ' . str_replace(' , ', ' ', implode(', ', $aColumns)), false);
 			$this -> db -> select("dc.id,dc.pack_size,u.name");
@@ -1749,7 +1745,16 @@ class report_management extends MY_Controller {
 				//Start of Other Transactions
 				$start_date = date('Y-m-d', strtotime($start_date));
 				$end_date = date('Y-m-d', strtotime($end_date));
-				$sql = "SELECT trans.name, trans.id, trans.effect, dsm.in_total, dsm.out_total FROM (SELECT id, name, effect FROM transaction_type WHERE name LIKE  '%received%' OR name LIKE  '%adjustment%' OR name LIKE  '%return%' OR name LIKE  '%dispense%' OR name LIKE  '%issue%' OR name LIKE  '%loss%' OR name LIKE  '%ajustment%' OR name LIKE  '%physical%count%' OR name LIKE  '%starting%stock%') AS trans LEFT JOIN (SELECT transaction_type, SUM( quantity ) AS in_total, SUM( quantity_out ) AS out_total FROM drug_stock_movement WHERE transaction_date BETWEEN  '$start_date' AND  '$end_date' AND drug =  '$drug_id' $first_value GROUP BY transaction_type) AS dsm ON trans.id = dsm.transaction_type GROUP BY trans.name";
+				$sql = "SELECT trans.name, trans.id, trans.effect, dsm.in_total, dsm.out_total FROM 
+						(SELECT id, name, effect FROM transaction_type 
+						WHERE name LIKE  '%received%' OR name LIKE  '%adjustment%' 
+						OR name LIKE  '%return%' OR name LIKE  '%dispense%' OR name LIKE  '%issue%' 
+						OR name LIKE  '%loss%' OR name LIKE  '%ajustment%' 
+						OR name LIKE  '%physical%count%' OR name LIKE  '%starting%stock%') AS trans 
+						LEFT JOIN (SELECT transaction_type, SUM( quantity ) AS in_total, SUM( quantity_out ) AS out_total 
+						FROM drug_stock_movement WHERE transaction_date 
+						BETWEEN  '$start_date' AND  '$end_date' AND drug =  '$drug_id' $first_value 
+						GROUP BY transaction_type) AS dsm ON trans.id = dsm.transaction_type GROUP BY trans.name";
 				$query = $this -> db -> query($sql);
 				$results = $query -> result_array();
 				if ($results) {
@@ -1788,16 +1793,9 @@ class report_management extends MY_Controller {
 		 * Inner Loop through all respective transaction types for the outer drug
 		 */
 
-		if ($stock_type == 1) {
-			//Main Store
-			$first_value = "AND source != destination";
-			$second_value = "AND dst.source != dst.destination";
-		} else if ($stock_type == 2) {
-			//Pharmacy
-			$first_value = "AND source=destination";
-			$second_value = "AND dst.source=dst.destination";
-		}
-
+		$first_value = "AND ccc_store_sp = $stock_type";
+		$second_value = "AND dst.ccc_store_sp = $stock_type";
+		
 		$drugs = Drugcode::getEnabledDrugs();
 		$transactions = Transaction_Type::getAllTypes();
 		$overall_array = array();
@@ -1817,7 +1815,11 @@ class report_management extends MY_Controller {
 					 * Runs when transaction is beginngin balance
 					 * Get Beginning Balance of drug
 					 */
-					$sql = "SELECT SUM( dst.balance ) AS total FROM drug_stock_movement dst, (SELECT drug, batch_number, MAX( transaction_date ) AS trans_date FROM  `drug_stock_movement` WHERE transaction_date BETWEEN  '$prev_start' AND  '$prev_end' AND drug ='$drug_id' $first_value GROUP BY batch_number) AS temp WHERE dst.drug = temp.drug AND dst.batch_number = temp.batch_number AND dst.transaction_date = temp.trans_date $second_value";
+					$sql = "SELECT SUM( dst.balance ) AS total FROM drug_stock_movement dst, 
+							(SELECT drug, batch_number, MAX( transaction_date ) AS trans_date FROM  `drug_stock_movement` 
+							WHERE transaction_date BETWEEN  '$prev_start' AND  '$prev_end' AND drug ='$drug_id' $first_value 
+							GROUP BY batch_number) AS temp WHERE dst.drug = temp.drug AND dst.batch_number = temp.batch_number 
+							AND dst.transaction_date = temp.trans_date $second_value";
 				} else {
 					$effect = Transaction_Type::getEffect($sections);
 					if ($effect['Effect'] == 1) {
@@ -1825,7 +1827,9 @@ class report_management extends MY_Controller {
 					} else {
 						$balance_value = "quantity_out";
 					}
-					$sql = "SELECT SUM($balance_value) AS total FROM  `drug_stock_movement` WHERE transaction_date BETWEEN  '$start_date' AND  '$end_date' $first_value AND transaction_type ='$sections' AND drug='$drug_id'";
+					$sql = "SELECT SUM($balance_value) AS total FROM  `drug_stock_movement` 
+							WHERE transaction_date BETWEEN  '$start_date' AND  '$end_date' $first_value 
+							AND transaction_type ='$sections' AND drug='$drug_id'";
 
 				}
 				$query = $this -> db -> query($sql);
@@ -3885,14 +3889,8 @@ class report_management extends MY_Controller {
 	public function getDrugInfo($facility_code, $drug, $drug_name, $drug_unit, $drug_packsize, $start_date, $end_date, $stock_type, $transaction_names = "", $phys_count_id = 0, $output = "", $row = "") {
 		$stock_param = "";
 		//Store
-		if ($stock_type == '1') {
-			$stock_param = " AND (source='" . $facility_code . "' OR destination='" . $facility_code . "') AND source!=destination ";
-		}
-		//Pharmacy
-		elseif ($stock_type == '2') {
-			$stock_param = " AND (source=destination) AND(source='" . $facility_code . "') ";
-
-		}
+		$stock_param = " AND ccc_store_sp = $stock_type";
+		
 		$stock_status = 0;
 		$counter = 0;
 		$k = 0;
@@ -3954,13 +3952,7 @@ class report_management extends MY_Controller {
 	public function getSafetyStock($drug, $stock_status, $drug_name, $drug_unit, $drug_packsize, $facility_code, $stock_type, $start_date, $end_date, $transaction_names = "", $phys_count_id = 0, $output = "", $row = "") {
 		$stock_param = "";
 		//Store
-		if ($stock_type == '1') {
-			$stock_param = " AND (source='" . $facility_code . "' OR destination='" . $facility_code . "') AND source!=destination ";
-		}
-		//Pharmacy
-		elseif ($stock_type == '2') {
-			$stock_param = " AND (source=destination) AND(source='" . $facility_code . "') ";
-		}
+		$stock_param = " AND ccc_store_sp = $stock_type";
 		$trans_counter = 0;
 		$trans_count = count($transaction_names);
 		//echo var_dump($transaction_names);die();
@@ -4338,22 +4330,29 @@ class report_management extends MY_Controller {
 		$this -> load -> view('template', $data);
 	}
 
-	public function graphical_adherence($start_date = "", $end_date = "")
-	{   
+	public function graphical_adherence($type="appointment",$start_date = "", $end_date = ""){
 		$data['start_date'] = date('Y-m-d',strtotime($start_date));
 		$data['end_date'] = date('Y-m-d',strtotime($end_date));
+		$data['type'] = $type;
 		$data['title'] = "webADT | Reports";
 		$data['hide_side_menu'] = 1;
 		$data['banner_text'] = "Facility Reports";
 		$data['selected_report_type_link'] = "early_warning_report_select";
 		$data['selected_report_type'] = "Early Warning Indicators";
-		$data['report_title'] = "Graphical Patient Adherence";
+			
+		if($type=="appointment"){
+			$data['report_title'] = "Graphical Patient Adherence By Appointment";
+		}
+		else if($type=="pill_count"){
+			$data['report_title'] = "Graphical Patient Adherence By Pill Count";
+		} 
+		
 		$data['facility_name'] = $this -> session -> userdata('facility_name');
 		$data['content_view'] = 'reports/graphical_adherence_v';
 		$this -> load -> view('template', $data);
 	}
 
-	public function getAdherence($start_date = "", $end_date = "" ,$type = "")
+	public function getAdherence($type="appointment",$start_date = "", $end_date = "" ,$type = "")
 	{	
 		$ontime = 0;
 		$missed = 0;
@@ -5389,28 +5388,29 @@ class report_management extends MY_Controller {
 		$facility_code = $this -> session -> userdata('facility');
 		$facilty_value = "";
 		$param = "";
-		if ($stock_type == 1) {
-			//Main Store
-			$facilty_value = "dsm.source!=dsm.destination";
-			$data['transaction_type'] = "Main Store";
-
-		} else if ($stock_type == 2) {
-			//Pharmacy
-			$facilty_value = "dsm.source=dsm.destination";
-			$data['transaction_type'] = "Pharmacy";
-			$param = "where des.name NOT LIKE '%pharmacy%'";
-		}
-		$sql = "select d.id,d.drug,du.Name as unit,d.pack_size,SUM(dsm.quantity_out) as total from drug_stock_movement dsm LEFT JOIN transaction_type t ON t.id=dsm.transaction_type LEFT JOIN drugcode d ON d.id=dsm.drug LEFT JOIN drug_unit du ON du.id=d.unit where dsm.transaction_date between '$start_date' and '$end_date' and $facilty_value and dsm.facility='$facility_code' AND t.name LIKE '%Issued To%' GROUP BY d.drug";
-		$get_destination = "select * from drug_destination des " . $param . " order by id asc";
-		$dest_query = $this -> db -> query($get_destination);
-		$dest_array = $dest_query -> result_array();
+		$facilty_value = "dsm.ccc_store_sp=$stock_type";
+		$ccc = CCC_store_service_point::getCCC($stock_type);
+		$data['transaction_type'] = $ccc['Name'];
+		
+		$sql = "select d.id,d.drug,du.Name as unit,d.pack_size,SUM(dsm.quantity_out) as total from drug_stock_movement dsm 
+				LEFT JOIN transaction_type t ON t.id=dsm.transaction_type 
+				LEFT JOIN drugcode d ON d.id=dsm.drug 
+				LEFT JOIN drug_unit du ON du.id=d.unit 
+				where dsm.transaction_date between '$start_date' and '$end_date' and $facilty_value and dsm.facility='$facility_code' 
+				AND t.name LIKE '%Issued To%' AND d.id IS  NOT NULL GROUP BY d.drug";
+		//echo $sql;die();
 		$query = $this -> db -> query($sql);
+		$dest_array =Drug_destination::getAllHydrate();
+		$all_other_ccc_stores = CCC_store_service_point::getAllBut($stock_type);
+		
 		$dyn_table = "<table border='1' class='dataTables' cellpadding='5'>";
 		$dyn_table .= "<thead>
 						<tr><th>Drug Name</th>
 					";
+		$dest_array =array_merge($all_other_ccc_stores,$dest_array);
+		//echo json_encode($dest_array);die();
 		foreach ($dest_array as $value) {
-			$dyn_table .= "<th>" . $value['name'] . "</th>";
+			$dyn_table .= "<th>" . $value['Name'] . "</th>";
 		}
 		$dyn_table .= "</tr>
 						</thead>
@@ -5421,23 +5421,49 @@ class report_management extends MY_Controller {
 			foreach ($results as $result) {
 				$dyn_table .= "<tr><td>" . $result['drug'] . "</td>";
 				//Get all destinations for that drug
-			    $get_drugs = "SELECT des.name,temp.total 
-				              FROM drug_destination des 
-				              LEFT JOIN (SELECT source_destination,SUM(dsm.quantity_out) as total 
-				              	         FROM drug_stock_movement dsm 
-				              	         LEFT JOIN transaction_type t ON t.id=dsm.transaction_type 
-				              	         LEFT JOIN drugcode d ON d.id=dsm.drug 
-				              	         LEFT JOIN drug_unit du ON du.id=d.unit 
-				              	         WHERE dsm.transaction_date 
-				              	         BETWEEN '$start_date' 
-				              	         AND '$end_date' 
-				              	         AND $facilty_value 
-				              	         AND dsm.facility='$facility_code' 
-				              	         AND t.name LIKE '%Issued To%' 
-				              	         AND dsm.drug='" . $result['id'] . "' 
-				              	         GROUP BY source_destination) as temp ON temp.source_destination=des.id " 
-										 .$param."
-                                         ORDER BY des.id";
+			    $get_drugs = "
+			    			SELECT table1.name,table1.total FROM
+			    			(
+								(
+								SELECT csp.name as name,temp.total 
+					              FROM ccc_store_service_point csp
+					              LEFT JOIN 
+					              (SELECT source_destination,SUM(dsm.quantity_out) as total 
+					              	         FROM drug_stock_movement dsm 
+					              	         LEFT JOIN transaction_type t ON t.id=dsm.transaction_type 
+					              	         LEFT JOIN drugcode d ON d.id=dsm.drug 
+					              	         LEFT JOIN drug_unit du ON du.id=d.unit 
+					              	         WHERE dsm.transaction_date 
+					              	         BETWEEN '$start_date' 
+					              	         AND '$end_date' 
+					              	         AND $facilty_value 
+					              	         AND t.name LIKE '%Issued To%' 
+					              	         AND dsm.drug='" . $result['id'] . "' 
+					              	         GROUP BY source_destination) as temp ON temp.source_destination = csp.name
+					              	         
+					              WHERE csp.id !=$stock_type AND csp.active = 1 
+								)
+								UNION ALL
+								(
+								SELECT des.name as name,temp.total 
+					              FROM drug_destination des  
+					              LEFT JOIN (SELECT source_destination,SUM(dsm.quantity_out) as total 
+					              	         FROM drug_stock_movement dsm 
+					              	         LEFT JOIN transaction_type t ON t.id=dsm.transaction_type 
+					              	         LEFT JOIN drugcode d ON d.id=dsm.drug 
+					              	         LEFT JOIN drug_unit du ON du.id=d.unit 
+					              	         WHERE dsm.transaction_date 
+					              	         BETWEEN '$start_date' 
+					              	         AND '$end_date' 
+					              	         AND $facilty_value 
+					              	         AND t.name LIKE '%Issued To%' 
+					              	         AND dsm.drug='" . $result['id'] . "' 
+					              	         GROUP BY source_destination) as temp ON temp.source_destination=des.id 
+					              	         WHERE des.active=1
+	                                         ORDER BY des.id ASC
+								)
+							) as table1
+			    			";                       
 				$get_dest = $this -> db -> query($get_drugs);
 				$get_des_array = $get_dest -> result_array();
 				if($get_des_array){
@@ -5468,6 +5494,7 @@ class report_management extends MY_Controller {
 	}
 
 	public function getDrugsReceived($stock_type, $start_date = "", $end_date = "") {
+		
 		$data['from'] = $start_date;
 		$data['to'] = $end_date;
 		$start_date = date('Y-m-d', strtotime($start_date));
@@ -5475,49 +5502,98 @@ class report_management extends MY_Controller {
 		$facility_code = $this -> session -> userdata('facility');
 		$facilty_value = "";
 		$param = "";
-		if ($stock_type == 1) {
-			//Main Store
-			$facilty_value = "dsm.source!=dsm.destination";
-			$data['transaction_type'] = "Main Store";
-			$param = "where des.name NOT LIKE '%Store%'";
-
-		} else if ($stock_type == 2) {
-			//Pharmacy
-			$facilty_value = "dsm.source=dsm.destination";
-			$data['transaction_type'] = "Pharmacy";
-		}
-		$sql = "select d.id,d.drug,du.Name as unit,d.pack_size,SUM(dsm.quantity) as total from drug_stock_movement dsm LEFT JOIN transaction_type t ON t.id=dsm.transaction_type LEFT JOIN drugcode d ON d.id=dsm.drug LEFT JOIN drug_unit du ON du.id=d.unit where dsm.transaction_date between '$start_date' and '$end_date' and $facilty_value and dsm.facility='$facility_code' AND t.name LIKE '%Received from%' GROUP BY d.drug";
-		$get_source = "select * from drug_source des " . $param . "  order by id asc";
-		$source_query = $this -> db -> query($get_source);
-		$source_array = $source_query -> result_array();
-
+		$facilty_value = "dsm.ccc_store_sp=$stock_type";
+		$ccc = CCC_store_service_point::getCCC($stock_type);
+		$data['transaction_type'] = $ccc['Name'];
+		
+		$sql = "select d.id,d.drug,du.Name as unit,d.pack_size,SUM(dsm.quantity) as total from drug_stock_movement dsm 
+				LEFT JOIN transaction_type t ON t.id=dsm.transaction_type 
+				LEFT JOIN drugcode d ON d.id=dsm.drug 
+				LEFT JOIN drug_unit du ON du.id=d.unit 
+				where dsm.transaction_date between '$start_date' and '$end_date' and $facilty_value and dsm.facility='$facility_code' 
+				AND t.name LIKE '%Received%' AND d.id IS  NOT NULL GROUP BY d.drug";
+		//echo $sql;die();
 		$query = $this -> db -> query($sql);
-		$dyn_table = "<table  class='table table-bordered table-hover table-condensed dataTables' >";
-		$dyn_table .= "<thead><tr><th style='width:200px'>Drug Name</th>";
+		$source_array =Drug_Source::getAllHydrate();
+		$all_other_ccc_stores = CCC_store_service_point::getAllBut($stock_type);
+		
+		$dyn_table = "<table border='1' class='dataTables' cellpadding='5'>";
+		$dyn_table .= "<thead>
+						<tr><th>Drug Name</th>
+					";
+		$source_array =array_merge($all_other_ccc_stores,$source_array);
+		//echo json_encode($dest_array);die();
 		foreach ($source_array as $value) {
-			$dyn_table .= "<th>" . $value['name'] . "</th>";
+			$dyn_table .= "<th>" . $value['Name'] . "</th>";
 		}
-		$dyn_table .= "</tr></thead><tbody>";
-
-		$query = $this -> db -> query($sql);
+		$dyn_table .= "</tr>
+						</thead>
+						<tbody>";
 
 		$results = $query -> result_array();
 		if ($results) {
 			foreach ($results as $result) {
 				$dyn_table .= "<tr><td>" . $result['drug'] . "</td>";
 				//Get all destinations for that drug
-				$get_drugs = "select des.name,temp.total from drug_source des LEFT JOIN (select source_destination,SUM(dsm.quantity) as total from drug_stock_movement dsm LEFT JOIN transaction_type t ON t.id=dsm.transaction_type LEFT JOIN drugcode d ON d.id=dsm.drug LEFT JOIN drug_unit du ON du.id=d.unit where dsm.transaction_date between '$start_date' and '$end_date' and $facilty_value and dsm.facility='$facility_code' AND t.name LIKE '%received%' AND dsm.drug='" . $result['id'] . "' GROUP BY source_destination) as temp ON temp.source_destination=des.id " . $param;
+			    $get_drugs = "
+			    			SELECT table1.name,table1.total FROM
+			    			(
+								(
+								SELECT csp.name as name,temp.total 
+					              FROM ccc_store_service_point csp
+					              LEFT JOIN 
+					              (SELECT source_destination,SUM(dsm.quantity) as total 
+					              	         FROM drug_stock_movement dsm 
+					              	         LEFT JOIN transaction_type t ON t.id=dsm.transaction_type 
+					              	         LEFT JOIN drugcode d ON d.id=dsm.drug 
+					              	         LEFT JOIN drug_unit du ON du.id=d.unit 
+					              	         WHERE dsm.transaction_date 
+					              	         BETWEEN '$start_date' 
+					              	         AND '$end_date' 
+					              	         AND $facilty_value 
+					              	         AND t.name LIKE '%received%' 
+					              	         AND dsm.drug='" . $result['id'] . "' 
+					              	         GROUP BY source_destination) as temp ON temp.source_destination = csp.name
+					              	         
+					              WHERE csp.id !=$stock_type AND csp.active = 1 
+								)
+								UNION ALL
+								(
+								SELECT des.name as name,temp.total 
+					              FROM drug_source des  
+					              LEFT JOIN (SELECT source_destination,SUM(dsm.quantity) as total 
+					              	         FROM drug_stock_movement dsm 
+					              	         LEFT JOIN transaction_type t ON t.id=dsm.transaction_type 
+					              	         LEFT JOIN drugcode d ON d.id=dsm.drug 
+					              	         LEFT JOIN drug_unit du ON du.id=d.unit 
+					              	         WHERE dsm.transaction_date 
+					              	         BETWEEN '$start_date' 
+					              	         AND '$end_date' 
+					              	         AND $facilty_value 
+					              	         AND t.name LIKE '%received%' 
+					              	         AND dsm.drug='" . $result['id'] . "' 
+					              	         GROUP BY source_destination) as temp ON temp.source_destination=des.id 
+					              	         WHERE des.active=1
+	                                         ORDER BY des.id ASC
+								)
+							) as table1
+			    			";        
+			    //echo $get_drugs;die();               
 				$get_dest = $this -> db -> query($get_drugs);
 				$get_des_array = $get_dest -> result_array();
-				foreach ($get_des_array as $value) {
-					$total = $value['total'];
-					if ($value['total'] == null) {
-						$total = 0;
+				if($get_des_array){
+					foreach ($get_des_array as $value) {
+						$total = $value['total'];
+						if ($value['total'] == null) {
+							$total = 0;
+						}
+						$dyn_table .= "<td>" . $total . "</td>";
 					}
-					$dyn_table .= "<td>" . $total . "</td>";
 				}
 				$dyn_table .= "</tr>";
 			}
+		} else {
+			//$dyn_table .= "<tr><td colspan='4'>No Data Available</td></tr>";
 		}
 		$dyn_table .= "</tbody></table>";
 		$data['dyn_table'] = $dyn_table;
@@ -6511,7 +6587,7 @@ class report_management extends MY_Controller {
 				LEFT JOIN brand b ON b.id = pv.brand
 				LEFT JOIN regimen r ON r.id = pv.regimen
 				$filter
-				ORDER BY dispensing_date DESC LIMIT 100";	
+				ORDER BY dispensing_date DESC ";	
 		//echo $sql;die();
 		$query = $this ->db ->query($sql);
 		$result = $query->result_array();

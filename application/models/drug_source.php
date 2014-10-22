@@ -15,11 +15,11 @@ class Drug_Source extends Doctrine_Record {
 		$infections = $query -> execute();
 		return $infections;
 	}
-	
-	public function getAllHydrated() {
-		$query = Doctrine_Query::create() -> select("*") -> from("Drug_Source") -> where("Active", "1");
-		$infections = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
-		return $infections;
+	public function getAllHydrate() {
+		$query = Doctrine_Query::create() -> select("*") -> from("Drug_Source") -> where("Active=1") ->orderBy("id ASC");
+		//return $query->getSqlQuery();
+		$destinations = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $destinations;
 	}
 
 	public function getTotalNumber() {

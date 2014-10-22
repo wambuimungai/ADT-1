@@ -148,8 +148,8 @@ $ccc_stores = $this ->session ->userdata("ccc_store");
 				<option id="expired_drugs" class="no_filter" value="expired_drugs">List of Expired Drugs</option>
 				<option id="getFacilityConsumption" class="date_range_report" value="getFacilityConsumption">Stock Consumption</option>
 				<option id="getDailyConsumption" class="date_range_report" value="getDailyConsumption">Daily Drug Consumption</option>
-				<option id="getDrugsIssued" class="date_range_report" value="getDrugsIssued">Drugs Issued To</option>
-				<option id="getDrugsReceived" class="date_range_report" value="getDrugsReceived">Drugs Received From</option>
+				<option id="getDrugsIssued" class="date_range_report" value="getDrugsIssued">Drugs Issued at</option>
+				<option id="getDrugsReceived" class="date_range_report" value="getDrugsReceived">Drugs Received at</option>
 			</select></td>
 		</tr>
 		<!--MOH Form-->
@@ -236,9 +236,14 @@ $ccc_stores = $this ->session ->userdata("ccc_store");
 							echo "<option value='".$value['id']."'>".$value['Name']."</option>";
 						}?>
 					</select></td>
-					<td><label >From: </label></td>
+					<td class="adherence_report_type_title"><label >Adherence Report By: </label></td>
+					<td class="adherence_report_type_title"><select name="adherence_type_report" id="adherence_type_report">
+							<option value="appointment">Appointment</option>
+							<option value="pill_count">Pill Count</option>
+						</select></td>
 					<td>
-					<input type="text" name="date_range_from" id="date_range_from" class="input-medium input_dates_from">
+					<td><label >From: </label></td>
+					<td><input type="text" name="date_range_from" id="date_range_from" class="input-medium input_dates_from"></td>
 					</td>
 					<td><label >To: </label></td>
 					<td>
