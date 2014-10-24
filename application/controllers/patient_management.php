@@ -9,7 +9,8 @@ class Patient_Management extends MY_Controller {
 	}
 
 	public function index() {
-		$data['content_view'] = "patient_listing_v";
+		//$data['content_view'] = "patient_listing_v";
+		$data['content_view'] = "patients/listing_view";
 		$this -> base_params($data);
 	}
 	public function merge_list() {
@@ -1756,6 +1757,67 @@ class Patient_Management extends MY_Controller {
 	{
 		//procedure
 		
+	}
+
+	public function get_patients()
+	{   
+		$facility_code = $this -> session -> userdata("facility");
+		$access_level = $this -> session -> userdata('user_indicator');
+
+		$sql = "SELECT 
+		            p.patient_number_ccc as ccc_no,
+		            UPPER(CONCAT_WS(' ',CONCAT_WS(' ',p.first_name,p.other_name),p.last_name)) as patient_name,
+		            DATE_FORMAT(p.nextappointment,'%b %D, %Y') as appointment,
+		            IF(p.phone='',p.alternate,p.phone) as phone_number,
+                    CONCAT_WS(' | ',r.regimen_code,r.regimen_desc) as regimen,
+                    ps.name as status,
+                    p.active,
+                    p.id
+		        FROM patient p  
+		        LEFT JOIN regimen r ON r.id=p.current_regimen
+		        LEFT JOIN patient_status ps ON ps.id=p.current_status
+		        WHERE p.facility_code = '$facility_code'
+		        AND p.patient_number_ccc != ''";
+		$query = $this -> db -> query($sql);
+		$patients = $query ->result_array();
+        $temp = array();
+
+        foreach($patients as $counter => $patient)
+        {  
+        	foreach ($patient as $key => $value) {
+        		if ($key == "active") 
+        		{   
+        			$id = $patient['id'];
+        			$link = '| <a href="' . base_url() . 'patient_management/enable/' . $id . '" class="green actual">Enable</a>';
+                    //Active Patient
+	        		if($value == 1)
+	        		{   
+	        			if ($access_level == "facility_administrator") 
+	        			{
+                            $link = '| <a href="' . base_url() . 'patient_management/disable/' . $id . '" class="red actual">Disable</a>';
+	        			}
+				        $link = '<a href="' . base_url() . 'patient_management/viewDetails/' . $id . '">Detail</a> | <a href="' . base_url() . 'patient_management/edit/' . $id . '">Edit</a> ' . $link;
+	        		}
+	        		else
+	        		{
+                        if ($access_level == "facility_administrator") 
+	        			{
+					        $link = '| <a href="' . base_url() . 'patient_management/enable/' . $id . '" class="green actual">Enable</a>';
+	        			}
+						$link = str_replace("|", "", $link);
+						$link .= '| <a href="' . base_url() . 'patient_management/delete/' . $id . '" class="red actual">Delete</a>';	
+					} 
+					$value = $link; 
+					unset($patient['id']);      		
+        		}
+        		$temp [$counter][] = $value;
+        	}
+           
+        }
+
+        $data['aaData'] = $temp;
+
+        echo json_encode($data,JSON_PRETTY_PRINT);
 	}
 
 }
