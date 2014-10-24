@@ -11,6 +11,7 @@ class Dispensement_Management extends MY_Controller {
 
 	public function dispense($record_no) {
 		$data = array();
+		/*
 		$facility_code = $this -> session -> userdata('facility');
                 
 		$dispensing_date = "";
@@ -105,7 +106,8 @@ class Dispensement_Management extends MY_Controller {
 		$data['non_adherence_reasons'] = Non_Adherence_Reasons::getAllHydrated();
 		$data['regimen_changes'] = Regimen_Change_Purpose::getAllHydrated();
 		$data['purposes'] = Visit_Purpose::getAll();
-		$data['content_view'] = "dispense_v";
+		 */
+		$data['content_view'] = "dispense_v1";
 		$data['hide_side_menu'] = 1;
 		$this -> base_params($data);
                 
