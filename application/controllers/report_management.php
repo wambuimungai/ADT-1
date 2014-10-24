@@ -6574,6 +6574,7 @@ class report_management extends MY_Controller {
 	}
 
 	public function dispensingReport($start_date="",$end_date=""){
+		ini_set("max_execution_time", "1000000");
 		$filter = "";
 		if($start_date!="" && $end_date!=""){
 			$start_date = date("Y-m-d",strtotime($start_date));

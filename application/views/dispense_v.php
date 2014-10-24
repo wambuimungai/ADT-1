@@ -1404,12 +1404,10 @@ foreach ($results as $result) {
                         <div class="max-row">
                             <div class="mid-row">
                                 <label>Current Height(cm)</label>
-
                                 <input  type="text"name="height" id="height" class="validate[required]">
                             </div>
                             <div class="mid-row">
                                 <label><span class='astericks'>*</span>Current Weight(kg)</label>
-
                                 <input  type="text"name="weight" id="weight" class="validate[required]" >
                             </div>
                         </div>
@@ -1420,7 +1418,6 @@ foreach ($results as $result) {
                             </div>
                             <div class="mid-row">
                                 <label><span class='astericks'>*</span>Date of Next Appointment</label>
-
                                 <input  type="text" name="next_appointment_date" id="next_appointment_date" class="validate[required]" >
                             </div>
                         </div>
