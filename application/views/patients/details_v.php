@@ -523,6 +523,6 @@
 </div>
 
 <!-- custom scripts-->
-<script src="<?php echo base_url();?>assets/modules/forms/forms.js"></script>
-<script src="<?php echo base_url();?>assets/modules/patients/details.js"></script>
+<script src="<?php echo base_url().'assets/modules/forms/forms.js'; ?>"></script>
+<script src="<?php echo base_url().'assets/modules/patients/details.js'; ?>"></script>
 

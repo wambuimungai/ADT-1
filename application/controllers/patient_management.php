@@ -1796,7 +1796,8 @@ class Patient_Management extends MY_Controller {
 	        			{
                             $link = '| <a href="' . base_url() . 'patient_management/disable/' . $id . '" class="red actual">Disable</a>';
 	        			}
-				        $link = '<a href="' . base_url() . 'patient_management/viewDetails/' . $id . '">Detail</a> | <a href="' . base_url() . 'patient_management/edit/' . $id . '">Edit</a> ' . $link;
+				        //$link = '<a href="' . base_url() . 'patient_management/viewDetails/' . $id . '">Detail</a> | <a href="' . base_url() . 'patient_management/edit/' . $id . '">Edit</a> ' . $link;
+	        			$link = '<a href="' . base_url() . 'patient_management/load_view/details/' . $id . '">Detail</a> | <a href="' . base_url() . 'patient_management/edit/' . $id . '">Edit</a> ' . $link;
 	        		}
 	        		else
 	        		{
