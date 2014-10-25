@@ -1820,5 +1820,11 @@ class Patient_Management extends MY_Controller {
         echo json_encode($data,JSON_PRETTY_PRINT);
 	}
 
+public function get_patient_details(){
+	$patient_id = $this ->input ->post('patient_id');
+	$query = patient::get_patient_details($patient_id);
+	echo json_encode($query);
+}
+
 }
 ?>

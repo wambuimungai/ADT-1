@@ -2,7 +2,7 @@
 	.content{
 		padding:10em 1% 5% 1%;
 	}
-	.dispensing-field input, .dispensing-field select{
+	.dispensing-field input, .dispensing-field select,#tbl-dispensing-drugs input, #tbl-dispensing-drugs select{
 		width: 100%;
 		height:1.9em;
 		border-radius:0px;
@@ -10,16 +10,42 @@
 	.dispensing-field table{
 		margin:0px;
 	}
-	 
+	
+	.dispensing-field label{
+		margin:0px;
+		line-height: 18px;
+		font-size:12px;
+	}
+	.dispensing-field .control-group{
+		margin-bottom:5px;
+	}
+	#tbl-dispensing-drugs{
+		margin-top:3px;
+	}
+	#tbl-dispensing-drugs, #tbl-dispensing-drugs tr, #tbl-dispensing-drugs td, #tbl-dispensing-drugs th{
+		border-radius: 0px;
+	}
+	#tbl-dispensing-drugs tr, #tbl-dispensing-drugs td, #tbl-dispensing-drugs th{
+		padding:2px;
+	} 
+	#submit_section{
+		text-align:right;
+	}
 </style>
 
 
 <div class="container-fluid content">
 	<div class="row-fluid">
-		<a href="<?php echo base_url() . 'patient_management ' ?>">Patient Listing </a> <i class=" icon-chevron-right"></i><a href="<?php echo base_url() . 'patient_management/viewDetails/' . @$result['id'] ?>"><?php echo strtoupper(@$result['first_name'] . ' ' . @$result['other_name'] . ' ' . @$result['last_name']) ?></a> <i class=" icon-chevron-right"></i><strong>Dispensing details</strong>
+		<a href="<?php echo base_url() . 'patient_management ' ?>">Patient Listing </a> <i class=" icon-chevron-right"></i><a id="patient_names" href="<?php echo base_url() . 'patient_management/viewDetails/' . @$patient_id ?>"><?php echo strtoupper(@$result['name']); ?></a> <i class=" icon-chevron-right"></i><strong>Dispensing details</strong>
         <hr size="1">
 	</div>
-	<form>	
+	<form name="fmDispensing">
+		<textarea name="sql" id="sql" style="display:none;"></textarea>
+        <input type="hidden" id="hidden_stock" name="hidden_stock"/>
+        <input type="hidden" id="days_count" name="days_count"/>
+        <input type="hidden" id="stock_type_text" name="stock_type_text" value="main pharmacy" />
+        <input type="hidden" id="purpose_refill_text" name="purpose_refill_text" value="" />
+        <input type="hidden" id="patient_source" name="patient_source" value="<?php echo @$result['patient_source']; ?>" />
 		<div class="row-fluid">
 			<div class="span6">
 				<legend>
@@ -28,10 +54,32 @@
 	            <div class="row-fluid ">
 	            	<div class="span6 dispensing-field">
 	            		<div class="control-group">
-		            		<label><span class='astericks'>*</span> Select Dispensing Point</label>
-			    		 	<select name="ccc_store_id" id="ccc_store_id" class="validate[required] ">
-			    		 		<option value="">Select One</option>
-			    		 	</select>
+		            		<?php
+		                    $ccc_stores = $this->session->userdata('ccc_store');
+		                    $count_ccc = count($ccc_stores);
+		                    $selected = '';
+		                    if ($count_ccc > 0) {//In case on has more than one dispensing point
+		                        echo "<label><span class='astericks'>*</span>Select dispensing point</label>
+		                                <select name='ccc_store_id' id='ccc_store_id' class='validate[required]'>
+		                                	<option value=''>Select One</option>";
+		                        //Check if facility has more than one dispensing point
+		                        foreach ($ccc_stores as $value) {
+		                            $name = $value['Name'];
+		                            if ($this -> session -> userdata('ccc_store_id')) {
+		                             	$ccc_storeid = $this -> session -> userdata('ccc_store_id');
+		                                if ($value['id'] === $ccc_storeid) {
+		                                    $selected = "selected";
+		                                } else {
+		                                    $selected = "";
+		                                }
+		                            } 
+		                            echo "<option value='" . $value['id'] . "' " . $selected . ">" . $name . "</option>";
+		                        }
+		                        echo "</select>";
+		                    }
+		
+		                    //$this->session->set_userdata('ccc_store',$name);
+		                    ?>
 			    		</div>
 	            	</div>
 	            </div>
@@ -61,6 +109,11 @@
 		            		<label><span class='astericks'>*</span>Purpose of Visit</label>
 	                        <select  type="text"name="purpose" id="purpose" class="validate[required] " >
 	                        	<option value="">--Select One--</option>
+	                        	<?php
+                                foreach ($purposes as $purpose) {
+                                    echo "<option value='" . $purpose['id'] . "'>" . $purpose['Name'] . "</option>";
+                                }
+                                ?>
 	                        </select>   
 			    		</div>
 	            	</div>
@@ -94,9 +147,10 @@
 	            	</div>
 	            </div>
 	            <div class="row-fluid">
-	            	<div class="span10 dispensing-field">
-	            		<span id="scheduled_patients" style="display:none;background:#9CF;padding:5px;"></span>
-	            	</div>
+	            	<!--
+            		<div class="span10 dispensing-field">
+	            		<span id="scheduled_patients" style="display:none;background:#9CF;"></span>
+	            	</div> -->
 	            </div>
 	            <div class="row-fluid">
 	            	<div class="span6 dispensing-field">
@@ -116,7 +170,7 @@
 	            	</div>
 	            </div>
 	             <div class="row-fluid">
-	            	<div class="span6 dispensing-field">
+	            	<!--<div class="span6 dispensing-field">
 	            		<div class="control-group" style="display:none" id="regimen_change_reason_container">
 		            		<label><span class='astericks'>*</span>Regimen Change Reason</label>
 	                        <select type="text"name="regimen_change_reason" id="regimen_change_reason" >
@@ -124,7 +178,7 @@
 	                        </select>
 	                           
 			    		</div>
-	            	</div>
+	            	</div> -->
 	            </div>
 	            <div class="row-fluid">
 	            	<div class="span6 dispensing-field">
@@ -169,7 +223,7 @@
 	            		<div class="control-group">
 	            			<label>Previously Dispensed Drugs</label>
 		            		<table class="data-table prev_dispense" id="last_visit_data" style="float:left;width:100%;">
-	                            <thead><th style="width: 70%">Drug Dispensed</th><th>Quantity Dispensed</th></thead>
+	                            <thead><th style="width: 70%">Drug Dispensed</th><th>Qty Dispensed</th></thead>
 	                            <tbody></tbody>
 	                        </table>
 	                    </div>
@@ -178,19 +232,22 @@
 			</div>
 		</div>
 		<div class="row-fluid">
-			<table class="table table-bordered">
+			<legend>
+                Drug Details 
+            </legend>
+			<table class="table table-bordered" id="tbl-dispensing-drugs">
 				<thead>
 					<tr>
-						<th>Drug</th>
-                        <th>Unit</th>
-                        <th >Batch No.&nbsp;</th>
-                        <th>Expiry&nbsp;Date</th>
+						<th style="width:18%">Drug</th>
+                        <th style="width:10%">Unit</th>
+                        <th style="width:10%">Batch No.&nbsp;</th>
+                        <th style="width:9%">Expiry&nbsp;Date</th>
                         <th>Dose</th>
                         <th><b>Expected</b><br/>Pill Count</th>
                         <th><b>Actual</b><br/> Pill Count</th>
                         <th>Duration</th>
-                        <th>Qty. disp</th>
-                        <th>Stock on Hand</th>
+                        <th style="width:5%">Qty. disp</th>
+                        <th style="width:8%">Stock on Hand</th>
                         <th>Brand Name</th>
                         <th>Indication</th>
                         <th>Comment</th>
@@ -198,8 +255,115 @@
                         <th style="">Action</th>
 					</tr>
 				</thead>
+				<tbody>
+                    <tr drug_row="0">
+                        <td><select name="drug[]" class="drug input-large span3"></select></td>
+                        <td>
+                            <input type="text" name="unit[]" class="unit input-small" style="" readonly="" />
+                            <input type="hidden" name="comment[]" class="comment input-small" style="" readonly="" />
+                        </td>
+                        <td><select name="batch[]" class="batch input-small next_pill span2"></select></td>
+                        <td>
+                            <input type="text" name="expiry[]" name="expiry" class="expiry input-small" id="expiry_date" readonly="" size="15"/>
+                        </td>
+                        <td class="dose_col">
+                            <input  name="dose[]" list="dose" id="doselist" class="input-small next_pill dose icondose">
+                            <datalist id="dose" class="dose"><select name="dose1[]" class="dose"></select></datalist>
+                        </td>
+                        <td>
+                            <input type="text" name="pill_count[]" class="pill_count input-small" readonly="readonly" />
+                        </td>
+                        <td>
+                            <input type="text" name="next_pill_count[]" class="next_pill_count input-small"qty  />
+                        </td>
+                        <td>
+                            <input type="text" name="duration[]" class="duration input-small" />
+                        </td>
+                        <td>
+                            <input type="text" name="qty_disp[]" class="qty_disp input-small next_pill validate[requireds]"  id="qty_disp"/>
+                        <td>
+                            <input type="text" name="soh[]" class="soh input-small" readonly="readonly"/>
+                        </td>
+                        </td>
+                        <td><select name="brand[]" class="brand input-small"></select></td>
+
+                        <td>
+                            <select name="indication[]" class="indication input-small " style="">
+                                <option value="0">None</option>
+                            </select></td>
+                        <td>
+                            <input type="text" name="comment[]" class="comment input-small" />
+                        </td>
+                        <td>
+                            <input type="text" name="missed_pills[]" class="missed_pills input-small" />
+                        </td>
+                        <td>
+                            <a class="add btn-small">Add</a>|<a style="display: none" class="remove btn-small">Remove</a>
+                        </td>
+                    </tr>
+                </tbody>
 			</table>
+		</div>
+		<div class="row-fluid" id="submit_section">
+			<div class="span12">
+				<input type="reset" class="btn btn-danger button_size" id="reset" value="Reset Fields" />
+                    <input type="button" class="btn button_size" id="print_btn" value="Print Labels" />
+                    <input type="submit" form="dispense_form" id="btn_submit " class="btn actual button_size" id="submit"  value="Dispense Drugs"/>
+			</div>
 		</div>
 	</form>
 		
 </div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		var link ="<?php echo base_url();?>patient_management/get_patient_details";
+		var patient_id = "<?php echo $patient_id;?>";
+		var request = $.ajax({
+                        url: link,
+                        type: 'post',
+                        data: {"patient_id": patient_id},
+                        dataType: "json"
+                    });
+                    
+			request.done(function(data){
+				$("#patient").val(data.Patient_Number_CCC);
+				$("#patient_details").val(data.names);
+				$("#height").val(data.Height);
+				$("#weight").val(data.Weight);
+				$("#patient_names").text(data.names);
+				var age = data.age;
+				//Load regimens
+				loadRegimens(age);
+			})
+			request.fail(function(jqXHR, textStatus) {
+                bootbox.alert("<h4>Patient Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve patient details : </center>" + textStatus);
+            });
+	});
+	
+	function loadRegimens(age){
+		var link ="<?php echo base_url();?>regimen_management/getFilteredRegiments";
+		var request = $.ajax({
+                        url: link,
+                        type: 'post',
+                        data: {"age": age},
+                        dataType: "json"
+                    });
+                    
+			request.done(function(data){
+				//Remove appended options to reinitialize dropdown
+				$('#current_regimen option')
+			    .filter(function() {
+			        return this.value || $.trim(this.value).length != 0;
+			    }).remove();
+			   
+				$(data).each(function(i,v){
+					
+					$("#current_regimen").append("<option value='"+v.id+"'>"+v.Regimen_Code+" | "+v.Regimen_Desc+"</option>");
+				});
+			});
+			request.fail(function(jqXHR, textStatus) {
+                bootbox.alert("<h4>Regimens Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve regimens details : </center>" + textStatus);
+            });
+	}
+</script>

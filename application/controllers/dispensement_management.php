@@ -10,7 +10,7 @@ class Dispensement_Management extends MY_Controller {
 	}
 
 	public function dispense($record_no) {
-		$data = array();
+		
 		/*
 		$facility_code = $this -> session -> userdata('facility');
                 
@@ -125,11 +125,19 @@ class Dispensement_Management extends MY_Controller {
 		$data['regimen_changes'] = Regimen_Change_Purpose::getAllHydrated();
 		$data['purposes'] = Visit_Purpose::getAll();
 		 */
+		$data = array();
+		$data['patient_id'] = $record_no; 
+		$data['purposes'] = Visit_Purpose::getAll();
 		$data['content_view'] = "dispense_v1";
 		$data['hide_side_menu'] = 1;
 		$this -> base_params($data);
                 
         
+	}
+	
+	public function get_patient_details(){
+		$patient_id = $this ->input ->post("patient_id");
+		
 	}
 
 	//Get list of drugs for a specific regimen
