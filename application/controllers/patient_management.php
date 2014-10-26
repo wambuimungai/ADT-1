@@ -703,7 +703,8 @@ class Patient_Management extends MY_Controller {
 		//Set session for notications
 		$this -> session -> set_userdata('msg_save_transaction', 'success');
 		$this -> session -> set_userdata('user_updated', $this -> input -> post('first_name'));
-		redirect("patient_management/viewDetails/$record_id");
+		//redirect("patient_management/viewDetails/$record_id");
+		redirect("patient_management/load_view/details/$record_id");
 	}
 
 	public function update_visit() {
@@ -994,7 +995,7 @@ class Patient_Management extends MY_Controller {
 				FROM patient_visit pv
 				LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
 				LEFT JOIN drugcode dc ON dc.id=pv.drug_id
-			    WHERE pv.patient_id = '$patient_no'
+			    WHERE pv.patient_id LIKE '%$patient_no%'
 			    AND pv.facility = '$facility' 
 			    ORDER BY pv.dispensing_date DESC";
 	    $query = $this -> db -> query($sql);
@@ -1112,7 +1113,7 @@ class Patient_Management extends MY_Controller {
                         . "left join regimen r1 on pv.regimen = r1.id"
                         . " left join regimen r2 on pv.last_regimen = r2.id"
                         . " left join regimen_change_purpose rc on pv.regimen_change_reason = rc.id "
-                        . "where pv.patient_id = '$patient_no' "
+                        . "where pv.patient_id LIKE '%$patient_no%' "
                         . "and pv.facility = '$facility' "
                         . "and pv.regimen != pv.last_regimen "
                         . "group by dispensing_date,pv.regimen "
@@ -1134,9 +1135,9 @@ class Patient_Management extends MY_Controller {
 				} elseif ($result['reason'] == "null") {
 					$result['reason'] = "-";
 				}
-				if ($result['current_regimen'] == "-") {
+				//if ($result['current_regimen'] == "-") {
 					$dyn_table .= "<tbody><tr><td>" . date('d-M-Y', strtotime($result['dispensing_date'])) . "</td><td>" . $result['current_regimen'] . "</td><td align='center'>" . $result['previous_regimen'] . "</td><td align='center'>" . $result['reason'] . "</td></tr></tbody>";
-				}
+				//}
 			}
 		}
 		echo $dyn_table;
@@ -1147,7 +1148,7 @@ class Patient_Management extends MY_Controller {
 		$status = "";
 		$facility = $this -> session -> userdata("facility");
 		$sql = "SELECT pa.appointment,IF(pa.appointment=pv.dispensing_date,'Visited',DATEDIFF(pa.appointment,curdate()))as Days_To 
-				FROM(SELECT patient,appointment FROM patient_appointment pa WHERE patient='$patient_no' AND facility='$facility') as pa,(SELECT patient_id,dispensing_date FROM patient_visit WHERE patient_id='$patient_no' AND facility='$facility') as pv GROUP BY pa.appointment ORDER BY pa.appointment desc";
+				FROM(SELECT patient,appointment FROM patient_appointment pa WHERE patient LIKE '%$patient_no%' AND facility='$facility') as pa,(SELECT patient_id,dispensing_date FROM patient_visit WHERE patient_id LIKE '%$patient_no%' AND facility='$facility') as pv GROUP BY pa.appointment ORDER BY pa.appointment desc";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		if ($results) {
@@ -1461,9 +1462,49 @@ class Patient_Management extends MY_Controller {
         $config['details'] = array(
         						'patient_id' => $id,
         						'content_view' => 'patients/details_v',
-        						'hide_side_menu' => '1'
+        						'hide_side_menu' => '1',
+        						'patient_msg' => $this->get_patient_relations($id)
         					 );
+
         $this -> base_params($config[$page_id]);
+	}
+
+	public function get_patient_relations( $patient_id = NULL)
+	{
+		
+		$this->db->select("p.first_name,p.last_name,LOWER(ps.name) as status,dp.child,s.secondary_spouse");
+		$this->db->from("patient p");
+		$this->db->join("patient_status ps","ps.id=p.current_status","left");
+		$this->db->join("dependants dp","p.patient_number_ccc=dp.parent","left");
+		$this->db->join("spouses s","p.patient_number_ccc=s.primary_spouse","left");
+		$this->db->where("p.id",$patient_id);
+		$query = $this->db->get();
+		$results = $query -> result_array();
+
+        $dependant_msg = "";
+		if ($results) 
+		{
+            $status = $results[0]['status'];
+            //Check dependedants/spouse status
+			$child = $results[0]['child'];
+			$spouse = $results[0]['secondary_spouse'];
+			$patient_name  = strtoupper($results[0]['first_name'].' '.$results[0]['last_name']);
+			if($child!=NULL){	
+				$pat = $this ->getDependentStatus($child);
+				if($pat!=''){
+					$dependant_msg.="Patient $patient_name\'s dependant ".$pat." is lost to follow up ";
+				}
+			}
+			if($spouse!=NULL){
+				$pat = $this ->getDependentStatus($spouse);
+				if($pat!=''){
+					$dependant_msg.="Patient $patient_name\'s spouse ".$pat." is lost to follow up ";
+				}
+			}
+		}
+
+		return array('status'=>$status,'message'=>$dependant_msg);
+
 	}
 
 	public function load_form($form_id = NULL)
@@ -1505,7 +1546,7 @@ class Patient_Management extends MY_Controller {
 					'p.First_Name AS first_name',
 					'p.Last_Name AS last_name',
 					'p.Other_Name AS other_name',
-					'p.Dob AS dob',
+					'DATE_FORMAT(p.Dob,"%Y-%m-%d") AS dob',
 					'p.Pob AS pob',
 					'p.dependant.parent as parent',
 					'p.Gender AS gender',
@@ -1572,6 +1613,66 @@ class Patient_Management extends MY_Controller {
 		}
 
 		echo json_encode($data,JSON_PRETTY_PRINT);
+	}
+
+	public function get_visits( $patient_id = NULL )
+	{  
+		$facility_code = $this -> session -> userdata("facility");
+        
+        $sql = "SELECT pv.dispensing_date, 
+                        v.name AS visit, 
+                        pv.dose, 
+                        pv.duration, 
+                        pv.id AS record_id, 
+                        d.drug, 
+                        pv.quantity, 
+                        pv.current_weight, 
+                        r1.regimen_desc, 
+                        pv.batch_number, 
+                        pv.pill_count, 
+                        pv.adherence, 
+                        pv.user, 
+                        rcp.name AS regimen_change_reason 
+                FROM patient_visit pv
+                LEFT JOIN patient p ON pv.patient_id = p.patient_number_ccc 
+                LEFT JOIN drugcode d ON pv.drug_id = d.id 
+                LEFT JOIN regimen r ON pv.regimen 
+                LEFT JOIN regimen r1 ON pv.last_regimen = r1.id 
+                LEFT JOIN visit_purpose v ON pv.visit_purpose = v.id 
+                LEFT JOIN regimen_change_purpose rcp ON rcp.id=pv.regimen_change_reason 
+                WHERE p.id = '$patient_id' 
+                AND pv.facility = '$facility_code' 
+                AND pv.active = 1 
+                GROUP BY d.drug,pv.dispensing_date
+                ORDER BY pv.dispensing_date DESC";
+
+        $query = $this -> db -> query($sql);
+		$visits = $query ->result_array();
+        $temp = array();
+
+        foreach($visits as $counter => $visit)
+        {  
+        	foreach ($visit as $key => $value) 
+        	{   
+                if($key == "record_id")
+                {
+					$link=base_url().'dispensement_management/edit/'.$value;
+					$value = "<a href='".$link."' class='btn btn-small btn-warning'>Edit</a>";
+				}
+
+				$temp[$counter][] = $value;
+        	}
+
+        }
+
+        $data['aaData'] = $temp;
+
+        //echo "<pre>";
+
+        echo json_encode($data,JSON_PRETTY_PRINT);
+
+        //echo "</pre>";
+
 	}
 
 	public function load_visits( $patient_id = NULL)
@@ -1681,6 +1782,8 @@ class Patient_Management extends MY_Controller {
 		$this -> db -> group_by(array("d.drug,pv.dispensing_date"));
 
 		$rResult = $this -> db -> get();
+
+		echo $this->db->last_query();die();
 
 		// Data set length after filtering
 		$this -> db -> select('FOUND_ROWS() AS found_rows');

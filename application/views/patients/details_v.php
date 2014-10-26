@@ -3,7 +3,7 @@
 
 <!--art card form-->
 <div class="container full-content" style="background:#9CF">
-    <input type="hidden" id="hidden_data" data-baseurl="<?php echo base_url(); ?>" data-patient="<?php echo $patient_id; ?>">
+    <input type="hidden" id="hidden_data" data-baseurl="<?php echo base_url(); ?>" data-patient="<?php echo $patient_id; ?>" data-status="<?php echo $patient_msg['status']; ?>" data-message="<?php echo $patient_msg['message']; ?>">
 	<!--breadcrumb & instructions row-->
     <div class="row-fluid">
 	    <div class="span12">
@@ -16,6 +16,41 @@
 				<h4>Mandatory!</h4>
 				(Fields Marked with <b><span class='astericks'>*</span></b> Asterisks are required)
 			</div>
+	    </div>
+	</div>
+	<!--message row-->
+    <div class="row-fluid">
+	    <div class="span12">
+		    <?php 
+		        if($this->session->userdata("msg_save_transaction")){
+					if($this->session->userdata("msg_save_transaction")=="success"){
+					   if($this->session->userdata("user_updated")){
+							?>
+							<p class=""><span class="message success"><?php echo $this->session->userdata("user_updated") ?>'s details were successfully updated !</span></p>
+							<?php
+							$this->session->unset_userdata('user_updated');
+						}
+						else if($this->session->userdata("dispense_updated")){
+							?>
+							<p class=""><span class="message  success">The dispensing details were successfully updated !</span></p>
+							<?php
+							$this->session->unset_userdata('dispense_updated');
+						}
+						else if($this->session->userdata("dispense_deleted")){
+							?>
+							<p class=""><span class="message  error">The dispensing details were successfully deleted !</span></p>
+							<?php
+							$this->session->unset_userdata('dispense_deleted');
+						} 
+					}
+					else{
+						?>
+						<p class=""><span class="message  error">Your data were not saved ! Try again or contact your system administrator.</span></p>
+						<?php
+					}
+					$this->session->unset_userdata('msg_save_transaction');
+				}
+			?>
 	    </div>
 	</div>
 	<!--demographics row-->
@@ -378,9 +413,10 @@
 	<div class="row-fluid">
 	    <div class="span12">
 	     	<div class="btn-group pull-right">
+	     	    <button class="btn btn-inverse" id="viral_load"><strong>Viral Load Data</strong></button>
 	     	    <button class="btn btn-inverse" id="patient_info"><strong>Patient Info Report</strong></button>
 			    <a class="btn btn-inverse" href="<?php echo base_url().'patient_management/edit/'.$patient_id; ?>"><strong>Edit Patient Record</strong></a>
-			    <a class="btn btn-inverse" href="<?php echo base_url().'dispensement_management/dispense/'.$patient_id; ?>"><strong>Dispense to Patient</strong></a>
+			    <a id="dispense_btn" class="btn btn-inverse" href="<?php echo base_url().'dispensement_management/dispense/'.$patient_id; ?>"><strong>Dispense to Patient</strong></a>
 			</div>
 	    </div>
 	</div>
@@ -437,89 +473,111 @@
 			</fieldset>
 	    </div>
 	</div>
-	<!--modals row-->
+	<!--patient_info modal row-->
 	<div id="patient_details" title="Patient Summary">
-	    <div class="accordion" id="summary_accordion">
-	    	<!--patient info summary-->
-			<div class="accordion-group">
-			    <div class="accordion-heading">
-			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#patient_information_summary">
-			        <strong>1.Demographics Summary</strong>
-			      </a>
-			    </div>
-			    <div id="patient_information_summary" class="accordion-body collapse in">
-			      <div class="accordion-inner">
-			        ........
-			      </div>
-			    </div>
-			</div>
-			<!--pill count summary-->
-			<div class="accordion-group">
-			    <div class="accordion-heading">
-			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#pill_count_summary">
-			        <strong>2.Pill Count Summary</strong>
-			      </a>
-			    </div>
-			    <div id="pill_count_summary" class="accordion-body collapse in">
-			      <div class="accordion-inner">
-			        ........
-			      </div>
-			    </div>
-			</div>
-	    	<!--regimen change summary-->
-			<div class="accordion-group">
-			    <div class="accordion-heading">
-			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#regimen_change_summary">
-			        <strong>3.Regimen Change Summary</strong>
-			      </a>
-			    </div>
-			    <div id="regimen_change_summary" class="accordion-body collapse in">
-			      <div class="accordion-inner">
-			        ...........
-			      </div>
-			    </div>
-			</div>
-			<!--appointment summary-->
-			<div class="accordion-group">
-			    <div class="accordion-heading">
-			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#appointment_summary">
-			        <strong>4.Appointment Summary</strong>
-			      </a>
-			    </div>
-			    <div id="appointment_summary" class="accordion-body collapse">
-			      <div class="accordion-inner">
-			        ...........
-			      </div>
-			    </div>
-			</div>
-			<!--viral load summary-->
-			<div class="accordion-group">
-			    <div class="accordion-heading">
-			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#viral_load_summary">
-			        <strong>5.Viral Load Summary</strong>
-			      </a>
-			    </div>
-			    <div id="viral_load_summary" class="accordion-body collapse">
-			      <div class="accordion-inner">
-			        ...........
-			      </div>
-			    </div>
-			</div>
-			<!--adherence summary-->
-			<div class="accordion-group">
-			    <div class="accordion-heading">
-			      <a class="accordion-toggle" data-toggle="collapse" data-parent="#summary_accordion" href="#adherence_summary">
-			        <strong>6.Adherence Summary</strong>
-			      </a>
-			    </div>
-			    <div id="adherence_summary" class="accordion-body collapse">
-			      <div class="accordion-inner">
-			        .........
-			      </div>
-			    </div>
-			</div>
-		</div>  
+	    <h3 id="facility_name" style="text-align: center"></h3>
+		<h4 style="text-align: center">Patient Information</h4>
+		<table  id="patient_information" class="table table-hover table-bordered table-striped table-condensed">
+		    <thead>
+				<tr>
+					<th>Art Number</th>
+					<th>First Name</th>
+					<th>Surname</th>
+					<th>Sex</th>
+					<th>Age</th>
+					<th>Date Therapy Started</th>
+					<th>Current Status</th>
+					<th>Last Viral Load Date</th>
+					<th>Last Viral Load Result</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td id='details_patient_number_ccc'></td>
+					<td id='details_first_name'></td>
+					<td id='details_last_name'></td>
+					<td id='details_gender'></td>
+					<td id="details_current_age"></td>
+					<td id='details_date_enrolled'></td>
+					<td id='details_current_status'></td>
+					<td id='viral_load_date'></td>
+					<td id='viral_load_result'></td>
+				</tr>
+			</tbody>
+		</table>
+		<h4 style="text-align: center">Patient Pill Count History (Last 12 Months)</h4>
+		<table id="patient_pill_count"  class="table table-hover table-bordered table-striped table-condensed" style="zoom:90%;">
+			<thead>
+			   <tr>
+					<th rowspan='2'>Date of Visit</th>
+					<th rowspan='2'>Drug Name</th>
+					<th rowspan='2'>Qty. Dispensed</th>
+					<th rowspan='2'>Pill Count</th>
+					<th rowspan='2'>Missed Pills</th>
+					<th colspan='4'>Adherence Rates</sub></th>
+				</tr>
+				<tr>
+					<th>Pill Count(%)</sub></th>
+					<th>Missed Pills(%)</sub></th>
+					<th>Appointment(%)</sub></th>
+					<th>Average(%)</sub></th>
+				</tr>
+			</thead>
+			<tbody class="spinner_loader">
+				
+			</tbody>
+		</table>
+		<h4 style="text-align: center">Patient Regimen Change History</h4>
+		<table   id="patient_regimen_history" class="table table-hover table-bordered table-striped table-condensed">
+			<thead>
+			<tr>
+				<th>Date of Visit</th>
+				<th>Last Regimen Dispensed</th>
+				<th>Current Regimen</th>
+				<th>Reason for Change</th> 
+			</tr>
+			</thead>
+			<tbody class="spinner_loader">
+				
+			</tbody>
+		</table>
+		<h4 style="text-align: center">Patient Appointment History</h4>
+		<table id="patient_appointment_history" class="table table-hover table-bordered table-striped table-condensed">
+			<thead>
+			    <tr>
+					<th>Date of Next Appointment</th>
+					<th>Days To Appointment</th> 
+				</tr>
+			</thead>
+			<tbody class="spinner_loader">
+				
+			</tbody>
+		</table> 
 	</div>
+	<!--viral_load modal row-->
+    <div id="viral_load_details" title="Viral Load Summary">
+        <div class="table-responsive">
+            <table id="viral_load_data" class="table table-hover table-bordered table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>Date Tested</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="2">no data available!</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Date Tested</th>
+                        <th>Result</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
 </div>
 
 <!-- custom scripts-->
