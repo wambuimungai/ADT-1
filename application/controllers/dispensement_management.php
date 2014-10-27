@@ -66,6 +66,8 @@ class Dispensement_Management extends MY_Controller {
 			}
 
 			$data['purposes'] = Visit_Purpose::getFiltered($enrollment_check,$start_art_check);
+		}else{
+			$data['purposes'] = Visit_Purpose::getAll();
 		}
 
 		$sql = "SELECT DISTINCT(d.drug),

@@ -147,9 +147,13 @@ function createTable(div,url){
 
 function sanitizeForm(){
     //Remove none selected options
-    $("select option:not(:selected)").remove();
+    $("#details_frm select option:not(:selected)").remove();
     //Disable Elements
     $("input[type='text'],select,textarea").attr("disabled", 'disabled');
+
+    //Enable DataTable Elements
+    $(".dataTables_filter input").attr("disabled", false);
+    $(".dataTables_length select").attr("disabled", false);
 
 	//Close Spinner
 	//$.unblockUI({});
