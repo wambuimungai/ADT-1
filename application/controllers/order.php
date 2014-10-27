@@ -547,7 +547,6 @@ class Order extends MY_Controller {
 				$facilities = Sync_Facility::getId($facility, $order_type);
 				$duplicate = $this -> check_duplicate($code, $period_start, $period_end, $facilities['id'], $type);
 				$data['commodities'] = Sync_Drug::getActiveList();
-				$data['duplicate'] = $duplicate;
 				if ($duplicate == true) {
 					//redirect("order");
 				}
@@ -562,20 +561,21 @@ class Order extends MY_Controller {
 			$this -> base_params($data);
 
 		} else if ($type == "maps") {
-			//Initialize parameters
-			$this -> session -> set_userdata("order_go_back", "fmaps");//Which tabe to load when back to order page
+			$this -> session -> set_userdata("order_go_back", "fmaps");
 			$data['o_type'] = "FMAP";
 			$data['options'] = "none";
 			$data["is_update"] = 0;
 			$data["is_view"] = 0;
-			$facility_code = $this -> session -> userdata('facility');
-			$facility_id = $this -> session -> userdata('facility_id');
-			$facilities = Sync_Facility::getId($facility_code, $order_type);
+
 			if ($order_type == 1) {//Central Dispensing point
+				$facility_code = $this -> session -> userdata('facility');
+				$facility_id = $this -> session -> userdata('facility_id');
+				$supplier['supplied_by'] = Facilities::getSupplier($facility_code);
+				$data['commodities'] = Drugcode::getAllObjects($supplier['supplied_by']);
+
 				$data['page_title'] = "Central Dispensing Point";
 				$data['banner_text'] = "Maps Form";
-			} 
-			else if ($order_type == 2) {//Satellite
+			} else if ($order_type == 2) {//Satellite
 				$facility_code = $this -> input -> post("satellite_facility", TRUE);
 				$data['page_title'] = "Satellite Facility(F-MAPS)";
 				$data['banner_text'] = "Satellite Facility(F-MAPS)";
@@ -585,12 +585,15 @@ class Order extends MY_Controller {
 				} else {
 					$data['hide_generate'] = 1;
 				}
-			} 
-			else if ($order_type == 3) {//Stand-alone Maps
+			} else if ($order_type == 3) {//Stand-alone Maps
+				$facility_code = $this -> session -> userdata('facility');
+				$facility_id = $this -> session -> userdata('facility_id');
+				$supplier['supplied_by'] = Facilities::getSupplier($facility_code);
+				$data['commodities'] = Drugcode::getAllObjects($supplier['supplied_by']);
 				$data['page_title'] = "Stand-Alone MAPS";
 				$data['banner_text'] = "Maps Form";
-			} 
-			else {//Aggregated order
+			} else {//Aggregated order
+				$facility_code = $this -> session -> userdata('facility');
 				$data['page_title'] = "Aggregate Maps List";
 				$facility = Facilities::getParent($facility_code);
 				$parent_code = $facility['parent'];
@@ -600,7 +603,7 @@ class Order extends MY_Controller {
 				$data['banner_text'] = "Aggregate Maps List";
 			}
 
-			if (!empty($content_array)) {//If updating or viewing MAPS
+			if (!empty($content_array)) {
 				$fmaps_array = $content_array;
 				$data['fmaps_array'] = $fmaps_array['fmaps_array'];
 				$facility_id = $fmaps_array['fmaps_array'][0]['facility_id'];
@@ -624,7 +627,7 @@ class Order extends MY_Controller {
 				$data['map_id'] = $map_id;
 				$data['logs'] = Maps_Log::getMapLogs($map_id);
 
-				if ($data['options'] == "view") {//When viewing, load regimen data
+				if ($data['options'] == "view") {
 					$data['hide_save'] = 1;	
 					$regimen_table = 'sync_regimen';
 					$regimen_cat_table = 'sync_regimen_category';
@@ -648,38 +651,43 @@ class Order extends MY_Controller {
 					$regimen_categories = array_unique($regimen_categories);
 					$data['regimen_categories'] = $regimen_categories;
 					$data['regimen_array'] = $regimen_array;
+
+				}
+				if ($data['options'] == "update") {
+					$data["is_update"] = 1;
+					$data['regimen_categories'] = Sync_Regimen_Category::getAll();
+				} else {
 					$data["is_view"] = 1;
 					$data['regimens'] = Maps_Item::getOrderItems($maps_id);
 				}
-				else if ($data['options'] == "update") {
-					$data["is_update"] = 1;
+
+			} else {
+				$data['supplier'] = $this -> get_supplier($facility_code);
+				if($data['supplier']=='KEMSA'){
+					$data['regimen_categories'] = Sync_Regimen_Category::getAll();
+				}else if($data['supplier']=='KENYA PHARMA'){
 					$data['regimen_categories'] = Sync_Regimen_Category::getAll();
 				}
-
-			} else {//When starting a new map, 
-				$data['supplier'] = $this -> get_supplier($facility_code);
-				$data['regimen_categories'] = New_Sync_Regimen_Category::getAll();
 
 				$period_start = date('Y-m-01', strtotime(date('Y-m-d') . "-1 month"));
 				$period_end = date('Y-m-t', strtotime(date('Y-m-d') . "-1 month"));
 
 				$code = $this -> getActualCode($order_type, $type);
+				$facilities = Sync_Facility::getId($facility_code, $order_type);
 				$duplicate = $this -> check_duplicate($code, $period_start, $period_end, $facilities['id'], $type);
-				$data['duplicate'] = $duplicate;
 				if ($duplicate == true) {
 					//redirect("order");
 				}
 			}
-			
+			$facilities = Sync_Facility::getId($facility_code, $order_type);
 			$data['facility_id'] = $facilities['id'];
-			$data['content_view'] = "orders/map_template";
+			$data['content_view'] = "orders/fmap_template";
 			$data['report_type'] = $order_type;
 			$data['facility_object'] = Facilities::getCodeFacility($facility_code);
 			$this -> base_params($data);
 		}
 
 	}
-	
 
 	public function check_duplicate($code, $period_start, $period_end, $facility, $table = "cdrr") {
 		$response = false;

@@ -147,9 +147,10 @@ class Dispensement_Management extends MY_Controller {
 
 	public function getPreviouslyDispensedDrugs(){
 		$patient_ccc = $this ->input ->post("patient_ccc");
-		$sql = "SELECT d.drug, pv.quantity,pv.dispensing_date,r.id as regimen_id,r.regimen_desc,r.regimen_code
+		$sql = "SELECT d.id as drug_id,d.drug,d.dose,d.duration, pv.quantity,pv.dispensing_date,pv.pill_count,r.id as regimen_id,r.regimen_desc,r.regimen_code,pv.months_of_stock as mos,ds.value,ds.frequency
 					FROM patient_visit pv
 					LEFT JOIN drugcode d ON d.id = pv.drug_id
+					LEFT JOIN dose ds ON ds.Name=d.dose
 					LEFT JOIN regimen r ON r.id = pv.regimen
 					WHERE pv.patient_id =  '$patient_ccc'
 					AND pv.dispensing_date = (SELECT dispensing_date FROM patient_visit pv WHERE pv.patient_id =  '$patient_ccc' ORDER BY dispensing_date DESC LIMIT 1)

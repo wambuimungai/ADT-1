@@ -1027,7 +1027,7 @@ foreach ($results as $result) {
                 var facility="<?php echo $facility ?>";
                 var timestamp = new Date().getTime();
                 var user="<?php echo $user;?>";
-                var all_rows=$('#drugs_table>tbody>tr');
+                var all_rows=$('#tbl-dispensing-drugs>tbody>tr');
                 var msg = '';
                 
                 //Loop through all rows to check values
@@ -1057,7 +1057,7 @@ foreach ($results as $result) {
                 }
 
                 
-                var rowCount = $('#drugs_table>tbody tr').length;
+                var rowCount = $('#tbl-dispensing-drugs>tbody tr').length;
                 return true;
             }
             
