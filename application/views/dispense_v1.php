@@ -1,6 +1,7 @@
 <style>
 	.content{
 		padding:10em 1% 5% 1%;
+		background-color: #FFA8E7;
 	}
 	.dispensing-field input, .dispensing-field select,#tbl-dispensing-drugs input, #tbl-dispensing-drugs select{
 		width: 100%;
@@ -22,7 +23,7 @@
 	#tbl-dispensing-drugs{
 		margin-top:3px;
 	}
-	#tbl-dispensing-drugs, #tbl-dispensing-drugs tr, #tbl-dispensing-drugs td, #tbl-dispensing-drugs th{
+	#tbl-dispensing-drugs,#last_visit_data,#last_visit_data th,#last_visit_data td, #tbl-dispensing-drugs tr, #tbl-dispensing-drugs td, #tbl-dispensing-drugs th{
 		border-radius: 0px;
 	}
 	#tbl-dispensing-drugs tr, #tbl-dispensing-drugs td, #tbl-dispensing-drugs th{
@@ -207,13 +208,13 @@
 	            	<div class="span6 dispensing-field">
 	            		<div class="control-group">
 		            		<label> Appointment Date</label>
-	                        <input readonly="" id="last_appointment_date" name="last_appointment_date"/>
+	                        <input type="text" readonly="" id="last_appointment_date" name="last_appointment_date"/>
 			    		</div>
 	            	</div>
 	            	<div class="span6 dispensing-field">
 	            		<div class="control-group">
 		            		<label>Previous Visit Date</label>
-	                        <input readonly="" id="last_visit_date" name="last_visit_date"/>
+	                        <input type="text" readonly="" id="last_visit_date" name="last_visit_date"/>
 	                        <input type="hidden" id="last_visit"/>
 			    		</div>
 	            	</div>
@@ -222,7 +223,7 @@
 	            	<div class="span12 dispensing-field">
 	            		<div class="control-group">
 	            			<label>Previously Dispensed Drugs</label>
-		            		<table class="data-table prev_dispense" id="last_visit_data" style="float:left;width:100%;">
+		            		<table class="table table-bordered prev_dispense" id="last_visit_data" style="float:left;width:100%;">
 	                            <thead><th style="width: 70%">Drug Dispensed</th><th>Qty Dispensed</th></thead>
 	                            <tbody></tbody>
 	                        </table>
@@ -333,8 +334,10 @@
 				$("#weight").val(data.Weight);
 				$("#patient_names").text(data.names);
 				var age = data.age;
+				var patient_ccc = data.Patient_Number_CCC;
 				//Load regimens
 				loadRegimens(age);
+				loadOtherDetails(patient_ccc);
 			})
 			request.fail(function(jqXHR, textStatus) {
                 bootbox.alert("<h4>Patient Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve patient details : </center>" + textStatus);
@@ -358,9 +361,78 @@
 			    }).remove();
 			   
 				$(data).each(function(i,v){
-					
 					$("#current_regimen").append("<option value='"+v.id+"'>"+v.Regimen_Code+" | "+v.Regimen_Desc+"</option>");
 				});
+			});
+			request.fail(function(jqXHR, textStatus) {
+                bootbox.alert("<h4>Regimens Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve regimens details : </center>" + textStatus);
+            });
+	}
+	
+	function loadOtherDetails(patient_ccc){
+		//Load Non adherence reasons, regimen change reasons previously dispensed drugs
+		var link ="<?php echo base_url();?>dispensement_management/get_other_dispensing_details";
+		var request = $.ajax({
+                        url: link,
+                        type: 'post',
+                        data: {"patient_ccc": patient_ccc},
+                        dataType: "json"
+                    });
+                    
+			request.done(function(data){
+				var non_adherence_reasons = data.non_adherence_reasons;
+				var regimen_change_reason = data.regimen_changes;
+				var patient_appointment	  = data.patient_appointment;
+				//Remove appended options to reinitialize dropdown
+				$('#non_adherence_reasons option')
+			    .filter(function() {
+			        return this.value || $.trim(this.value).length != 0;
+			    }).remove();
+			   
+				$(non_adherence_reasons).each(function(i,v){
+					$("#non_adherence_reasons").append("<option value='"+v.id+"'>"+v.Name+"</option>");
+				});
+				//Load regimen change reasons
+				$('#regimen_change_reason option')
+			    .filter(function() {
+			        return this.value || $.trim(this.value).length != 0;
+			    }).remove();
+			   
+				$(regimen_change_reason).each(function(i,v){
+					$("#regimen_change_reason").append("<option value='"+v.id+"'>"+v.Name+"</option>");
+				});
+				
+				//Appointment date, If patient presiously visited,load previous appointment date
+				if(patient_appointment.length==2){
+					var previous_date = patient_appointment[1].Appointment;
+					$("#last_appointment_date").val(patient_appointment[0].Appointment);
+					$("#last_visit_date").val(patient_appointment[1].Appointment);
+					$("#last_visit").val(previous_date);
+					
+					//Load previously dispensed drugs
+					var link ="<?php echo base_url();?>dispensement_management/getPreviouslyDispensedDrugs";
+					var request = $.ajax({
+			                        url: link,
+			                        type: 'post',
+			                        data: {"patient_ccc": patient_ccc,"last_dispensed_date":previous_date},
+			                        dataType: "json"
+			                    });
+			                    
+						request.done(function(msg){
+							$(msg).each(function(i,v){
+								$("#last_visit_data tbody").append("<tr><td>"+v.drug+"</td><td>"+v.quantity+"</td></tr>");
+							});
+						});
+						request.fail(function(jqXHR, textStatus) {
+			                bootbox.alert("<h4>Previous Dispensing Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve previously dispensed details : </center>" + textStatus);
+			            });
+				
+				}else if(patient_appointment.length==1){
+					$("#last_appointment_date").val(patient_appointment[0].Appointment);
+				}
+				
+				
+				
 			});
 			request.fail(function(jqXHR, textStatus) {
                 bootbox.alert("<h4>Regimens Details Alert</h4>\n\<hr/>\n\<center>Could not retrieve regimens details : </center>" + textStatus);

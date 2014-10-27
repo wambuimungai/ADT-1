@@ -139,6 +139,28 @@ class Dispensement_Management extends MY_Controller {
 		$patient_id = $this ->input ->post("patient_id");
 		
 	}
+	public function get_other_dispensing_details(){
+		$data  = array();
+		$patient_ccc = $this ->input ->post("patient_ccc");
+		$data['non_adherence_reasons'] = Non_Adherence_Reasons::getAllHydrated();
+		$data['regimen_changes'] = Regimen_Change_Purpose::getAllHydrated();
+		$data['patient_appointment']=Patient_appointment::getAppointmentDate($patient_ccc);
+		
+		echo json_encode($data);
+	}
+
+	public function getPreviouslyDispensedDrugs(){
+		$last_dispensed_date = $this ->input ->post("last_dispensed_date");
+		$patient_ccc = $this ->input ->post("patient_ccc");
+		$sql = "SELECT d.drug, pv.quantity
+				FROM patient_visit pv
+				LEFT JOIN drugcode d ON d.id = pv.drug_id
+				WHERE pv.dispensing_date =  '$last_dispensed_date'
+				AND pv.patient_id =  '$patient_ccc'";	
+		$query = $this -> db -> query($sql);
+		$results = $query -> result_array();
+		echo json_encode($results);
+	} 
 
 	//Get list of drugs for a specific regimen
 	public function getDrugsRegimens() {

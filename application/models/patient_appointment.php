@@ -41,5 +41,11 @@ class Patient_Appointment extends Doctrine_Record {
 		$patient_appointments = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $patient_appointments;
 	}
+	
+	public function getAppointmentDate($patient_ccc){
+		$query = Doctrine_Query::create() -> select("*") -> from("Patient_Appointment") -> where("patient = '$patient_ccc'")->orderBy("appointment DESC")->limit("2");
+		$patient_appointments = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $patient_appointments;
+	}
 
 }
