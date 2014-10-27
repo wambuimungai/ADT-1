@@ -54,7 +54,7 @@
 	    </div>
 	</div>
 	<!--demographics row-->
-	<div class="row-fluid">
+	<div class="row-fluid" id="details_frm">
 		<!--demographics column-->
 	    <div class="span4">
 		    <fieldset>
