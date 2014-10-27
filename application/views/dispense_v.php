@@ -620,7 +620,6 @@ foreach ($results as $result) {
                     $("#stock_type_text").val(stock_type_text);
                     $("#current_regimen").trigger("change");
                     reinitialize();
-
                     storeSession($(this).val());
                 });
 

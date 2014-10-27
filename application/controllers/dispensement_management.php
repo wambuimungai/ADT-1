@@ -128,17 +128,13 @@ class Dispensement_Management extends MY_Controller {
 		$data = array();
 		$data['patient_id'] = $record_no; 
 		$data['purposes'] = Visit_Purpose::getAll();
-		$data['content_view'] = "dispense_v1";
+		$data['content_view'] = "patients/dispense_v";
 		$data['hide_side_menu'] = 1;
 		$this -> base_params($data);
                 
         
 	}
 	
-	public function get_patient_details(){
-		$patient_id = $this ->input ->post("patient_id");
-		
-	}
 	public function get_other_dispensing_details(){
 		$data  = array();
 		$patient_ccc = $this ->input ->post("patient_ccc");
@@ -150,13 +146,14 @@ class Dispensement_Management extends MY_Controller {
 	}
 
 	public function getPreviouslyDispensedDrugs(){
-		$last_dispensed_date = $this ->input ->post("last_dispensed_date");
 		$patient_ccc = $this ->input ->post("patient_ccc");
-		$sql = "SELECT d.drug, pv.quantity
-				FROM patient_visit pv
-				LEFT JOIN drugcode d ON d.id = pv.drug_id
-				WHERE pv.dispensing_date =  '$last_dispensed_date'
-				AND pv.patient_id =  '$patient_ccc'";	
+		$sql = "SELECT d.drug, pv.quantity,pv.dispensing_date,r.id as regimen_id,r.regimen_desc,r.regimen_code
+					FROM patient_visit pv
+					LEFT JOIN drugcode d ON d.id = pv.drug_id
+					LEFT JOIN regimen r ON r.id = pv.regimen
+					WHERE pv.patient_id =  '$patient_ccc'
+					AND pv.dispensing_date = (SELECT dispensing_date FROM patient_visit pv WHERE pv.patient_id =  '$patient_ccc' ORDER BY dispensing_date DESC LIMIT 1)
+		ORDER BY dispensing_date DESC";	
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		echo json_encode($results);
