@@ -314,24 +314,24 @@
 			</div>
 		</div>
 	</form>
-		
+	<!-- Modal -->
+	<div id="open_print_label" name="open_print_label" title="Label Printer" class="container-fluid">
+	    <!--select all row-->
+	    <div class="drugrow"> 
+	        <form id="print_frm" method="post" action="<?php echo base_url(); ?>dispensement_management/print_test">
+	            <div class="row label_selectall">
+	                <div class="span1" style="padding: 4px 5px;">
+	                    <label class="checkbox inline">
+	                        <input type="checkbox" id="selectall" class="label_checker" value="0">All
+	                    </label>
+	                </div>
+	
+	        </form>
+	    </div>
+	</div>
+	<!--end modal-->
 </div>
-<!-- Modal -->
-<div id="open_print_label" name="open_print_label" title="Label Printer" class="container-fluid">
-    <!--select all row-->
-    <div class="drugrow"> 
-        <form id="print_frm" method="post" action="<?php echo base_url(); ?>dispensement_management/print_test">
-            <div class="row label_selectall">
-                <div class="span1" style="padding: 4px 5px;">
-                    <label class="checkbox inline">
-                        <input type="checkbox" id="selectall" class="label_checker" value="0">All
-                    </label>
-                </div>
 
-        </form>
-    </div>
-</div>
-<!--end modal-->
 <script type="text/javascript">
 	$(document).ready(function(){
 		
