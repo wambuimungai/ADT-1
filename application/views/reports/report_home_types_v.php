@@ -1,3 +1,8 @@
+
+<?php
+$ccc_stores = $this ->session ->userdata("ccc_store");
+?>
+
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#reporting_period").datepicker({
@@ -143,8 +148,8 @@
 				<option id="expired_drugs" class="no_filter" value="expired_drugs">List of Expired Drugs</option>
 				<option id="getFacilityConsumption" class="date_range_report" value="getFacilityConsumption">Stock Consumption</option>
 				<option id="getDailyConsumption" class="date_range_report" value="getDailyConsumption">Daily Drug Consumption</option>
-				<option id="getDrugsIssued" class="date_range_report" value="getDrugsIssued">Drugs Issued To</option>
-				<option id="getDrugsReceived" class="date_range_report" value="getDrugsReceived">Drugs Received From</option>
+				<option id="getDrugsIssued" class="date_range_report" value="getDrugsIssued">Drugs Issued at</option>
+				<option id="getDrugsReceived" class="date_range_report" value="getDrugsReceived">Drugs Received at</option>
 			</select></td>
 		</tr>
 		<!--MOH Form-->
@@ -227,12 +232,18 @@
 					<td class="show_report_type">
 					<select name="commodity_summary_report_type" id="commodity_summary_report_type" class="report_type input-large">
 						<option value="0">-- Select Report Type --</option>
-						<option value="1">Main Store</option>
-						<option value="2">Pharmacy</option>
+						<?php foreach ($ccc_stores as $key => $value) {
+							echo "<option value='".$value['id']."'>".$value['Name']."</option>";
+						}?>
 					</select></td>
-					<td><label >From: </label></td>
+					<td class="adherence_report_type_title"><label >Adherence Report By: </label></td>
+					<td class="adherence_report_type_title"><select name="adherence_type_report" id="adherence_type_report">
+							<option value="appointment">Appointment</option>
+							<option value="pill_count">Pill Count</option>
+						</select></td>
 					<td>
-					<input type="text" name="date_range_from" id="date_range_from" class="input-medium input_dates_from">
+					<td><label >From: </label></td>
+					<td><input type="text" name="date_range_from" id="date_range_from" class="input-medium input_dates_from"></td>
 					</td>
 					<td><label >To: </label></td>
 					<td>
@@ -250,8 +261,9 @@
 					<td class="show_report_type">
 					<select name="commodity_summary_report_type" id="commodity_summary_report_type" class="report_type input-large">
 						<!--<option value="0">-- Select Report Type --</option>-->
-						<option value="1" selected="selected">Main Store</option>
-						<option value="2">Pharmacy</option>
+						<?php foreach ($ccc_stores as $key => $value) {
+							echo "<option value='".$value['id']."'>".$value['Name']."</option>";
+						}?>
 					</select></td>
 					<td>
 					<input class="_green" name="reporting_period" id="reporting_period" type="text" placeholder="Select Period">
@@ -284,8 +296,9 @@
 					<td class="show_report_type">
 					<select name="commodity_summary_report_type_1" id="commodity_summary_report_type_1" class="report_type input-large">
 						<option value="0">-- Select Report Type --</option>
-						<option value="1">Main Store</option>
-						<option value="2">Pharmacy</option>
+						<?php foreach ($ccc_stores as $key => $value) {
+							echo "<option value='".$value['id']."'>".$value['Name']."</option>";
+						}?>
 					</select></td>
 					<td>
 					<input type="button" id="generate_no_filter_report" class="btn btn-warning generate_btn" value="Generate Report">

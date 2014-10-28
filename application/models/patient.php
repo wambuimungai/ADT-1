@@ -175,5 +175,11 @@ class Patient extends Doctrine_Record {
 		$patients = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $patients[0];
 	}
+	
+	public function get_patient_details($id){
+		$query = Doctrine_Query::create() -> select("p.Patient_Number_CCC,CONCAT_WS(' ',first_name,last_name,other_name) as names,Height,Weight,FLOOR(DATEDIFF(CURDATE(),p.dob)/365) as Dob,Pregnant,Tb") -> from("Patient p") -> where( "p.id = $id");
+		$patients = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $patients[0];
+	}
 
 }

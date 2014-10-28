@@ -139,7 +139,8 @@ function createTable(div,url){
 		"sDom" : '<"H"T<"clear">lfr>t<"F"ip>',
 		"bAutoWidth" : false,
 		"bDeferRender" : true,
-		"bInfo" : true
+		"bInfo" : true,
+		"aLengthMenu":[10,25,50,100]
 		});
 }
 
@@ -160,6 +161,8 @@ function sanitizeForm(){
 	//Enable these Buttons
 	$("#patient_info").attr("disabled", false);
 	$("#viral_load").attr("disabled", false);
+	$("#dispensing_history_filter input").attr("disabled", false);
+	$("#dispensing_history_length select").attr("disabled", false);
 
 }
 

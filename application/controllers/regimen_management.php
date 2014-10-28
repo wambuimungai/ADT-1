@@ -330,6 +330,23 @@ class Regimen_management extends MY_Controller {
 		echo $aff;
 		
 	}
+	
+	public function getFilteredRegiments(){
+		$age = $this ->input ->post("age");
+		$regimens = "";
+		if($age==''){
+		   $regimens = Regimen::getRegimens();
+		}else{
+			if($age>=15){
+				//adult regimens
+				$regimens=Regimen::getAdultRegimens();
+			}else if($age<15){
+				//paediatric regimens
+				$regimens=Regimen::getChildRegimens();
+			}
+		}
+		echo json_encode($regimens);
+	}
 
 	public function base_params($data) {
 		$data['quick_link'] = "regimen";

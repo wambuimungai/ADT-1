@@ -15,6 +15,12 @@ class Drug_Destination extends Doctrine_Record {
 		$infections = $query -> execute();
 		return $infections;
 	}
+	public function getAllHydrate() {
+		$query = Doctrine_Query::create() -> select("*") -> from("Drug_Destination") -> where("Active=1") ->orderBy("id ASC");
+		//return $query->getSqlQuery();
+		$destinations = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $destinations;
+	}
 
 	public function getTotalNumber() {
 		$query = Doctrine_Query::create() -> select("count(*) as Total_Destinations") -> from("Drug_Destination")-> where("Active", "1");
