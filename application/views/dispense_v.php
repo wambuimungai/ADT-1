@@ -1557,7 +1557,7 @@ foreach ($results as $result) {
                                     <input type="text" name="expiry[]" name="expiry" class="expiry input-small" id="expiry_date" readonly="" size="15"/>
                                 </td>
                                 <td class="dose_col">
-                                    <input  name="dose[]" list="dose" id="doselist"  style="width:95%;height:25px;" class="input-small next_pill dose icondose">
+                                    <input  name="dose[]" list="dose" id="doselist"  style="width:95%;height:25px;" class="input-small next_pill dose">
                                     <datalist id="dose" class="dose"><select name="dose1[]" class="dose"></select></datalist>
                                 </td>
                                 <td>

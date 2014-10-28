@@ -149,10 +149,9 @@
 	            	</div>
 	            </div>
 	            <div class="row-fluid">
-	            	<!--
-            		<div class="span10 dispensing-field">
+	            	<div class="span10 dispensing-field">
 	            		<span id="scheduled_patients" style="display:none;background:#9CF;"></span>
-	            	</div> -->
+	            	</div>
 	            </div>
 	            <div class="row-fluid">
 	            	<div class="span6 dispensing-field">
@@ -172,15 +171,14 @@
 	            	</div>
 	            </div>
 	             <div class="row-fluid">
-	            	<!--<div class="span6 dispensing-field">
+	            	<div class="span6 dispensing-field">
 	            		<div class="control-group" style="display:none" id="regimen_change_reason_container">
 		            		<label><span class='astericks'>*</span>Regimen Change Reason</label>
 	                        <select type="text"name="regimen_change_reason" id="regimen_change_reason" >
 	                            <option value="">--Select One--</option>
 	                        </select>
-	                           
 			    		</div>
-	            	</div> -->
+	            	</div>
 	            </div>
 	            <div class="row-fluid">
 	            	<div class="span6 dispensing-field">
@@ -244,7 +242,7 @@
                         <th style="width:10%">Unit</th>
                         <th style="width:10%">Batch No.&nbsp;</th>
                         <th style="width:9%">Expiry&nbsp;Date</th>
-                        <th>Dose</th>
+                        <th style="width:9%">Dose</th>
                         <th><b>Expected</b><br/>Pill Count</th>
                         <th><b>Actual</b><br/> Pill Count</th>
                         <th>Duration</th>
