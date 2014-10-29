@@ -39,6 +39,8 @@
 */
 
 $route['default_controller'] = "System_Management";
+$route['cdrr/login'] = "cdrr_interfaces/login";
+$route['cdrr/listing'] = "cdrr_interfaces/listing";
 $route['404_override'] = '';
 
 
