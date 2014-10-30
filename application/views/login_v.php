@@ -14,7 +14,7 @@
 			<div class="container-fluid">
 			<div class="row-fluid">
 			<div class="span12" style="text-align:center">
-			<img src='<?php echo asset_url();?>Images/nascop.jpg'>
+			<img src='<?php echo asset_url();?>images/nascop.jpg'>
 			</div>
 			</div>
 			</div>
