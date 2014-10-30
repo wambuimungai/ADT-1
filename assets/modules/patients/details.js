@@ -129,28 +129,6 @@ function addToMultiSelect(div,data){
 	$("#"+div).val(values);	
 }
 
-function createTable(div,url){
-	var oTable =$(div).dataTable({
-					"bProcessing": true,
-			        "sAjaxSource": url,
-			        "bJQueryUI" : true,
-					"sPaginationType" : "full_numbers",
-					"bStateSave" : true,
-					"sDom" : '<"H"T<"clear">lfr>t<"F"ip>',
-					"bAutoWidth" : false,
-					"bDeferRender" : true,
-					"bInfo" : true,
-					"aLengthMenu":[10,25,50,100]
-					});
-
-	//Sort Table
-	sortTable(oTable,0,'desc');
-}
-
-function sortTable(table,column,order){
-	table.fnSort([[column,order]]);
-}
-
 
 function sanitizeForm(){
     //Remove none selected options
