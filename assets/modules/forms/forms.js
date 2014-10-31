@@ -12,7 +12,7 @@ function getPageData(url){
 		});
 }
 
-function createTable(div,url){
+function createTable(div,url,sortIndex,sortOrder){
 	var oTable =$(div).dataTable({
 					"bProcessing": true,
 			        "sAjaxSource": url,
@@ -27,7 +27,7 @@ function createTable(div,url){
 					});
 
 	//Sort Table
-	sortTable(oTable,0,'desc');
+	sortTable(oTable,sortIndex,sortOrder);
 }
 
 function sortTable(table,column,order){

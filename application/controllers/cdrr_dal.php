@@ -8,11 +8,12 @@ class Cdrr_Dal extends MY_Controller {
 		$this->load->database();
 	}
 
-	public function getcdrr() 
+	public function get_cdrr($facilities) 
 	{   
         $this->db->select("c.id,c.period_begin,c.status,sf.name");
         $this->db->from("cdrr c");
         $this->db->join("sync_facility sf","sf.id=c.facility_id","left");
+        $this->db->where_in("facility_id",$facilities);
         $query=$this->db->get();
         return $query->result_array();
 	}

@@ -9,22 +9,23 @@ class Cdrr_Api extends MY_Controller {
 		$this->load->library('../controllers/cdrr_logic');
 	}
 
-	public function authuser() 
+	public function auth_user() 
 	{
         $username = $this->input->post('username',TRUE);
         $password = $this->input->post('password',TRUE);
+        $facility_code = $this->input->post('facility_code',TRUE);
 
         //Process User
         $logic = new Cdrr_Logic;
-        $user = $logic->processUser($username,$password);
+        $user = $logic->process_user($username,$password,$facility_code);
         return $user;
 	}
 
-	public function getcdrr() 
+	public function get_cdrr($facilities) 
 	{
         //Get Cdrrs
-        $logic = new Cdrr_Logic;
-        $cdrrs = $logic->getcdrr();
+        $dal = new Cdrr_Dal;
+        $cdrrs = $dal->get_cdrr($facilities);
         return $cdrrs;
 	}
 

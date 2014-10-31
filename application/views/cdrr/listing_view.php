@@ -8,7 +8,7 @@
         <div class="span11">
             <div class="alert alert-block alert-success">
 			    <button type="button" class="close" data-dismiss="alert">&times;</button>
-			    <strong>Welcome! </strong>Mr.User to the cdrr module.
+			    <strong>Welcome! </strong><?=$this->session->userdata("api_name");?> to the cdrr module.
 			</div>
         </div>
     </div>
@@ -17,9 +17,10 @@
         <div class="span11">
             <div class="btn-group">
                 <input type="hidden" data-baseurl="<?=base_url();?>" id="sources">
-			    <button class="btn btn-inverse">new aggregate cdrr</button>
-			    <button class="btn btn-inverse">new central cdrr</button>
-			    <button class="btn btn-inverse">new satellite cdrr</button>
+			    <a class="btn btn-default" href="../cdrr/facility">
+                    <i class="icon-plus"></i>
+                    new cdrr
+                </a>
 			</div>
         </div>
     </div>
