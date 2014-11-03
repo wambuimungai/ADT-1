@@ -10,7 +10,7 @@
 		<li id="early_warning_indicators" class="reports_tabs"><a  href="#">Early Warning Indicators</a> </li>   
 		<li id="drug_inventory" class="reports_tabs"><a  href="#">Drug Inventory</a></li>   
 		<li id="moh_forms" class="reports_tabs"><a  href="#">MOH Forms</a></li>
-                <li id="guidelines" class="reports_tabs"><a  href="#">Guidelines</a></li> 
+        <li id="guidelines" class="reports_tabs"><a  href="#">Guidelines</a></li> 
 	</ul> 
 	
 	<div id="report_container">

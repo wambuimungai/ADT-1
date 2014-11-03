@@ -94,18 +94,19 @@ class Regimen_management extends MY_Controller {
 		$data['regimen_categories'] = Regimen_Category::getAll();
 		$data['regimen_service_types'] = Regimen_Service_Type::getAll();
         
-        /*
-		$query = $this -> db -> query("SELECT s.id,s.code,s.name,sr.Name as category_name,s.category_id
-                                       FROM sync_regimen s 
-                                       LEFT JOIN sync_regimen_category sr ON sr.id = s.category_id
-                                       WHERE s.id NOT IN(SELECT r.map
-                                                         FROM regimen r
-                                                         WHERE r.map !='0')
-                                                         OR s.name LIKE '%other%'
-                                       ORDER BY s.category_id,s.code asc");
-                                       */
+        $sql = "SELECT s.id,s.code,s.name,sr.Name as category_name,s.category_id
+                FROM sync_regimen s 
+                LEFT JOIN sync_regimen_category sr ON sr.id = s.category_id
+                WHERE s.id NOT IN(SELECT r.map
+                                  FROM regimen r
+                                  WHERE r.map !='0')
+                OR s.name LIKE '%other%'
+                OR s.code LIKE '%x%'
+                ORDER BY s.category_id,s.code asc";
+		$query = $this -> db -> query($sql);
+        $unmapped_regimens = $query->result_array();                               
         $sync_regimens = Sync_Regimen::getActive();
-		$data['edit_mappings'] = $sync_regimens;
+		$data['edit_mappings'] = $unmapped_regimens;
 		$data['mappings'] = $sync_regimens;
 
 		$this -> base_params($data);
@@ -329,6 +330,23 @@ class Regimen_management extends MY_Controller {
 		$aff = $this->db->affected_rows();
 		echo $aff;
 		
+	}
+	
+	public function getFilteredRegiments(){
+		$age = $this ->input ->post("age");
+		$regimens = "";
+		if($age==''){
+		   $regimens = Regimen::getRegimens();
+		}else{
+			if($age>=15){
+				//adult regimens
+				$regimens=Regimen::getAdultRegimens();
+			}else if($age<15){
+				//paediatric regimens
+				$regimens=Regimen::getChildRegimens();
+			}
+		}
+		echo json_encode($regimens);
 	}
 
 	public function base_params($data) {

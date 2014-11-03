@@ -26,6 +26,11 @@ class CCC_store_service_point extends Doctrine_Record {
 		$stores = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $stores;
 	}
+	public function getAllBut($ccc_id) {
+		$query = Doctrine_Query::create() -> select("*") -> from("ccc_store_service_point") -> where("Active = 1 AND id!=$ccc_id") ->orderBy("id ASC");
+		$stores = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $stores;
+	}
 	
 	public static function getCCC($id) {
 		$query = Doctrine_Query::create() -> select("*") -> from("ccc_store_service_point") -> where("id = '$id' and Active='1' ");

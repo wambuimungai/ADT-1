@@ -620,7 +620,6 @@ foreach ($results as $result) {
                     $("#stock_type_text").val(stock_type_text);
                     $("#current_regimen").trigger("change");
                     reinitialize();
-
                     storeSession($(this).val());
                 });
 
@@ -1028,7 +1027,7 @@ foreach ($results as $result) {
                 var facility="<?php echo $facility ?>";
                 var timestamp = new Date().getTime();
                 var user="<?php echo $user;?>";
-                var all_rows=$('#drugs_table>tbody>tr');
+                var all_rows=$('#tbl-dispensing-drugs>tbody>tr');
                 var msg = '';
                 
                 //Loop through all rows to check values
@@ -1058,7 +1057,7 @@ foreach ($results as $result) {
                 }
 
                 
-                var rowCount = $('#drugs_table>tbody tr').length;
+                var rowCount = $('#tbl-dispensing-drugs>tbody tr').length;
                 return true;
             }
             
@@ -1404,12 +1403,10 @@ foreach ($results as $result) {
                         <div class="max-row">
                             <div class="mid-row">
                                 <label>Current Height(cm)</label>
-
                                 <input  type="text"name="height" id="height" class="validate[required]">
                             </div>
                             <div class="mid-row">
                                 <label><span class='astericks'>*</span>Current Weight(kg)</label>
-
                                 <input  type="text"name="weight" id="weight" class="validate[required]" >
                             </div>
                         </div>
@@ -1420,7 +1417,6 @@ foreach ($results as $result) {
                             </div>
                             <div class="mid-row">
                                 <label><span class='astericks'>*</span>Date of Next Appointment</label>
-
                                 <input  type="text" name="next_appointment_date" id="next_appointment_date" class="validate[required]" >
                             </div>
                         </div>
@@ -1561,7 +1557,7 @@ foreach ($results as $result) {
                                     <input type="text" name="expiry[]" name="expiry" class="expiry input-small" id="expiry_date" readonly="" size="15"/>
                                 </td>
                                 <td class="dose_col">
-                                    <input  name="dose[]" list="dose" id="doselist"  style="width:95%;height:25px;" class="input-small next_pill dose icondose">
+                                    <input  name="dose[]" list="dose" id="doselist"  style="width:95%;height:25px;" class="input-small next_pill dose">
                                     <datalist id="dose" class="dose"><select name="dose1[]" class="dose"></select></datalist>
                                 </td>
                                 <td>

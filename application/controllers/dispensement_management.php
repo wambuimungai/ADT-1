@@ -10,7 +10,8 @@ class Dispensement_Management extends MY_Controller {
 	}
 
 	public function dispense($record_no) {
-		$data = array();
+		
+		/*
 		$facility_code = $this -> session -> userdata('facility');
                 
 		$dispensing_date = "";
@@ -65,6 +66,8 @@ class Dispensement_Management extends MY_Controller {
 			}
 
 			$data['purposes'] = Visit_Purpose::getFiltered($enrollment_check,$start_art_check);
+		}else{
+			$data['purposes'] = Visit_Purpose::getAll();
 		}
 
 		$sql = "SELECT DISTINCT(d.drug),
@@ -122,12 +125,42 @@ class Dispensement_Management extends MY_Controller {
 
 		$data['non_adherence_reasons'] = Non_Adherence_Reasons::getAllHydrated();
 		$data['regimen_changes'] = Regimen_Change_Purpose::getAllHydrated();
-		$data['content_view'] = "dispense_v";
+		$data['purposes'] = Visit_Purpose::getAll();
+		 */
+		$data = array();
+		$data['patient_id'] = $record_no; 
+		$data['purposes'] = Visit_Purpose::getAll();
+		$data['content_view'] = "patients/dispense_v";
 		$data['hide_side_menu'] = 1;
 		$this -> base_params($data);
                 
         
 	}
+	
+	public function get_other_dispensing_details(){
+		$data  = array();
+		$patient_ccc = $this ->input ->post("patient_ccc");
+		$data['non_adherence_reasons'] = Non_Adherence_Reasons::getAllHydrated();
+		$data['regimen_changes'] = Regimen_Change_Purpose::getAllHydrated();
+		$data['patient_appointment']=Patient_appointment::getAppointmentDate($patient_ccc);
+		
+		echo json_encode($data);
+	}
+
+	public function getPreviouslyDispensedDrugs(){
+		$patient_ccc = $this ->input ->post("patient_ccc");
+		$sql = "SELECT d.id as drug_id,d.drug,d.dose,d.duration, pv.quantity,pv.dispensing_date,pv.pill_count,r.id as regimen_id,r.regimen_desc,r.regimen_code,pv.months_of_stock as mos,ds.value,ds.frequency
+					FROM patient_visit pv
+					LEFT JOIN drugcode d ON d.id = pv.drug_id
+					LEFT JOIN dose ds ON ds.Name=d.dose
+					LEFT JOIN regimen r ON r.id = pv.regimen
+					WHERE pv.patient_id =  '$patient_ccc'
+					AND pv.dispensing_date = (SELECT dispensing_date FROM patient_visit pv WHERE pv.patient_id =  '$patient_ccc' ORDER BY dispensing_date DESC LIMIT 1)
+		ORDER BY dispensing_date DESC";	
+		$query = $this -> db -> query($sql);
+		$results = $query -> result_array();
+		echo json_encode($results);
+	} 
 
 	//Get list of drugs for a specific regimen
 	public function getDrugsRegimens() {

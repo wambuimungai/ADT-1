@@ -2937,18 +2937,13 @@ class Order extends MY_Controller {
 				$data['cotrimo_dapsone'] = $results;
 			}else if($data_type=='diflucan'){
 				//Totals for Patients / Clients on Diflucan (For Diflucan Donation Program ONLY):
-				$sql_clients ="SELECT temp.age,COUNT(temp.patient_number_ccc) as total
-							   FROM(
-									SELECT pv.patient_number_ccc,
-									pv.current_status,
-									IF(ROUND(DATEDIFF(CURDATE(),pv.dob)/360)>=15,'diflucan_adult','diflucan_child') as age
-									FROM v_patient_visits pv
-									LEFT JOIN drugcode dc ON dc.id=pv.drug_id
-									WHERE dc.drug LIKE '%diflucan%'
-									GROUP BY pv.patient_number_ccc) as temp 
-							   LEFT JOIN patient_status ps ON ps.id=temp.current_status
-							   WHERE ps.name LIKE '%active%'
-							   GROUP BY temp.age";
+				$sql_clients ='SELECT IF(round(datediff(CURDATE(),p.dob)/360)>15,"diflucan_adult","diflucan_child") as age,COUNT(DISTINCT(p.id)) as total
+								FROM  patient p 
+								LEFT JOIN drug_prophylaxis dp ON dp.id = p.drug_prophylaxis
+								INNER JOIN patient_status ps ON ps.id=p.current_status
+								WHERE (dp.name LIKE "%flucona%")
+								AND ps.name LIKE "%active%" 
+								GROUP BY age';
 				$query = $this -> db -> query($sql_clients);
 				$results = $query -> result_array();
 				$data['diflucan'] = $results;
@@ -3748,6 +3743,7 @@ class Order extends MY_Controller {
 		}
 
         $row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'];
+      
         if ($code == "D-CDRR") {
             $row['resupply'] = ($row['reported_consumed'] * 3) - $row['physical_stock'];
         }else{
@@ -3771,6 +3767,9 @@ class Order extends MY_Controller {
 			if($row['dispensed_to_patients'] >0){
 			   $row['dispensed_packs']=round(@$row['dispensed_to_patients'] / @$pack_size);
 			}
+			//Fix for physical Count
+			$row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_packs'] - $row['losses'] + $row['adjustments'];
+            $row['resupply'] = ($row['dispensed_packs'] * 3) - $row['physical_stock'];
 		}
 
 		echo json_encode($row);
