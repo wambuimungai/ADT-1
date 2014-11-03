@@ -2485,7 +2485,35 @@ class report_management extends MY_Controller {
 		$from = date('Y-m-d', strtotime($from));
 		$to = date('Y-m-d', strtotime($to));
 
-		$sql = "SELECT pv.patient_id as art_no,pv.dispensing_date, t.name AS service_type, s.name AS supported_by,UPPER(p.first_name) as first_name ,UPPER(p.other_name) as other_name ,UPPER(p.last_name)as last_name,FLOOR(DATEDIFF('$today',p.dob)/365) as age, pv.current_weight as weight, IF(p.gender=1,'Male','Female')as gender, r.regimen_desc,r.regimen_code,AVG(pv.adherence) as avg_adherence from patient_visit pv LEFT JOIN  visit_purpose v on v.id=pv.visit_purpose,patient p,supporter s,regimen_service_type t,regimen r where pv.dispensing_date between '$from' and '$to' and pv.patient_id=p.patient_number_ccc and s.id = p.supported_by and t.id = p.service and r.id = pv.regimen and v.name like '%routine%'  and p.current_status =  '1' and pv.facility =  '$facility_code' and p.facility_code = pv.facility group by pv.patient_id,pv.dispensing_date";
+        $sql = "SELECT 
+				pv.patient_id as art_no,
+				pv.dispensing_date, 
+				t.name AS service_type,
+				s.name AS supported_by,
+				UPPER(p.first_name) as first_name ,
+				UPPER(p.other_name) as other_name ,
+				UPPER(p.last_name)as last_name,
+				FLOOR(DATEDIFF('$today',p.dob)/365) as age,
+				pv.current_weight as weight, 
+				IF(p.gender=1,'Male','Female')as gender,
+				r.regimen_desc,
+				r.regimen_code,
+				AVG(pv.adherence) as avg_adherence 
+				FROM patient_visit pv 
+				LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
+				LEFT JOIN visit_purpose v ON v.id=pv.visit_purpose
+				LEFT JOIN supporter s ON s.id=p.supported_by
+				LEFT JOIN regimen r ON r.id=p.current_regimen
+				LEFT JOIN regimen_service_type t ON t.id=p.service
+				LEFT JOIN patient_status ps ON ps.id=p.current_status
+				WHERE pv.dispensing_date 
+				BETWEEN '$from' 
+				AND '$to' 
+				AND v.name like '%routine%' 
+				AND ps.name LIKE '%active%' 
+				AND pv.facility = '$facility_code' 
+				GROUP BY pv.patient_id,pv.dispensing_date";
+
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		$row_string = "<table border='1'   class='dataTables'>
@@ -2514,7 +2542,7 @@ class report_management extends MY_Controller {
 				$gender = $result['gender'];
 				$dispensing_date = date('d-M-Y', strtotime($result['dispensing_date']));
 				$regimen_desc = "<b>" . $result['regimen_code'] . "</b>|" . $result['regimen_desc'];
-				$weight = number_format($result['weight'], 2);
+				$weight = $result['weight'];
 				$avg_adherence = number_format($result['avg_adherence'], 2);
 				$row_string .= "<tr><td>$patient_no</td><td>$service_type</td><td>$supported_by</td><td>$patient_name</td><td>$age</td><td>$gender</td><td>$regimen_desc</td><td>$dispensing_date</td><td>$weight</td><td>$avg_adherence</td></tr>";
 				$overall_total++;
