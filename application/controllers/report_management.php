@@ -5672,7 +5672,7 @@ class report_management extends MY_Controller {
 		$facility_code = $this -> session -> userdata('facility');
 		$bmi_temp = array();
 
-		$sql = "SELECT gender,rst.Name,FLOOR((((weight)*10000)/(height*height)),1) AS BMI 
+		$sql = "SELECT gender,rst.Name,ROUND((((weight)*10000)/(height*height)),1) AS BMI 
 		        FROM patient p 
 		        LEFT JOIN gender g ON g.id=p.gender 
 		        LEFT JOIN regimen_service_type rst ON rst.id=p.service 
@@ -5681,8 +5681,9 @@ class report_management extends MY_Controller {
 		        AND p.facility_code='$facility_code' 
 		        AND ps.Name LIKE '%active%' 
 		        GROUP BY patient_number_ccc";
-		$query = $this -> db -> query($sql);
-		$results = $query -> result_array();
+				$query = $this -> db -> query($sql);
+		        $results = $query -> result_array();
+
 
 		$bmi_temp['ART']['Very Severely Underweight']['Male'] = 0;
 		$bmi_temp['ART']['Severely Underweight']['Male'] = 0;

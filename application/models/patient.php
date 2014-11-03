@@ -175,70 +175,124 @@ class Patient extends Doctrine_Record {
 		$patients = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $patients[0];
 	}
-	public function get_patients_enrolled_by_regimen(){
-		// number of patients starting each regimen within a period
-		// CONCAT_WS('/',MONTH(p.date_enrolled),YEAR(p.date_enrolled) )AS period,
-		$sql = "SELECT  
-		            r.regimen_desc AS regimen, 
-		            DATE_FORMAT(p.date_enrolled,'%M-%Y') as period,
-	                COUNT(p.patient_number_ccc) AS total
-	            FROM patient p
-	            LEFT JOIN regimen r ON r.id=p.start_regimen
-	            WHERE p.date_enrolled IS NOT NULL
-	            GROUP by MONTH(p.date_enrolled),YEAR(p.date_enrolled),p.start_regimen
-	            ORDER by p.date_enrolled ASC
-	            ";
 
-
-
-	    $query = $this -> db -> query($sql);
+// Started on ART
+public function start_on_ART(){
+		$sql=("SELECT DATE_FORMAT(p.start_regimen_date,'%M-%Y') as period ,
+		                 COUNT( p.patient_number_ccc) AS totalart 
+                         FROM patient p 
+                         LEFT JOIN regimen_service_type rst ON rst.id=p.service 
+                         LEFT JOIN regimen r ON r.id=p.start_regimen 
+                         LEFT JOIN patient_source ps ON ps.id = p.source
+                         WHERE rst.name LIKE '%art%' 
+                        AND ps.name NOT LIKE '%transfer%'
+                         AND p.start_regimen !=''
+                         AND p.start_regimen_date >= '2011-01-01'
+                        GROUP BY YEAR(p.start_regimen_date),MONTH(p.start_regimen_date)
+                        ORDER BY p.start_regimen_date DESC
+                        
+                       ");
+		 $query = $this -> db -> query($sql);
 		$patients = $query -> result_array();
-
-
-		foreach($patients as $patient)
+         foreach($patients as $patient)
 		{
-			$data[$patient['period']][]=array('regimen'=>$patient['regimen'],'total'=>(int)$patient['total']);
+			$data[$patient['period']][]=array('art_patients'=>(int)$patient['totalart']);
 
 		}
 
 		return $data;
 	}
-	public function get_patients_started_on_ART(){
-		//Get total number of patients starting on ART within a period
-		$sql=("SELECT CONCAT_WS(' -',MONTH(p.start_regimen_date),YEAR(p.start_regimen_date) ) as period , COUNT( p.patient_number_ccc) AS Number_Of_Patients_ART
-                        FROM patient p
-                        LEFT JOIN regimen_service_type rst ON rst.id=p.service
-                        LEFT JOIN patient_source ps ON ps.id = p.source
-                        WHERE rst.name LIKE '%art%'
-                        AND ps.name NOT LIKE '%transfer%'
-                        AND p.start_regimen !=''
-                        GROUP BY YEAR(p.start_regimen_date),MONTH(p.start_regimen_date)");
-	
-	    $query = $this -> db -> query($sql);
-		$patients = $query -> result_array();
-		return $patients;
-
-	}
-	public function get_patients_started_on_firstline(){
-		//Get total number of patients started in firstline within a period
-		$sql=("SELECT COUNT( p.patient_number_ccc) AS Number_of_patients_First_Line,CONCAT_WS(' -',MONTH(p.start_regimen_date),YEAR(p.start_regimen_date) ) as period
-                     FROM patient p
-                     LEFT JOIN regimen_service_type rst ON rst.id=p.service
-                     LEFT JOIN regimen r ON r.id = p.start_regimen
-                     LEFT JOIN regimen_category rc ON rc.id =r.category
+// Started on firstline regimen
+public function start_on_firstline(){
+		$sql=("SELECT DATE_FORMAT(p.start_regimen_date,'%M-%Y') as period ,
+			         COUNT( p.patient_number_ccc) AS First 
+                     FROM patient p 
+                     LEFT JOIN regimen_service_type rst ON rst.id=p.service 
+                     LEFT JOIN regimen r ON r.id = p.start_regimen 
                      LEFT JOIN patient_source ps ON ps.id = p.source 
-                     WHERE rc.Name LIKE '%first line%'
+                     WHERE r.line=1 
+                     AND rst.name LIKE '%art%' 
                      AND ps.name NOT LIKE '%transfer%'
-                     AND p.start_regimen !=' '
-                     GROUP BY YEAR(p.start_regimen_date),MONTH(p.start_regimen_date)");
-
+                     AND p.start_regimen !=''
+                     AND p.start_regimen_date >= '2011-01-01'
+                     GROUP BY YEAR(p.start_regimen_date),MONTH(p.start_regimen_date)
+                     ORDER BY p.start_regimen_date DESC");
+		
 		$query = $this -> db -> query($sql);
 		$patients = $query -> result_array();
-		return $patients;
+
+
+		 foreach($patients as $patient)
+		{
+			$data[$patient['period']][]=array('firstline_patients'=>(int)$patient['First']);
+
+		}
+
+		return $data;
+
 	}
+
+	//Still in Firstline
+	public function still_in_firstline(){
+
+	$sql=("SELECT DATE_FORMAT(p.start_regimen_date,'%M-%Y') as period ,COUNT( * ) AS patients_still_firstline
+                        FROM patient p
+                        LEFT JOIN regimen_service_type rst ON rst.id=p.service
+                        LEFT JOIN regimen r ON r.id=p.start_regimen
+                        LEFT JOIN regimen r1 ON r1.id = p.current_regimen
+                        LEFT JOIN patient_source ps ON ps.id = p.source
+                        LEFT JOIN patient_status pt ON pt.id = p.current_status
+                        WHERE rst.name LIKE '%art%'
+                        AND ps.name NOT LIKE '%transfer%'
+                        AND r.line=1
+                        AND r1.line ='1'
+                        AND pt.Name LIKE '%active%'
+                        GROUP BY YEAR(p.start_regimen_date),MONTH(p.start_regimen_date)
+                        ORDER BY p.start_regimen_date DESC");	
+         
+         
+         $query = $this -> db -> query($sql);
+		 
+		 $patients = $query -> result_array();
+
+		foreach($patients as $patient)
+		{
+			$data[$patient['period']][]=array('Still_in_Firstline'=>(int)$patient['patients_still_firstline']);
+
+		}
+
+		return $data;
+	}
+
+	// Started ART 12 months ago
+	public function started_art_12months(){
+		$to_date = date('Y-m-d', strtotime($start_date. " -1 year"));
+		$future_date = date('Y-m-d', strtotime($end_date . " -1 year"));
+                
+                $sql = "SELECT COUNT( * ) AS Total_Patients "
+                        . " FROM patient p "
+                        . " LEFT JOIN regimen_service_type rst ON rst.id=p.service "
+                        . " LEFT JOIN regimen r ON r.id=p.start_regimen "
+                        . " LEFT JOIN patient_source ps ON ps.id = p.source"
+                        . " WHERE p.start_regimen_date"
+                        . " BETWEEN '" . $to_date . "'"
+                        . " AND '" . $future_date . "'"
+                        . " AND rst.name LIKE  '%art%' "
+                        . " AND ps.name NOT LIKE '%transfer%'"
+                        . " AND p.start_regimen !=''";
+		$patient_from_period_sql = $this -> db -> query($sql);
+		$total_from_period_array = $patient_from_period_sql -> result_array();
+		$total_from_period = 0;
+		foreach ($total_from_period_array as $value) {
+			$total_from_period = $value['Total_Patients'];
+		}
+
+	}
+
 	public function get_lost_to_followup(){
-		//Get total number of patients lost to follow up within a period
-		$sql=("SELECT COUNT( p.patient_number_ccc ) AS Total_Patients_Lost_to_Follow, rst.name as service_type, CONCAT_WS(' -',MONTH(p.status_change_date),YEAR(p.status_change_date) ) as period 
+		//Get total number of patients lost to follow up 
+		$sql=("SELECT COUNT( p.patient_number_ccc ) AS total_patients_lost_to_follow, rst.name as service_type,
+		 DATE_FORMAT(p.status_change_date,'%M-%Y') as period 
                         FROM patient p 
                         LEFT JOIN regimen_service_type rst ON rst.id=p.service 
                         LEFT JOIN regimen r ON r.id=p.start_regimen 
@@ -247,12 +301,42 @@ class Patient extends Doctrine_Record {
                         WHERE rst.name LIKE '%art%' 
                         AND ps.name NOT LIKE '%transfer%' 
                         AND pt.Name LIKE '%lost%'
-                        GROUP BY YEAR(p.status_change_date),MONTH(p.status_change_date)");
+                        AND p.status_change_date >= '2011-01-01'
+                        GROUP BY YEAR(p.status_change_date),MONTH(p.status_change_date)
+                        ORDER BY p.status_change_date DESC");
 		$query = $this -> db -> query($sql);
+		$patients = $query -> result_array();
+
+		foreach($patients as $patient)
+		{
+			$data[$patient['period']][]=array('lost_to_followup'=>(int)$patient['total_patients_lost_to_follow']);
+
+		}
+
+		return $data;
+		
+
+	}
+
+	public function adherence_reports(){
+		$sql=("SELECT SUM( months_of_stock ) - SUM(pill_count) AS pill_count, SUM( pill_count ) AS e_pill_count,SUM( months_of_stock ) AS a_pill_count,SUM(missed_pills) as missed_pills,adherence,SUM(pv.quantity) as quantity, frequency, p.patient_number_ccc, p.service, p.gender,(YEAR(curdate()) - YEAR(p.dob)) as age 
+				FROM patient_visit pv 
+				LEFT JOIN patient p ON p.patient_number_ccc = pv.patient_id 
+				LEFT JOIN dose ds ON ds.name = pv.dose 
+				LEFT JOIN drugcode dc ON dc.id = pv.drug_id 
+				LEFT JOIN regimen r ON pv.regimen = r.id
+				LEFT JOIN drug_classification cl ON cl.id = dc.classification 
+				WHERE frequency <=2 
+				AND (r.regimen_code NOT LIKE '%OI%' OR dc.drug LIKE '%COTRIMOXAZOLE%' OR dc.drug LIKE '%DAPSONE%' ) 
+				AND (cl.Name LIKE '%art%' OR cl.Name LIKE '%anti%tb%') 
+				GROUP BY p.patient_number_ccc");
+		$query = $this -> db -> query($sql);
+		$patients = $query -> result_array();
+        
+        $query = $this -> db -> query($sql);
 		$patients = $query -> result_array();
 		return $patients;
 
 	}
-
 
 }

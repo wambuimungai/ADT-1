@@ -17,26 +17,56 @@ class nascop_report_management extends MY_Controller{
 	}
 
 	public function index(){}
- 
+  
+public function nascop_reports()
+{
+    $temp = array();
+    //Early Warning Indicators Report
+    $percentage_on_firstline=0;
+    
+    $current_total = Patient::start_on_ART();
+    $current_firstline = Patient::start_on_firstline();
+    $patients_still_in_firstline=Patient::still_in_firstline();
+    $lost_to_followup=Patient::get_lost_to_followup();
+    
+    
+    foreach ($current_total as $period => $values) 
+    { 
+      foreach($values as $value)
+      {
+          $value_total = $value['art_patients'];
+          $value_firstline = $current_firstline[$period][0]['firstline_patients'];
+          $value_percent_firstline=doubleval(number_format(($value_firstline/$value_total)*100,2));
+          $lost_to_follow=$lost_to_followup[$period][0]['lost_to_followup'];
+          $Started_on_ART=$current_total[$period][0]['art_patients'];
+          $percent_lost_to_follow=doubleval(number_format(($lost_to_follow/$Started_on_ART)*100,2));
+          
+          $temp[$period]['current_total'] = $value_total;
+          $temp[$period]['current_firstline'] = $value_firstline;
+          $temp[$period]['percentage_on_firstline'] = $value_percent_firstline;
+          $temp[$period]['percentage_on_other_regimens']=100-$value_percent_firstline;
+          $temp[$period]['patients_still_in_firstline']=$patients_still_in_firstline[$period][0]['Still_in_Firstline'];
+          $temp[$period]['patients_starting_in_12months']=0;
+          $temp[$period]['percentage_still_in_firstline']=0;
+          $temp[$period]['patients_lost_followup']=$lost_to_follow;
+          $temp[$period]['patients_started_on_ART']=$Started_on_ART;
+          $temp[$period]['percentage_lost_to_followup']=$percent_lost_to_follow;
+      }     
+    }
 
-public function send_nascop_reports(){
-    $url=$this ->nascop_url."";
-    $facility_code = $this->session ->userdata("facility");
-
-    $data=array();
-    $data['patients_enrolled_by_regimen']=patient::get_patients_enrolled_by_regimen();
-    //$data['non_adherence_reason']=patient_visit::getNon_adherence_reason();
-    //$data['lost_to_followup']=patient::get_lost_to_followup();
-    //$data['Started_on_firstline']=patient::get_patients_started_on_firstline();
-    //$data['Started_on_ART']=patient::get_patients_started_on_ART();
     echo '<pre>';
-    echo json_encode($data,JSON_PRETTY_PRINT);
+    echo json_encode($temp,JSON_PRETTY_PRINT);
     echo '</pre>';
     die();
 
     $data['facility_code']=$facility_code;
     $json_data = json_encode($data,JSON_PRETTY_PRINT);
-     $ch = curl_init();
+    
+
+}
+public function send_nascop_reports(){
+
+  $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -49,7 +79,6 @@ public function send_nascop_reports(){
             $message = $messages[0]; 
         }
          curl_close($ch);
-        return $message;
-
+        return $message; 
 }
 }
