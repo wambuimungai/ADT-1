@@ -5521,6 +5521,38 @@ class report_management extends MY_Controller {
 		$this -> load -> view('template', $data);
 	}
 
+	public function get_received_drugs()
+	{   
+		$store='2';
+		$start_date='2014-11-01';
+		$end_date='2014-11-10';
+		$facility_code = $this->session->userdata("facility");
+        
+        //Get Drugs Received in Period
+		$this->db->select("UPPER(d.drug) as drug_name,IF(ds.name IS NOT NULL,UPPER(ds.name),UPPER(dsm.source_destination)) as drug_source,SUM(dsm.quantity) as total")
+		    ->from("drug_stock_movement dsm")
+		    ->join("transaction_type t","t.id = dsm.transaction_type","LEFT")
+			->join("drugcode d","d.id = dsm.drug","LEFT")
+			->join("drug_source ds","ds.id = dsm.source_destination","LEFT")
+			->where("dsm.transaction_date BETWEEN '$start_date' AND '$end_date'")
+		    ->where("dsm.facility",$facility_code)
+		    ->like("t.name","received")
+		    ->where("d.id IS NOT NULL")
+		    ->group_by("dsm.source_destination");
+		$query = $this->db->get();
+ 		$results = $query->result_array();
+
+		foreach ($results as $result) {
+			$temp = array();
+			$temp[$result['drug_source']] = $result['total'];
+			$data[$result['drug_name']][] = $temp;
+		}
+        
+        echo "<pre>";
+        echo json_encode($data,JSON_PRETTY_PRINT);
+        echo "</pre>";
+	}
+
 	public function getDrugsReceived($stock_type, $start_date = "", $end_date = "") {
 		
 		$data['from'] = $start_date;

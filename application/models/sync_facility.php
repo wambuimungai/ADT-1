@@ -77,6 +77,13 @@ class Sync_Facility extends Doctrine_Record {
 		return $sync_facility;
 	}
 
+	public function get_facility_category($code = NULL) 
+	{
+		$query = Doctrine_Query::create() -> select("category") -> from("sync_facility") -> where("code='$code'");
+		$sync_facility = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
+		return $sync_facility[0]['category'];
+	}
+
 }
 ?>
 

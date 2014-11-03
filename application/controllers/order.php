@@ -553,6 +553,9 @@ class Order extends MY_Controller {
 				}
 			}
 
+			//Check if Central Site
+			$data['is_central_site'] = $this->check_if_central($this->session->userdata("facility"));
+
 			$facilities = Sync_Facility::getId($facility, $order_type);
 			$data['facility_id'] = $facilities['id'];
 			$data['facility_object'] = Facilities::getCodeFacility($facility);
@@ -708,6 +711,7 @@ class Order extends MY_Controller {
 		$main_array = array();
 		$updated = "";
 		$created = date('Y-m-d H:i:s'); 
+		die();
 		
 		if ($id != "") {
 			$status = $this -> input -> post("status");
@@ -3905,6 +3909,20 @@ class Order extends MY_Controller {
 		$data["expected"] = $this ->expectedReports($facility_code);
 		$data["actual"] =  $this ->actualReports($facility_code,$period_begin,$type);
 		echo json_encode($data);
+	}
+
+	public function check_if_central($facility_code)
+	{   
+		$category = FALSE;
+	    $result= Sync_Facility::get_facility_category($facility_code);
+	    if($result)
+	    {
+            if(strtolower($result) == "central")
+            {
+               $category = TRUE;
+            }
+	    }
+	    return $category;
 	}
 }
 ?>
