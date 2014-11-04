@@ -711,7 +711,6 @@ class Order extends MY_Controller {
 		$main_array = array();
 		$updated = "";
 		$created = date('Y-m-d H:i:s'); 
-		die();
 		
 		if ($id != "") {
 			$status = $this -> input -> post("status");

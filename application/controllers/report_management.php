@@ -5521,6 +5521,30 @@ class report_management extends MY_Controller {
 		$this -> load -> view('template', $data);
 	}
 
+
+	public function get_lost_followup()
+	{
+		$from = "2014-10-01";
+		$to = "2014-10-31";
+		$facility_code = $this->session->userdata("facility");
+        
+        //Get Patients Lost to Follow Up
+		$this->db->select("p.patient_number_ccc as ccc_no,UPPER(CONCAT_WS(' ',p.first_name,CONCAT_WS(' ',p.other_name,p.last_name))) as person_name,ps.name as status,DATE_FORMAT(p.status_change_date,'%d/%b/%Y') as status_date",FALSE)
+		    ->from("patient p")
+		    ->join("patient_status ps","ps.id = p.current_status","LEFT")
+			->where("p.status_change_date BETWEEN '$from' AND '$to'")
+		    ->where("p.facility_code",$facility_code)
+		    ->like("ps.name","lost")
+		    ->where("p.patient_number_ccc IS NOT NULL")
+		    ->group_by("p.id");
+		$query = $this->db->get();
+ 		$results = $query->result_array();
+
+ 		echo "<pre>";
+        echo json_encode($results,JSON_PRETTY_PRINT);
+        echo "</pre>";
+	}
+
 	public function get_received_drugs()
 	{   
 		$store='2';
