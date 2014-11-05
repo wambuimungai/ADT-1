@@ -48,7 +48,7 @@ $(function(){
 	});
 
 	//Setup Dispensing History Datatable
-	createTable("#dispensing_history",visits_url);
+	createTable("#dispensing_history",visits_url,0,'desc');
 
 	//Patient Info Modal
 	$("#patient_details").dialog({

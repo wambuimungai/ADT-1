@@ -10,7 +10,7 @@
 			<!--Login form-->
             <form class="form-horizontal" action="../cdrr_core/login" method="post">
 				<div class="control-group">
-				    <label class="control-label" for="inputEmail">Username</label>
+				    <label class="control-label" for="inputEmail">Email/Username</label>
 				    <div class="controls">
 				        <input type="text" id="inputEmail" name="username"  required>
 				    </div>

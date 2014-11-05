@@ -553,6 +553,9 @@ class Order extends MY_Controller {
 				}
 			}
 
+			//Check if Central Site
+			$data['is_central_site'] = $this->check_if_central($this->session->userdata("facility"));
+
 			$facilities = Sync_Facility::getId($facility, $order_type);
 			$data['facility_id'] = $facilities['id'];
 			$data['facility_object'] = Facilities::getCodeFacility($facility);
@@ -3745,6 +3748,7 @@ class Order extends MY_Controller {
 		}
 
         $row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'];
+      
         if ($code == "D-CDRR") {
             $row['resupply'] = ($row['reported_consumed'] * 3) - $row['physical_stock'];
         }else{
@@ -3768,6 +3772,9 @@ class Order extends MY_Controller {
 			if($row['dispensed_to_patients'] >0){
 			   $row['dispensed_packs']=round(@$row['dispensed_to_patients'] / @$pack_size);
 			}
+			//Fix for physical Count
+			$row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_packs'] - $row['losses'] + $row['adjustments'];
+            $row['resupply'] = ($row['dispensed_packs'] * 3) - $row['physical_stock'];
 		}
 
 		echo json_encode($row);
@@ -3903,6 +3910,20 @@ class Order extends MY_Controller {
 		$data["expected"] = $this ->expectedReports($facility_code);
 		$data["actual"] =  $this ->actualReports($facility_code,$period_begin,$type);
 		echo json_encode($data);
+	}
+
+	public function check_if_central($facility_code)
+	{   
+		$category = FALSE;
+	    $result= Sync_Facility::get_facility_category($facility_code);
+	    if($result)
+	    {
+            if(strtolower($result) == "central")
+            {
+               $category = TRUE;
+            }
+	    }
+	    return $category;
 	}
 }
 ?>
