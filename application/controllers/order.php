@@ -1182,6 +1182,7 @@ class Order extends MY_Controller {
 					}
 				}
 			}
+			//print_r($cdrr);die();
 			//Insert the cdrr and retrieve the auto_id assigned to it,this will be the cdrr_id
 			$this -> db -> insert('cdrr', $cdrr);
 			$cdrr_id = $this -> db -> insert_id();
@@ -1687,7 +1688,7 @@ class Order extends MY_Controller {
 						$main_array['order_id'] = 0;
 						$facilities = Sync_Facility::getId($facility_code, 2);
 						$main_array['facility_id'] = $facilities['id'];
-
+						
 						$sixth_row = 18;
 						$cdrr_array = array();
 						$commodity_counter = 0;
@@ -1735,6 +1736,7 @@ class Order extends MY_Controller {
 
 						$main_array['ownCdrr_log'] = array($log_array);
 						$main_array = array($main_array);
+						
 						$this -> prepare_order($type, $main_array);
 						$ret[] = "Your " . strtoupper($type) . " data was successfully saved !-" . $_FILES["file"]["name"][$i];
 					}
