@@ -90,6 +90,29 @@ class admin_management extends MY_Controller {
 		$data['dyn_table'] = $dyn_table;
 		$this -> base_params($data);
 	}
+        public function addFAQ() {
+                $results = Faq::getAll();
+		$dyn_table = "<table border='1' id='patient_listing'  cellpadding='5' class='dataTables'>";
+		$dyn_table .= "<thead><tr><th>Question</th><th>Answer</th><th> Options</th></tr></thead><tbody>";
+		$option = "";
+		if ($results) {
+			foreach ($results as $result) {
+				if ($result['active'] == "1") {
+					$option = "<a href='#edit_faq' data-toggle='modal' role='button' class='edit' table='faq' faq-question='" . $result['questions'] . "' faq_answer='" . $result['answers'] . "' faq_id='" . $result['id'] . "'>Edit</a> | <a href='" . base_url() . "admin_management/disable/faq/" . $result['id'] . "' class='red'>Disable</a>";
+				} else {
+					$option = "<a href='#edit_faq' data-toggle='modal' role='button' class='edit' table='faq' faq-question='" . $result['questions'] . "' faq_answer='" . $result['answers'] . "' faq_id='" . $result['id'] . "'>Edit</a> | <a href='" . base_url() . "admin_management/enable/faq/" . $result['id'] . "' class='green'>Enable</a>";
+				}
+				$dyn_table .= "<tr><td>" . $result['questions'] . "</td><td>" . $result['answers'] . "</td><td>" . $option . "</td></tr>";
+			}
+		}
+		$dyn_table .= "</tbody></table>";
+		$data['label'] = 'FAQ';
+		$data['table'] = 'faq';
+		$data['column'] = 'active';
+		$data['actual_page'] = 'View FAQ';
+		$data['dyn_table'] = $dyn_table;
+		$this -> base_params($data); 
+        }
 
 	public function addUsers() {
 		$results = Users::getThem();
@@ -306,6 +329,15 @@ class admin_management extends MY_Controller {
 			$new_menu -> save();
 			$this -> session -> set_userdata('msg_success', 'Menu: ' . $menu_name . ' was Added');
 			$this -> session -> set_userdata('default_link', 'addMenu');
+		}else if ($table == "faq") {
+			$faq_question = $this -> input -> post("faq_questions");
+			$faq_answer = $this -> input -> post("faq_answers");
+			$new_faq = new Faq();
+			$new_faq -> questions = $faq_question;
+			$new_faq -> answers = $faq_answer;
+			$new_faq -> save();
+			$this -> session -> set_userdata('msg_success', 'FAQ was Added');
+			$this -> session -> set_userdata('default_link', 'addFAQ');
 		} else if ($table == "users") {
 			//default password
 			$default_password='123456';
@@ -477,7 +509,16 @@ class admin_management extends MY_Controller {
 			$this -> db -> update($table, array('menu_text' => $menu_name, 'menu_url' => $menu_url, 'description' => $menu_description));
 			$this -> session -> set_userdata('msg_success', 'Menu: ' . $menu_name . ' was Updated');
 			$this -> session -> set_userdata('default_link', 'addMenu');
-		} else if ($table == "user_right") {
+		} elseif ($table=="faq") {
+                        $faq_id = $this -> input -> post("faq_id");
+			$faq_question = $this -> input -> post("faq_question");
+			$faq_answer = $this -> input -> post("faq_answer");
+			$this -> db -> where('id', $faq_id);
+			$this -> db -> update($table, array('questions' => $faq_question, 'answers' => $faq_answer));
+			$this -> session -> set_userdata('msg_success', 'FAQ was Updated');
+			$this -> session -> set_userdata('default_link', 'addFAQ');
+                
+                }else if ($table == "user_right") {
 			$right_id = $this -> input -> post("right_id");
 			$access_id = $this -> input -> post("access_level");
 			$menu_id = $this -> input -> post("menus");
@@ -506,7 +547,9 @@ class admin_management extends MY_Controller {
 			$this -> session -> set_userdata('default_link', 'addDistrict');
 		} else if ($table == "menu") {
 			$this -> session -> set_userdata('default_link', 'addMenu');
-		} else if ($table == "user_right") {
+		}else if ($table=="faq") {
+                        $this -> session -> set_userdata('default_link', 'addFAQ');
+                } else if ($table == "user_right") {
 			$this -> session -> set_userdata('default_link', 'assignRights');
 		} else if ($table = "nascop") {
 			$this -> session -> set_userdata('default_link', 'nascopSettings');

@@ -36,6 +36,7 @@ if ($this -> uri -> segment(7) != "") {
 	$actual_page .= "/" . $this -> uri -> segment(7);
 }
 
+
 /*
  * Manage Actual Page When auto logged out
  * Check prev page session is set
@@ -356,6 +357,9 @@ if (isset($styles)) {
 			    		?>
 				    </ul>
 			    </li>
+                                <li>
+                                    <a href="#"><i class="icon-question-sign"></i>FAQ</a>
+                                </li>
 					<?php
 				}else{//If no Extra pharmacies, load main store and Main Pharmacy Only
 				?>
@@ -385,9 +389,12 @@ if (isset($styles)) {
 					<li>
 						<a  id="addMenu" class="admin_link"><i class="icon-eye-open icon-black"></i>View Menus</a>
 					</li>
+                                        <li>
+                                            <a id="addFAQ" class="admin_link"><i class="icon-eye-open icon-black"></i>View FAQ</a>
+                                        </li>
 					<li>
 						<a  id="addUsers" class="admin_link"><i class="icon-user"></i>View Users</a>
-					</li>
+					</li> 
 					<li class="divider"></li>
 					<li>
 						<a  id="assignRights" class="admin_link"><i class="icon-cog"></i>Assign User Rights</a>
