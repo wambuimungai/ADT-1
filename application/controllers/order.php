@@ -3765,7 +3765,7 @@ class Order extends MY_Controller {
 			} 
 		}
 
-        $row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'];
+        $row['physical_stock'] = abs($row['beginning_balance']) + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'];
         if ($code == "D-CDRR") {
             $row['resupply'] = ($row['reported_consumed'] * 3) - $row['physical_stock'];
         }else{
