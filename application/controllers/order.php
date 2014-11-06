@@ -553,9 +553,6 @@ class Order extends MY_Controller {
 				}
 			}
 
-			//Check if Central Site
-			$data['is_central_site'] = $this->check_if_central($this->session->userdata("facility"));
-
 			$facilities = Sync_Facility::getId($facility, $order_type);
 			$data['facility_id'] = $facilities['id'];
 			$data['facility_object'] = Facilities::getCodeFacility($facility);
@@ -1612,7 +1609,6 @@ class Order extends MY_Controller {
 					$text = $arr[2]['A'];
 
 					$file_type = $this -> checkFileType($code, $text);
-
 					$facilities = Sync_Facility::getId($facility_code, 2);
 					$duplicate = $this -> check_duplicate($code, $period_begin, $period_end, $facilities['id']);
 
@@ -1738,7 +1734,31 @@ class Order extends MY_Controller {
 
 						$main_array['ownCdrr_log'] = array($log_array);
 						$main_array = array($main_array);
-						$this -> prepare_order($type, $main_array);
+						//----------------------------------Post order to supplier start--------------------------------
+						//format to json
+						$json_data = json_encode($main_array, JSON_PRETTY_PRINT);
+						
+						//get supplier
+						$facility_code = $this -> session -> userdata("facility");
+						$supplier = $this -> get_supplier($facility_code);
+						//save links
+						if ($supplier != "KEMSA") {
+							//Go to escm
+							$url = $this -> esm_url . $type;
+						} else {
+							//Go to nascop
+							$target_url = "sync/save/nascop/" . $type;
+							$url = $this -> nascop_url . $target_url;
+						}
+						$responses = $this -> post_order($url, $json_data,$supplier);
+						$responses = json_decode($responses, TRUE);
+						if (is_array($responses)) {
+							if (!empty($responses)) {
+								$id = $this -> extract_order($type, $responses);
+							}
+						}
+						//----------------------------------Post order to supplier start End--------------------------------
+						//$this -> prepare_order($type, $main_array);
 						$ret[] = "Your " . strtoupper($type) . " data was successfully saved !-" . $_FILES["file"]["name"][$i];
 					}
 
@@ -3746,7 +3766,6 @@ class Order extends MY_Controller {
 		}
 
         $row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'];
-      
         if ($code == "D-CDRR") {
             $row['resupply'] = ($row['reported_consumed'] * 3) - $row['physical_stock'];
         }else{
@@ -3770,9 +3789,6 @@ class Order extends MY_Controller {
 			if($row['dispensed_to_patients'] >0){
 			   $row['dispensed_packs']=round(@$row['dispensed_to_patients'] / @$pack_size);
 			}
-			//Fix for physical Count
-			$row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_packs'] - $row['losses'] + $row['adjustments'];
-            $row['resupply'] = ($row['dispensed_packs'] * 3) - $row['physical_stock'];
 		}
 
 		echo json_encode($row);
@@ -3908,20 +3924,6 @@ class Order extends MY_Controller {
 		$data["expected"] = $this ->expectedReports($facility_code);
 		$data["actual"] =  $this ->actualReports($facility_code,$period_begin,$type);
 		echo json_encode($data);
-	}
-
-	public function check_if_central($facility_code)
-	{   
-		$category = FALSE;
-	    $result= Sync_Facility::get_facility_category($facility_code);
-	    if($result)
-	    {
-            if(strtolower($result) == "central")
-            {
-               $category = TRUE;
-            }
-	    }
-	    return $category;
 	}
 }
 ?>
