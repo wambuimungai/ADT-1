@@ -260,8 +260,8 @@ if ($facility_object -> service_pep == "1") {
 							foreach($regimen_list as $regimen){
 								?>
 							<tr>
-								<td style="border-right:2px solid #DDD;"><?php echo @$regimen -> code;?></td>
-								<td regimen_id="<?php echo $regimen['reg_id'];?>" class="regimen_desc col_drug"><?php echo @$regimen -> name;?></td>
+								<td style="border-right:2px solid #DDD;"><?php echo @$regimen['code'];?></td>
+								<td regimen_id="<?php echo $regimen['reg_id'];?>" class="regimen_desc col_drug"><?php echo @$regimen ['description'];?></td>
 								<td regimen_id="<?php echo $regimen['reg_id'];?>" class="regimen_numbers">
 								<input type="text" class="f_right patient_number" data-cat="<?php echo $cat; ?>" name="patient_numbers[]" id="patient_numbers_<?php echo $regimen['reg_id'];?>" value="<?php echo $regimen['total'];?>" >
 								<input name="patient_regimens[]"class="regimen_list" value="<?php echo $regimen['reg_id'];?>" type="hidden">

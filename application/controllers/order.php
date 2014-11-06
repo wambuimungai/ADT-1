@@ -1734,32 +1734,7 @@ class Order extends MY_Controller {
 
 						$main_array['ownCdrr_log'] = array($log_array);
 						$main_array = array($main_array);
-						//----------------------------------Post order to supplier start--------------------------------
-						//format to json
-						$json_data = json_encode($main_array, JSON_PRETTY_PRINT);
 						
-						//get supplier
-						$facility_code = $this -> session -> userdata("facility");
-						$supplier = $this -> get_supplier($facility_code);
-						//save links
-						if ($supplier != "KEMSA") {
-							//Go to escm
-							$url = $this -> esm_url . $type;
-						} else {
-							//Go to nascop
-							$target_url = "sync/save/nascop/" . $type;
-							$url = $this -> nascop_url . $target_url;
-						}
-						$responses = $this -> post_order($url, $json_data,$supplier);
-						$responses = json_decode($responses, TRUE);
-						if (is_array($responses)) {
-							if (!empty($responses)) {
-								$id = $this -> extract_order($type, $responses);
-							}
-						}
-						//----------------------------------Post order to supplier start End--------------------------------
-						//$this -> prepare_order($type, $main_array);
-						$ret[] = "Your " . strtoupper($type) . " data was successfully saved !-" . $_FILES["file"]["name"][$i];
 					}
 
 				} else if ($type == "maps") {
@@ -1768,7 +1743,6 @@ class Order extends MY_Controller {
 					$first_row = 4;
 					$facility_name = trim($arr[$first_row]['B'] . $arr[$first_row]['C'] . $arr[$first_row]['D']);
 					$facility_code = trim($arr[$first_row]['F'] . $arr[$first_row]['G'] . $arr[$first_row]['H']);
-
 					$second_row = 5;
 					$province = trim($arr[$first_row]['B'] . $arr[$first_row]['C'] . $arr[$first_row]['D']);
 					$district = trim($arr[$first_row]['F'] . $arr[$first_row]['G'] . $arr[$first_row]['H']);
@@ -1845,7 +1819,7 @@ class Order extends MY_Controller {
 						$revisit_oc = $arr[174]["G"];
 						$facilities = Sync_Facility::getId($facility_code, 2);
 						$facility_id = $facilities['id'];
-
+						
 						//Save Import Values
 
 						$created = date('Y-m-d H:i:s');
@@ -1918,10 +1892,34 @@ class Order extends MY_Controller {
 						$main_array['ownMaps_log'] = array($log_array);
 
 						$main_array = array($main_array);
-						$this -> prepare_order($type, $main_array);
-						$ret[] = "Your " . strtoupper($type) . " data was successfully saved !-" . $_FILES["file"]["name"][$i];
 					}
 				}
+				//----------------------------------Post order to supplier start--------------------------------
+				//format to json
+				$json_data = json_encode($main_array, JSON_PRETTY_PRINT);
+				
+				//get supplier
+				$facility_code = $this -> session -> userdata("facility");
+				$supplier = $this -> get_supplier($facility_code);
+				//save links
+				if ($supplier != "KEMSA") {
+					//Go to escm
+					$url = $this -> esm_url . $type;
+				} else {
+					//Go to nascop
+					$target_url = "sync/save/nascop/" . $type;
+					$url = $this -> nascop_url . $target_url;
+				}
+				$responses = $this -> post_order($url, $json_data,$supplier);
+				$responses = json_decode($responses, TRUE);
+				if (is_array($responses)) {
+					if (!empty($responses)) {
+						$id = $this -> extract_order($type, $responses);
+					}
+				}
+				//----------------------------------Post order to supplier start End--------------------------------
+				//$this -> prepare_order($type, $main_array);
+				$ret[] = "Your " . strtoupper($type) . " data was successfully saved !-" . $_FILES["file"]["name"][$i];
 			}
 		}
 		$ret = implode("<br/>", $ret);
