@@ -328,5 +328,11 @@
             "date_tested": "2014-07-10",
             "result": "< LDL copies\/ml"
         }
+    ],
+    "18794000198": [
+        {
+            "date_tested": "0000-00-00",
+            "result": ""
+        }
     ]
 }
