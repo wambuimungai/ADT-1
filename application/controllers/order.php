@@ -1609,7 +1609,6 @@ class Order extends MY_Controller {
 					$text = $arr[2]['A'];
 
 					$file_type = $this -> checkFileType($code, $text);
-
 					$facilities = Sync_Facility::getId($facility_code, 2);
 					$duplicate = $this -> check_duplicate($code, $period_begin, $period_end, $facilities['id']);
 
@@ -1735,8 +1734,7 @@ class Order extends MY_Controller {
 
 						$main_array['ownCdrr_log'] = array($log_array);
 						$main_array = array($main_array);
-						$this -> prepare_order($type, $main_array);
-						$ret[] = "Your " . strtoupper($type) . " data was successfully saved !-" . $_FILES["file"]["name"][$i];
+						
 					}
 
 				} else if ($type == "maps") {
@@ -1745,7 +1743,6 @@ class Order extends MY_Controller {
 					$first_row = 4;
 					$facility_name = trim($arr[$first_row]['B'] . $arr[$first_row]['C'] . $arr[$first_row]['D']);
 					$facility_code = trim($arr[$first_row]['F'] . $arr[$first_row]['G'] . $arr[$first_row]['H']);
-
 					$second_row = 5;
 					$province = trim($arr[$first_row]['B'] . $arr[$first_row]['C'] . $arr[$first_row]['D']);
 					$district = trim($arr[$first_row]['F'] . $arr[$first_row]['G'] . $arr[$first_row]['H']);
@@ -1822,7 +1819,7 @@ class Order extends MY_Controller {
 						$revisit_oc = $arr[174]["G"];
 						$facilities = Sync_Facility::getId($facility_code, 2);
 						$facility_id = $facilities['id'];
-
+						
 						//Save Import Values
 
 						$created = date('Y-m-d H:i:s');
@@ -1895,10 +1892,34 @@ class Order extends MY_Controller {
 						$main_array['ownMaps_log'] = array($log_array);
 
 						$main_array = array($main_array);
-						$this -> prepare_order($type, $main_array);
-						$ret[] = "Your " . strtoupper($type) . " data was successfully saved !-" . $_FILES["file"]["name"][$i];
 					}
 				}
+				//----------------------------------Post order to supplier start--------------------------------
+				//format to json
+				$json_data = json_encode($main_array, JSON_PRETTY_PRINT);
+				
+				//get supplier
+				$facility_code = $this -> session -> userdata("facility");
+				$supplier = $this -> get_supplier($facility_code);
+				//save links
+				if ($supplier != "KEMSA") {
+					//Go to escm
+					$url = $this -> esm_url . $type;
+				} else {
+					//Go to nascop
+					$target_url = "sync/save/nascop/" . $type;
+					$url = $this -> nascop_url . $target_url;
+				}
+				$responses = $this -> post_order($url, $json_data,$supplier);
+				$responses = json_decode($responses, TRUE);
+				if (is_array($responses)) {
+					if (!empty($responses)) {
+						$id = $this -> extract_order($type, $responses);
+					}
+				}
+				//----------------------------------Post order to supplier start End--------------------------------
+				//$this -> prepare_order($type, $main_array);
+				$ret[] = "Your " . strtoupper($type) . " data was successfully saved !-" . $_FILES["file"]["name"][$i];
 			}
 		}
 		$ret = implode("<br/>", $ret);
@@ -3742,8 +3763,7 @@ class Order extends MY_Controller {
 			} 
 		}
 
-        $row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'];
-      
+        $row['physical_stock'] = abs($row['beginning_balance']) + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'];
         if ($code == "D-CDRR") {
             $row['resupply'] = ($row['reported_consumed'] * 3) - $row['physical_stock'];
         }else{
@@ -3767,9 +3787,6 @@ class Order extends MY_Controller {
 			if($row['dispensed_to_patients'] >0){
 			   $row['dispensed_packs']=round(@$row['dispensed_to_patients'] / @$pack_size);
 			}
-			//Fix for physical Count
-			$row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_packs'] - $row['losses'] + $row['adjustments'];
-            $row['resupply'] = ($row['dispensed_packs'] * 3) - $row['physical_stock'];
 		}
 
 		echo json_encode($row);

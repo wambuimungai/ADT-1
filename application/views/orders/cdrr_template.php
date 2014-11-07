@@ -47,7 +47,7 @@
 	            <input type="hidden" name="status_change" value="approved"/>
 				<input type='submit' name='save' class='btn btn-info state_change' value='Approve'/>
 		<?php
-		      } else if($status_name=="approved"){
+		      } else if($status_name == "approved" && $cdrr_array[0]['status'] == "F-CDRR_units" && $is_central_site == TRUE){
 		 ?>
 		        <input type="hidden" name="status_change" value="archived"/> 
 		 		<input type='submit' name='save' class='btn btn-info state_change' value='Archive'/>
@@ -732,7 +732,7 @@
         	//$(".btn").attr("disabled","disabled");
         	return true;
         }
-   }
+    }
 
    function calculateUnits(element)
    {
