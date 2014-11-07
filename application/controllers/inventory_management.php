@@ -442,11 +442,12 @@ class Inventory_Management extends MY_Controller {
 		$this->email->subject('Reciept of drugs');
 		$this->email->message('Dear Sir/Madam we have recieved the drugs sent');
 		
-		if($this->email->send()){
+		if(@$this->email->send()){
 			echo "The email was successfully sent";
 		}
 		else{
-			show_error($this->email->print_debugger());
+			//show_error($this->email->print_debugger());
+			echo "The email was not sent";
 		}
 		
 		

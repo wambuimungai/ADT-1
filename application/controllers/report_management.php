@@ -2485,7 +2485,35 @@ class report_management extends MY_Controller {
 		$from = date('Y-m-d', strtotime($from));
 		$to = date('Y-m-d', strtotime($to));
 
-		$sql = "SELECT pv.patient_id as art_no,pv.dispensing_date, t.name AS service_type, s.name AS supported_by,UPPER(p.first_name) as first_name ,UPPER(p.other_name) as other_name ,UPPER(p.last_name)as last_name,FLOOR(DATEDIFF('$today',p.dob)/365) as age, pv.current_weight as weight, IF(p.gender=1,'Male','Female')as gender, r.regimen_desc,r.regimen_code,AVG(pv.adherence) as avg_adherence from patient_visit pv LEFT JOIN  visit_purpose v on v.id=pv.visit_purpose,patient p,supporter s,regimen_service_type t,regimen r where pv.dispensing_date between '$from' and '$to' and pv.patient_id=p.patient_number_ccc and s.id = p.supported_by and t.id = p.service and r.id = pv.regimen and v.name like '%routine%'  and p.current_status =  '1' and pv.facility =  '$facility_code' and p.facility_code = pv.facility group by pv.patient_id,pv.dispensing_date";
+        $sql = "SELECT 
+				pv.patient_id as art_no,
+				pv.dispensing_date, 
+				t.name AS service_type,
+				s.name AS supported_by,
+				UPPER(p.first_name) as first_name ,
+				UPPER(p.other_name) as other_name ,
+				UPPER(p.last_name)as last_name,
+				FLOOR(DATEDIFF('$today',p.dob)/365) as age,
+				pv.current_weight as weight, 
+				IF(p.gender=1,'Male','Female')as gender,
+				r.regimen_desc,
+				r.regimen_code,
+				AVG(pv.adherence) as avg_adherence 
+				FROM patient_visit pv 
+				LEFT JOIN patient p ON p.patient_number_ccc=pv.patient_id
+				LEFT JOIN visit_purpose v ON v.id=pv.visit_purpose
+				LEFT JOIN supporter s ON s.id=p.supported_by
+				LEFT JOIN regimen r ON r.id=p.current_regimen
+				LEFT JOIN regimen_service_type t ON t.id=p.service
+				LEFT JOIN patient_status ps ON ps.id=p.current_status
+				WHERE pv.dispensing_date 
+				BETWEEN '$from' 
+				AND '$to' 
+				AND v.name like '%routine%' 
+				AND ps.name LIKE '%active%' 
+				AND pv.facility = '$facility_code' 
+				GROUP BY pv.patient_id,pv.dispensing_date";
+
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		$row_string = "<table border='1'   class='dataTables'>
@@ -2514,7 +2542,7 @@ class report_management extends MY_Controller {
 				$gender = $result['gender'];
 				$dispensing_date = date('d-M-Y', strtotime($result['dispensing_date']));
 				$regimen_desc = "<b>" . $result['regimen_code'] . "</b>|" . $result['regimen_desc'];
-				$weight = number_format($result['weight'], 2);
+				$weight = $result['weight'];
 				$avg_adherence = number_format($result['avg_adherence'], 2);
 				$row_string .= "<tr><td>$patient_no</td><td>$service_type</td><td>$supported_by</td><td>$patient_name</td><td>$age</td><td>$gender</td><td>$regimen_desc</td><td>$dispensing_date</td><td>$weight</td><td>$avg_adherence</td></tr>";
 				$overall_total++;
@@ -5491,6 +5519,62 @@ class report_management extends MY_Controller {
 		$data['facility_name'] = $this -> session -> userdata('facility_name');
 		$data['content_view'] = 'reports/drugissued_v';
 		$this -> load -> view('template', $data);
+	}
+
+
+	public function get_lost_followup()
+	{
+		$from = "2014-10-01";
+		$to = "2014-10-31";
+		$facility_code = $this->session->userdata("facility");
+        
+        //Get Patients Lost to Follow Up
+		$this->db->select("p.patient_number_ccc as ccc_no,UPPER(CONCAT_WS(' ',p.first_name,CONCAT_WS(' ',p.other_name,p.last_name))) as person_name,ps.name as status,DATE_FORMAT(p.status_change_date,'%d/%b/%Y') as status_date",FALSE)
+		    ->from("patient p")
+		    ->join("patient_status ps","ps.id = p.current_status","LEFT")
+			->where("p.status_change_date BETWEEN '$from' AND '$to'")
+		    ->where("p.facility_code",$facility_code)
+		    ->like("ps.name","lost")
+		    ->where("p.patient_number_ccc IS NOT NULL")
+		    ->group_by("p.id");
+		$query = $this->db->get();
+ 		$results = $query->result_array();
+
+ 		echo "<pre>";
+        echo json_encode($results,JSON_PRETTY_PRINT);
+        echo "</pre>";
+	}
+
+	public function get_received_drugs()
+	{   
+		$store='2';
+		$start_date='2014-11-01';
+		$end_date='2014-11-10';
+		$facility_code = $this->session->userdata("facility");
+        
+        //Get Drugs Received in Period
+		$this->db->select("UPPER(d.drug) as drug_name,IF(ds.name IS NOT NULL,UPPER(ds.name),UPPER(dsm.source_destination)) as drug_source,SUM(dsm.quantity) as total")
+		    ->from("drug_stock_movement dsm")
+		    ->join("transaction_type t","t.id = dsm.transaction_type","LEFT")
+			->join("drugcode d","d.id = dsm.drug","LEFT")
+			->join("drug_source ds","ds.id = dsm.source_destination","LEFT")
+			->where("dsm.transaction_date BETWEEN '$start_date' AND '$end_date'")
+		    ->where("dsm.facility",$facility_code)
+		    ->like("t.name","received")
+		    ->where("d.id IS NOT NULL")
+		    ->group_by("dsm.source_destination");
+		$query = $this->db->get();
+ 		$results = $query->result_array();
+
+		foreach ($results as $result) {
+			$temp = array();
+			$temp[$result['drug_source']] = $result['total'];
+			$data[$result['drug_name']][] = $temp;
+		}
+        
+        echo "<pre>";
+        echo json_encode($data,JSON_PRETTY_PRINT);
+        echo "</pre>";
 	}
 
 	public function getDrugsReceived($stock_type, $start_date = "", $end_date = "") {
