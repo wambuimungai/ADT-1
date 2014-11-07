@@ -17,6 +17,17 @@ class nascop_report_management extends MY_Controller{
 	}
 
 	public function index(){}
+
+  public function adherence(){
+    $data=array();
+    $data['adhere']=Patient::adherence_reports();
+
+    echo '<pre>';
+    echo json_encode($data,JSON_PRETTY_PRINT);
+    echo '</pre>';
+    die();
+
+  }
   
 public function nascop_reports()
 {
@@ -40,14 +51,15 @@ public function nascop_reports()
           $lost_to_follow=$lost_to_followup[$period][0]['lost_to_followup'];
           $Started_on_ART=$current_total[$period][0]['art_patients'];
           $percent_lost_to_follow=doubleval(number_format(($lost_to_follow/$Started_on_ART)*100,2));
+          $percent_still_in_firstline=doubleval(number_format(($value_firstline/$value_total)*100,2));
           
           $temp[$period]['current_total'] = $value_total;
           $temp[$period]['current_firstline'] = $value_firstline;
           $temp[$period]['percentage_on_firstline'] = $value_percent_firstline;
           $temp[$period]['percentage_on_other_regimens']=100-$value_percent_firstline;
           $temp[$period]['patients_still_in_firstline']=$patients_still_in_firstline[$period][0]['Still_in_Firstline'];
-          $temp[$period]['patients_starting_in_12months']=0;
-          $temp[$period]['percentage_still_in_firstline']=0;
+          $temp[$period]['patients_starting_in_12months']=$value_total;
+          $temp[$period]['percentage_still_in_firstline']=$percent_still_in_firstline;
           $temp[$period]['patients_lost_followup']=$lost_to_follow;
           $temp[$period]['patients_started_on_ART']=$Started_on_ART;
           $temp[$period]['percentage_lost_to_followup']=$percent_lost_to_follow;
@@ -65,12 +77,14 @@ public function nascop_reports()
 
 }
 public function send_nascop_reports(){
+  $data=array();
+  $data['reports']=nascop_reports();
 
   $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, array('json_data' => $json_data));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, array('Nascop_reports' => $data));
         $json_data = curl_exec($ch);
         if (empty($json_data)) {
             $message = "cURL Error: " . curl_error($ch);

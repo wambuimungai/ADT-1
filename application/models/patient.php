@@ -252,6 +252,7 @@ public function start_on_firstline(){
                         AND ps.name NOT LIKE '%transfer%'
                         AND r.line=1
                         AND r1.line ='1'
+                        AND p.start_regimen_date !=''
                         AND pt.Name LIKE '%active%'
                         GROUP BY YEAR(p.start_regimen_date),MONTH(p.start_regimen_date)
                         ORDER BY p.start_regimen_date DESC");	
@@ -308,6 +309,7 @@ public function start_on_firstline(){
                         AND ps.name NOT LIKE '%transfer%' 
                         AND pt.Name LIKE '%lost%'
                         AND p.status_change_date >= '2011-01-01'
+                        AND p.status_change_date!=''
                         GROUP BY YEAR(p.status_change_date),MONTH(p.status_change_date)
                         ORDER BY p.status_change_date DESC");
 		$query = $this -> db -> query($sql);
@@ -325,23 +327,27 @@ public function start_on_firstline(){
 	}
 
 	public function adherence_reports(){
-		$sql=("SELECT SUM( months_of_stock ) - SUM(pill_count) AS pill_count, SUM( pill_count ) AS e_pill_count,SUM( months_of_stock ) AS a_pill_count,SUM(missed_pills) as missed_pills,adherence,SUM(pv.quantity) as quantity, frequency, p.patient_number_ccc, p.service, p.gender,(YEAR(curdate()) - YEAR(p.dob)) as age 
-				FROM patient_visit pv 
-				LEFT JOIN patient p ON p.patient_number_ccc = pv.patient_id 
-				LEFT JOIN dose ds ON ds.name = pv.dose 
-				LEFT JOIN drugcode dc ON dc.id = pv.drug_id 
-				LEFT JOIN regimen r ON pv.regimen = r.id
-				LEFT JOIN drug_classification cl ON cl.id = dc.classification 
-				WHERE frequency <=2 
-				AND (r.regimen_code NOT LIKE '%OI%' OR dc.drug LIKE '%COTRIMOXAZOLE%' OR dc.drug LIKE '%DAPSONE%' ) 
-				AND (cl.Name LIKE '%art%' OR cl.Name LIKE '%anti%tb%') 
-				GROUP BY p.patient_number_ccc");
+		$sql=("SELECT DATE_FORMAT(pv.dispensing_date,'%M-%Y') as period,SUM(`quantity`) as givenpills,SUM(`months_of_stock`)as expected_pillcount,SUM(`pill_count`) as actual_pillcount, SUM(`months_of_stock`)-SUM(`pill_count`)as pillcount_variance,SUM(`missed_pills`) as missedpills,COUNT(p.patient_number_ccc) as total_patients
+FROM patient_visit pv
+LEFT JOIN patient p ON p.patient_number_ccc = pv.patient_id 
+WHERE pv.dispensing_date >'2013-10-01'
+GROUP BY YEAR(pv.dispensing_date),MONTH(pv.dispensing_date)");
 		$query = $this -> db -> query($sql);
 		$patients = $query -> result_array();
         
-        $query = $this -> db -> query($sql);
+         foreach($patients as $patient)
+		{
+			$data[$patient['period']][]=array('Total_Patients'=>(int)$patient['total_patients'],'given_pills'=>(int)$patient['givenpills'],'expected_pillcount'=>(int)$patient['expected_pillcount'],'actual_pillcount'=>(int)$patient['actual_pillcount'],'pillcount_variance'=>(int)$patient['pillcount_variance'],'missedpills'=>(int)$patient['missedpills']);
+
+		}
+
+		return $data;
+
+
+
+        /*$query = $this -> db -> query($sql);
 		$patients = $query -> result_array();
-		return $patients;
+		return $patients;*/
 
 	}
 
