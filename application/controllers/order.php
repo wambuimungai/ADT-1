@@ -3760,10 +3760,12 @@ class Order extends MY_Controller {
                     	$row['dispensed_to_patients']=$results[0]['total'];
                     }
 				}
+				//Multiply By Packsize
+				$row['dispensed_to_patients'] = round(@$row['dispensed_to_patients']/@$pack_size);
 			} 
 		}
 
-        $row['physical_stock'] = abs($row['beginning_balance']) + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'];
+        $row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'];
         if ($code == "D-CDRR") {
             $row['resupply'] = ($row['reported_consumed'] * 3) - $row['physical_stock'];
         }else{
@@ -3774,7 +3776,7 @@ class Order extends MY_Controller {
 		if ($code == "D-CDRR") {
 			foreach ($row as $i => $v) {
 				if ($i != "expiry_month" && $i !="beginning_balance") {
-					$row[$i] = round(@$v / @$pack_size);
+					//$row[$i] = round(@$v / @$pack_size);
 				}
 			}
 		}else if($code == "F-CDRR_packs"){
