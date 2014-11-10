@@ -3750,6 +3750,7 @@ class Order extends MY_Controller {
 						    WHERE c.period_begin='$period_begin' 
 						    AND c.period_end='$period_end'
 						    AND ci.drug_id='$drug_id'
+						    AND c.status LIKE '%approved%'
 						    AND c.facility_id='$satellite_site'
 						    GROUP BY ci.drug_id";
 					$query = $this -> db -> query($sql);
@@ -3799,25 +3800,29 @@ class Order extends MY_Controller {
                     }
 				}
 				//Multiply By Packsize
-				$row['dispensed_to_patients'] = round(@$row['dispensed_to_patients']/@$pack_size);
+				//$row['dispensed_to_patients'] = round(@$row['dispensed_to_patients']/@$pack_size);
 			} 
 		}
 
-        $row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'];
-        if ($code == "D-CDRR") {
-            $row['resupply'] = ($row['reported_consumed'] * 3) - $row['physical_stock'];
-        }else{
+		if ($code == "D-CDRR") 
+		{
+			foreach ($row as $i => $v) {
+				if ($i != "expiry_month" && $i !="beginning_balance") {
+					$row[$i] = round(@$v / @$pack_size);
+				}
+			}
+			//Get Physical Count
+			$row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'];
+		    //Get Resupply
+		    $row['resupply'] = ($row['reported_consumed'] * 3) - $row['physical_stock'];
+		}
+		else
+		{
+			$row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_to_patients'] - $row['losses'] + $row['adjustments'];
         	$row['resupply'] = ($row['dispensed_to_patients'] * 3) - $row['physical_stock'];
         }
 
-        //if D-CDRR convert to packs
-		if ($code == "D-CDRR") {
-			foreach ($row as $i => $v) {
-				if ($i != "expiry_month" && $i !="beginning_balance") {
-					//$row[$i] = round(@$v / @$pack_size);
-				}
-			}
-		}else if($code == "F-CDRR_packs"){
+        if($code == "F-CDRR_packs"){
             foreach ($row as $i => $v) {
 				if ($i != "expiry_month" && $i != "dispensed_to_patients" && $i !="beginning_balance") {
 					$row[$i] = round(@$v / @$pack_size);
