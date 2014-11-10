@@ -562,6 +562,10 @@
 		$(".physical_count").live('change',function() {
 			calculateResupply($(this));
 		});
+
+		$(".aggregated_qty").live('change',function() {
+			calculateResupply($(this));
+		});
 		
 		
 		<?php
@@ -714,8 +718,20 @@
 		 resupply = 0 - calculated_physical;
 		 physical_count = calculated_physical;
 		 } 
+		//If D-CDRR use reported consumed
+	    <?php
+	    	if($hide_generate==2){
+	    ?>
+        var quantity_dispensed = parseInt(row_element.find(".aggregated_qty").attr("value"));
+        <?php
+    	}
+    	?>
 		resupply = (quantity_dispensed * 3) - physical_count;
-		resupply=parseInt(resupply);
+		resupply = parseInt(resupply);
+		if(isNaN(resupply))
+		{
+			resupply = 0;
+		}
 		row_element.find('.label-warning').remove();
 		row_element.find(".physical_count").attr("value", physical_count);
 		row_element.find(".resupply").attr("value", resupply);
