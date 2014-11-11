@@ -517,7 +517,7 @@ class Order extends MY_Controller {
 				$data['logs'] = Cdrr_Log::getLogs($cdrr_id);
 				if ($data['options'] == "view" || $data['options'] == "update") {
 					if ($data['status_name'] == "prepared" || $data['status_name'] == "review") {
-						$data['option_links'] = "<li class='active'><a href='" . site_url("order/view_order/cdrr/" . $cdrr_id) . "'>view</a></li><li><a href='" . site_url("order/update_order/cdrr/" . $cdrr_id) . "'>update</a></li><li><a class='delete' href='" . site_url("order/delete_order/cdrr/" . $cdrr_id) . "'>delete</a></li>";
+						$data['option_links'] = "<li class='active'><a href='" . site_url("order/view_order/cdrr/" . $cdrr_id) . "'>view</a></li><li><a href='" . site_url("order/update_order/cdrr/" . $cdrr_id) . "'>update</a></li><li><a class='delete' href='" . site_url("order/read_order/cdrr/" . $cdrr_id) . "'>delete</a></li>";
 					} else {
 						$data['option_links'] = "<li class='active'><a href='" . site_url("order/view_order/cdrr/" . $cdrr_id) . "'>view</a></li>";
 					}
@@ -1613,12 +1613,13 @@ class Order extends MY_Controller {
 				    $facility_id= $facilities['id'];
 					$duplicate = $this -> check_duplicate($code, $period_begin, $period_end, $facilities['id']);
 
+					/*
 					if ($period_begin != date('Y-m-01', strtotime(date('Y-m-d') . "-1 month")) || $period_end != date('Y-m-t', strtotime(date('Y-m-d') . "-1 month"))) {
 						$ret[] = "You can only report for current month. Kindly check the period fields !-" . $_FILES["file"]["name"][$i];
-					} else if ($file_type == false) {
-						$ret[] = "Incorrect File Selected-" . $_FILES["file"]["name"][$i];
 					} else if ($duplicate == true) {
 						$ret[] = "A cdrr report already exists for this month !-" . $_FILES["file"]["name"][$i];
+					} else */ if ($file_type == false) {
+						$ret[] = "Incorrect File Selected-" . $_FILES["file"]["name"][$i];
 					} else if ($facility_id == null) {
 						$ret[] = "No facility found associated with this user!<br>
 						 		- Make sure that you have updated your settings
@@ -1655,7 +1656,7 @@ class Order extends MY_Controller {
 
 						$services = implode(",", $service);
 
-						$seventh_row = 92;
+						$seventh_row = 95;
 
 						$comments = trim($arr[$seventh_row]['A']);
 						$comments .= trim($arr[$seventh_row]['B']);
@@ -1712,11 +1713,13 @@ class Order extends MY_Controller {
 									$cdrr_array[$commodity_counter]['count'] = str_replace(',', '', trim($arr[$i]['H']));
 									$cdrr_array[$commodity_counter]['expiry_quant'] = str_replace(',', '', trim($arr[$i]['I']));
 									$expiry_date = trim($arr[$i]['J']);
-									if ($expiry_date != "-" || $expiry_date != "" || $expiry_date != null) {
-										$cdrr_array[$commodity_counter]['expiry_date'] = $this -> clean_date($expiry_date);
+
+			                        if ($expiry_date != "-" && $expiry_date != "" && $expiry_date !=null && $expiry_date != "NULL" && $expiry_date != "1970-01-01" && $expiry_date != "0000-00-00") {
+										$cdrr_array[$commodity_counter]['expiry_date'] = date('Y-m-d', strtotime($expiry_date[$commodity_counter]));
 									} else {
-										$cdrr_array[$commodity_counter]['expiry_date'] = "";
+										$cdrr_array[$commodity_counter]['expiry_date'] = null;
 									}
+
 									$cdrr_array[$commodity_counter]['out_of_stock'] = str_replace(',', '', trim($arr[$i]['K']));
 									$cdrr_array[$commodity_counter]['resupply'] = str_replace(',', '', trim($arr[$i]['L']));
 									$cdrr_array[$commodity_counter]['aggr_consumed'] = null;
@@ -1790,11 +1793,11 @@ class Order extends MY_Controller {
 
 					$file_type = $this -> checkFileType($code, $text);
 
-					if ($period_begin != date('Y-m-01', strtotime(date('Y-m-d') . "-1 month")) || $period_end != date('Y-m-t', strtotime(date('Y-m-d') . "-1 month"))) {
+					/*if ($period_begin != date('Y-m-01', strtotime(date('Y-m-d') . "-1 month")) || $period_end != date('Y-m-t', strtotime(date('Y-m-d') . "-1 month"))) {
 						$ret[] = "You can only report for current month. Kindly check the period fields !-" . $_FILES["file"]["name"][$i];
 					} else if ($duplicate == true) {
 						$ret[] = "An fmap report already exists for this month !-" . $_FILES["file"]["name"][$i];
-					} else if ($file_type == false) {
+					} else */if ($file_type == false) {
 						$ret[] = "Incorrect File Selected-" . $_FILES["file"]["name"][$i];
 					} else if ($facility_id == null) {
 						$ret[] = "No facility found associated with this user!<br>
@@ -2011,7 +2014,7 @@ class Order extends MY_Controller {
 			$sql = "SELECT r.map
 				    FROM regimen r
 				    WHERE(r.regimen_code='$regimen_code'
-				    OR r.regimen_desc='$regimen_desc')";
+				    AND r.regimen_desc='$regimen_desc')";
 			$query = $this -> db -> query($sql);
 			$results = $query -> result_array();
 			if ($results) {
