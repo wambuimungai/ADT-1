@@ -22,7 +22,7 @@ class Faq extends Doctrine_Record{
         return $faqs;
 	}
     public function getAllHydrated(){
-        $query= Doctrine_Query::create()->select("modules,questions, answers")->from("faq");
+        $query= Doctrine_Query::create()->select("modules,questions, answers")->from("faq")->where("active='1'") ->groupBy("modules");
         $faqs=$query->execute(array(), Doctrine::HYDRATE_ARRAY);
         return $faqs;
     }

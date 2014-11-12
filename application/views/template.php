@@ -358,7 +358,7 @@ if (isset($styles)) {
 				    </ul>
 			    </li>
                                 <li>
-                                    <a href="#"><i class="icon-question-sign"></i>FAQ</a>
+                                    <a href="<?php echo base_url().'home_controller/get_faq';?>" target="_blank"><i class="icon-question-sign"></i>FAQ</a>
                                 </li>
 					<?php
 				}else{//If no Extra pharmacies, load main store and Main Pharmacy Only
