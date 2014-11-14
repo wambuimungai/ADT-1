@@ -219,7 +219,13 @@
 				
 			$("#msg_fill_order").css("display", "none");
 			$("#upload_excel_btn").click(function() {
-				$("#excel_upload").toggle();
+				//Check if facility is selected
+				if($("#satellite_facility").val() == 0) {
+					$("#msg_fill_order").fadeIn("slow");
+					$("#msg_fill_order").html("Please select a facility !");
+				}else{
+					$("#excel_upload").toggle();
+				}
 			});
 			//Validate before submitting
 			$("#proceed").click(function() {
@@ -234,7 +240,6 @@
 					$("#fmFillOrderForm").submit();
 				}
 			});
-			var 
 			
 			//cdrr table
 			oTable1 = $('#order_listing_cdrr').dataTable({
@@ -376,6 +381,12 @@
 				$('#fmImportData').attr('action','<?php echo base_url().'order/import_order/maps'?>');
 			}
 		});
+
+		//Save Import File
+		$("#fmImportData").on('submit',function(){
+			$(".btn").attr("disabled","disabled");
+		});
+		
 	});
 	
 	function update_orders(){
