@@ -1448,6 +1448,7 @@ class Order extends MY_Controller {
 			$fmaps_array = $query -> result_array();
 			$data['fmaps_array'] = $fmaps_array;
 			$data['options'] = "update";
+			//echo $sql;die();
 			if ($fmaps_array[0]['code'] == "D-MAPS") {
 				$code = 0;
 			} else if ($fmaps_array[0]['code'] == "F-MAPS") {
@@ -3734,7 +3735,7 @@ class Order extends MY_Controller {
 	    if($row['stock_out']==null){
 			$row['stock_out']=0;
 		}
-
+		
 		if ($facility_type > 1) {
 			//central site
 			if ($code == "D-CDRR") {
