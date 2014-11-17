@@ -992,7 +992,7 @@ foreach($results as $result){
 	<div class="column" id="colmnTwo">
 		<fieldset>
 			<legend>
-				Program History
+				Patient History
 			</legend>
 			<div class="plan_hidden">
 			<div class="max-row">

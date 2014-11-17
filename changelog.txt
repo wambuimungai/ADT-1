@@ -1,3 +1,11 @@
+Version 2.18 10/11/2014
+==============================================
+- Added: Lost to Followup Reporty
+- Added: Ajax Loading for Patient Listing
+- Added: Ajax Loading for Patient Details and Dispensing
+- Fixed: D-CDRR Ordering Bug
+- Fixed: Issued/Received Drug Report
+
 Version 2.17 7/10/2014
 ==============================================
 - Added: Changed NASCOP URL
