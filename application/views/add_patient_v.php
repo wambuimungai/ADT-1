@@ -644,7 +644,7 @@
 				<div class="column" id="colmnTwo">
 					<fieldset>
 						<legend>
-							Program History
+							Patient History
 						</legend>
 						<div class="max-row status_hidden">
 							<label  id="tstatus"> Partner Status</label>
