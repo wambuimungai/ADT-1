@@ -3814,7 +3814,7 @@ class Order extends MY_Controller {
 		if ($code == "D-CDRR") {
 			foreach ($row as $i => $v) {
 				if ($i != "expiry_month" && $i !="beginning_balance") {
-					//$row[$i] = round(@$v / @$pack_size);
+					$row[$i] = round(@$v / @$pack_size);
 				}
 			}
 		}else if($code == "F-CDRR_packs"){
