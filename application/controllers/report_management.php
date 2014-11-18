@@ -4454,7 +4454,7 @@ class report_management extends MY_Controller {
         
         /*
          * Get all appointments for a patient in selected period
-         * For each appointment, get corresponding visit that is equal or greater that date of appointment
+         * For each appointment, get corresponding visit that is equal or greater than date of appointment
          * e.g. if appointment is 2014-09-01 and visits for this period are 2014-09-03, 2014-09-15, use 2014-09-03
          * Calculate the difference of days between those two dates and find adherence
          */

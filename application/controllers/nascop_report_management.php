@@ -21,11 +21,11 @@ class nascop_report_management extends MY_Controller{
   public function adherence(){
     $data=array();
     $data['adhere']=Patient::adherence_reports();
-
+ 
     echo '<pre>';
     echo json_encode($data,JSON_PRETTY_PRINT);
-    echo '</pre>';
-    die();
+   echo '</pre>';
+    
 
   }
   
@@ -69,16 +69,17 @@ public function nascop_reports()
     echo '<pre>';
     echo json_encode($temp,JSON_PRETTY_PRINT);
     echo '</pre>';
-    die();
+    
 
-    $data['facility_code']=$facility_code;
-    $json_data = json_encode($data,JSON_PRETTY_PRINT);
+   // $data['facility_code']=$facility_code;
+   // $json_data = json_encode($data,JSON_PRETTY_PRINT);
     
 
 }
 public function send_nascop_reports(){
   $data=array();
-  $data['reports']=nascop_reports();
+  $data['early_warning_reports']=$this->nascop_reports();
+  $data['adherence_reports']=$this->adhere();
 
   $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -94,5 +95,34 @@ public function send_nascop_reports(){
         }
          curl_close($ch);
         return $message; 
+}
+
+public function test(){
+
+  $temper=array();
+  $current_total = Patient::start_on_ART();
+  foreach ($current_total as $key => $value) {
+    foreach ($value as $keys => $values) {
+      foreach ($values as $keyes => $valuees) {
+        # code...
+        print_r($keyes);
+      }
+      
+    }
+    
+  }
+
+
+
+ /* $products = array('paper'=>array('cre'=>"cre_paper",'eng'=>"English_paper"),'book'=>array('cpa'=>"cpa_book",'program'=>"programming"));
+  
+foreach ($products as $key => $value) {
+  foreach ($value as $keys=> $values) {
+    # code...
+   print_r($products['paper'][0]);
+    //print_r($keys);
+  }
+}*/
+  die();
 }
 }

@@ -327,28 +327,57 @@ public function start_on_firstline(){
 	}
 
 	public function adherence_reports(){
-		$sql=("SELECT DATE_FORMAT(pv.dispensing_date,'%M-%Y') as period,SUM(`quantity`) as givenpills,SUM(`months_of_stock`)as expected_pillcount,SUM(`pill_count`) as actual_pillcount, SUM(`months_of_stock`)-SUM(`pill_count`)as pillcount_variance,SUM(`missed_pills`) as missedpills,COUNT(p.patient_number_ccc) as total_patients
-FROM patient_visit pv
-LEFT JOIN patient p ON p.patient_number_ccc = pv.patient_id 
-WHERE pv.dispensing_date >'2013-10-01'
-GROUP BY YEAR(pv.dispensing_date),MONTH(pv.dispensing_date)");
+
+		$ontime=0;
+		$missed=0;
+		$defaulter = 0;
+		$lost_to_followup = 0;
+		$overview_total = 0;
+
+		$adherence=array(
+							'ontime'=> 0,
+							'missed'=>0,
+							'defaulter'=>0,
+							'lost_to_followup'=>0);
+		$sql=("SELECT 
+                    pa.appointment as appointment,
+                    pa.patient,
+                    IF(UPPER(rst.Name) ='ART','art','non_art') as service,
+        		    IF(UPPER(g.name) ='MALE','male','female') as gender,
+        		    IF(FLOOR(DATEDIFF(CURDATE(),p.dob)/365)<15,'<15', IF(FLOOR(DATEDIFF(CURDATE(),p.dob)/365) >= 15 AND FLOOR(DATEDIFF(CURDATE(),p.dob)/365) <= 24,'15_24','>24')) as age
+                FROM patient_appointment pa
+                LEFT JOIN patient p ON p.patient_number_ccc = pa.patient
+                LEFT JOIN regimen_service_type rst ON rst.id = p.service
+                LEFT JOIN gender g ON g.id = p.gender 
+                WHERE pa.appointment >'2011-01-01'
+                GROUP BY pa.patient,pa.appointment
+                ORDER BY pa.appointment");
 		$query = $this -> db -> query($sql);
 		$patients = $query -> result_array();
-        
-         foreach($patients as $patient)
-		{
-			$data[$patient['period']][]=array('Total_Patients'=>(int)$patient['total_patients'],'given_pills'=>(int)$patient['givenpills'],'expected_pillcount'=>(int)$patient['expected_pillcount'],'actual_pillcount'=>(int)$patient['actual_pillcount'],'pillcount_variance'=>(int)$patient['pillcount_variance'],'missedpills'=>(int)$patient['missedpills']);
+		
+		#return $patients;
 
-		}
+		if ($patients) {
+			foreach ($patients as $patient) {
+				$appointment=$patient['appointment'];
+				$patient=$patient['patient'];
+				$sql=("SELECT 
+        		            DATEDIFF('$appointment',pv.dispensing_date) as no_of_days
+	                    FROM v_patient_visits pv
+	                    WHERE pv.patient_id='$patient'
+	                    AND pv.dispensing_date >= '$appointment'
+	                    GROUP BY pv.patient_id,pv.dispensing_date
+	                    ORDER BY pv.dispensing_date ASC
+	                    LIMIT 1");	
+	                    $query=$this-> db ->query($sql);
+	                    $results=$query -> result_array();	
+	            	
+	                                        }						
+	       					            
+		                } return $results; 
 
-		return $data;
+	                 						}
 
-
-
-        /*$query = $this -> db -> query($sql);
-		$patients = $query -> result_array();
-		return $patients;*/
-
-	}
+	
 
 }
