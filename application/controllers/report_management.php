@@ -5409,7 +5409,109 @@ class report_management extends MY_Controller {
 		$this -> load -> view('template', $data);
 	}
 
-	public function getDrugsIssued($stock_type, $start_date = "", $end_date = "") {
+	public function getDrugsIssued($stock_type, $start_date = "", $end_date = "")
+	{   
+		$facility_code = $this->session->userdata("facility");
+		$start_date = date('Y-m-d',strtotime($start_date));
+		$end_date = date('Y-m-d',strtotime($end_date));
+        
+        //Get Drugs Received in Period
+		$this->db->select("UPPER(d.drug) as drug_name,IF(ds.name IS NOT NULL,UPPER(ds.name),UPPER(dsm.source_destination)) as drug_source,SUM(dsm.quantity) as total")
+		    ->from("drug_stock_movement dsm")
+		    ->join("transaction_type t","t.id = dsm.transaction_type","LEFT")
+			->join("drugcode d","d.id = dsm.drug","LEFT")
+			->join("drug_source ds","ds.id = dsm.source_destination","LEFT")
+			->where("dsm.transaction_date BETWEEN '$start_date' AND '$end_date'")
+		    ->where("dsm.facility",$facility_code)
+		    ->like("t.name","issue")
+		    ->where("d.id IS NOT NULL")
+		    ->group_by("d.drug,dsm.source_destination");
+		$query = $this->db->get();
+ 		$results = $query->result_array();
+ 		
+ 		$sources = array();
+
+ 		if($results)
+ 		{
+ 			foreach ($results as $result) {
+				$temp = array();
+				$temp[$result['drug_source']] = $result['total'];
+				$sources[] = $result['drug_source'];
+				$drugs[$result['drug_name']][] = $temp;
+			}
+ 		}
+
+		//Select Unique Sources
+		$sources = array_unique($sources);
+
+		$temp = array();
+         
+        if($drugs)
+        {
+			//Loop through Drugs 
+	    	foreach($drugs as $drug => $sources_data)
+	    	{   
+	    		$temp_data = array();
+	    		//Map Drugs to Sources
+	            foreach($sources as $source)
+	            {   
+	            	foreach($sources_data as $source_data)
+	            	{   
+	            		foreach($source_data as $name => $value)
+	            		{
+	            			if($source == $name)
+			            	{
+			                	$temp_data[$source] = $value;
+			            	}
+			            	else
+			            	{
+			                	$temp_data[$source] = 0;
+			            	}
+	            		}
+	            	}
+	            }
+
+	            $temp[$drug] = $temp_data;
+	    	}
+	    }
+
+    	$this -> load -> library('table');
+
+		$tmpl = array('table_open' => '<table class="table table-bordered table-hover table-condensed dataTables" id="received_listing">');
+		$initial = array('#','DRUGNAME');
+		$columns = array_merge($initial,$sources);
+		
+		$this -> table -> set_template($tmpl);
+		$this -> table -> set_heading($columns);
+
+        foreach ($temp as $drug => $quantities) {
+        	$result = array();
+        	$result['DRUGNAME'] = $drug;
+
+        	foreach($quantities as $source_name =>$quantity)
+        	{	
+        		$result[$source_name] = number_format($quantity);
+        	}
+			$this -> table -> add_row($result);
+		}
+
+		$ccc = CCC_store_service_point::getCCC($stock_type);
+		$data['transaction_type'] = $ccc['Name'];
+		$data['from'] = $start_date;
+		$data['to'] = $end_date;
+		$data['dyn_table'] = $this -> table -> generate();
+		$data['title'] = "webADT | Reports";
+		$data['hide_side_menu'] = 1;
+		$data['banner_text'] = "Facility Reports";
+		$data['selected_report_type_link'] = "drug_inventory_report_row";
+		$data['selected_report_type'] = "Stock Consumption";
+		$data['report_title'] = "Stock Consumption";
+		$data['facility_name'] = $this -> session -> userdata('facility_name');
+		$data['content_view'] = 'reports/drugissued_v';
+		$this -> load -> view('template', $data);
+	}
+
+	public function getDrugsIssued_old($stock_type, $start_date = "", $end_date = "") {
 		$data['from'] = $start_date;
 		$data['to'] = $end_date;
 		$start_date = date('Y-m-d', strtotime($start_date));
@@ -5523,17 +5625,17 @@ class report_management extends MY_Controller {
 	}
 
 
-	public function get_lost_followup()
+	public function get_lost_followup($from = "",$to ="")
 	{
-		$from = "2014-10-01";
-		$to = "2014-10-31";
 		$facility_code = $this->session->userdata("facility");
+		$start_date = date('Y-m-d',strtotime($from));
+		$end_date = date('Y-m-d',strtotime($to));
         
         //Get Patients Lost to Follow Up
 		$this->db->select("p.patient_number_ccc as ccc_no,UPPER(CONCAT_WS(' ',p.first_name,CONCAT_WS(' ',p.other_name,p.last_name))) as person_name,ps.name as status,DATE_FORMAT(p.status_change_date,'%d/%b/%Y') as status_date",FALSE)
 		    ->from("patient p")
 		    ->join("patient_status ps","ps.id = p.current_status","LEFT")
-			->where("p.status_change_date BETWEEN '$from' AND '$to'")
+			->where("p.status_change_date BETWEEN '$start_date' AND '$end_date'")
 		    ->where("p.facility_code",$facility_code)
 		    ->like("ps.name","lost")
 		    ->where("p.patient_number_ccc IS NOT NULL")
@@ -5541,17 +5643,38 @@ class report_management extends MY_Controller {
 		$query = $this->db->get();
  		$results = $query->result_array();
 
- 		echo "<pre>";
-        echo json_encode($results,JSON_PRETTY_PRINT);
-        echo "</pre>";
+ 		$this -> load -> library('table');
+
+		$tmpl = array('table_open' => '<table class="table table-bordered table-hover table-condensed dataTables" id="followup_listing">');
+		$columns = array('#','CCC NO','PATIENT NAME','STATUS','DATE OF STATUS CHANGE');
+		$this -> table -> set_template($tmpl);
+		$this -> table -> set_heading($columns);
+
+		foreach ($results as $result) 
+		{
+			$this -> table -> add_row($result);
+		}
+
+		$data['from'] = $from;
+		$data['to'] = $to;
+		$data['dyn_table'] = $this -> table -> generate();
+		$data['title'] = "webADT | Reports";
+		$data['hide_side_menu'] = 1;
+		$data['banner_text'] = "Facility Reports";
+		$data['selected_report_type_link'] = "early_warning_report_select";
+		$data['selected_report_type'] = "Stock Consumption";
+		$data['report_title'] = "Stock Consumption";
+		$data['facility_name'] = $this -> session -> userdata('facility_name');
+		$data['content_view'] = 'reports/lostfollowup_v';
+		$this -> load -> view('template', $data);
+
 	}
 
-	public function get_received_drugs()
+	public function getDrugsReceived($stock_type, $start_date = "", $end_date = "")
 	{   
-		$store='2';
-		$start_date='2014-11-01';
-		$end_date='2014-11-10';
 		$facility_code = $this->session->userdata("facility");
+		$start_date = date('Y-m-d',strtotime($start_date));
+		$end_date = date('Y-m-d',strtotime($end_date));
         
         //Get Drugs Received in Period
 		$this->db->select("UPPER(d.drug) as drug_name,IF(ds.name IS NOT NULL,UPPER(ds.name),UPPER(dsm.source_destination)) as drug_source,SUM(dsm.quantity) as total")
@@ -5563,22 +5686,93 @@ class report_management extends MY_Controller {
 		    ->where("dsm.facility",$facility_code)
 		    ->like("t.name","received")
 		    ->where("d.id IS NOT NULL")
-		    ->group_by("dsm.source_destination");
+		    ->group_by("d.drug,dsm.source_destination");
 		$query = $this->db->get();
  		$results = $query->result_array();
 
-		foreach ($results as $result) {
-			$temp = array();
-			$temp[$result['drug_source']] = $result['total'];
-			$data[$result['drug_name']][] = $temp;
+ 		$sources = array();
+
+ 		if($results)
+ 		{
+ 			foreach ($results as $result) {
+				$temp = array();
+				$temp[$result['drug_source']] = $result['total'];
+				$sources[] = $result['drug_source'];
+				$drugs[$result['drug_name']][] = $temp;
+			}
+ 		}
+
+		//Select Unique Sources
+		$sources = array_unique($sources);
+
+		$temp = array();
+         
+        if($drugs)
+        {
+			//Loop through Drugs 
+	    	foreach($drugs as $drug => $sources_data)
+	    	{   
+	    		$temp_data = array();
+	    		//Map Drugs to Sources
+	            foreach($sources as $source)
+	            {   
+	            	foreach($sources_data as $source_data)
+	            	{   
+	            		foreach($source_data as $name => $value)
+	            		{
+	            			if($source == $name)
+			            	{
+			                	$temp_data[$source] = $value;
+			            	}
+			            	else
+			            	{
+			                	$temp_data[$source] = 0;
+			            	}
+	            		}
+	            	}
+	            }
+
+	            $temp[$drug] = $temp_data;
+	    	}
+	    }
+
+    	$this -> load -> library('table');
+
+		$tmpl = array('table_open' => '<table class="table table-bordered table-hover table-condensed dataTables" id="received_listing">');
+		$initial = array('#','DRUGNAME');
+		$columns = array_merge($initial,$sources);
+		
+		$this -> table -> set_template($tmpl);
+		$this -> table -> set_heading($columns);
+
+        foreach ($temp as $drug => $quantities) {
+        	$result = array();
+        	$result['DRUGNAME'] = $drug;
+
+        	foreach($quantities as $source_name =>$quantity)
+        	{	
+        		$result[$source_name] = number_format($quantity);
+        	}
+			$this -> table -> add_row($result);
 		}
-        
-        echo "<pre>";
-        echo json_encode($data,JSON_PRETTY_PRINT);
-        echo "</pre>";
+
+		$ccc = CCC_store_service_point::getCCC($stock_type);
+		$data['transaction_type'] = $ccc['Name'];
+		$data['from'] = $start_date;
+		$data['to'] = $end_date;
+		$data['dyn_table'] = $this -> table -> generate();
+		$data['title'] = "webADT | Reports";
+		$data['hide_side_menu'] = 1;
+		$data['banner_text'] = "Facility Reports";
+		$data['selected_report_type_link'] = "drug_inventory_report_row";
+		$data['selected_report_type'] = "Stock Consumption";
+		$data['report_title'] = "Stock Consumption";
+		$data['facility_name'] = $this -> session -> userdata('facility_name');
+		$data['content_view'] = 'reports/drugreceived_v';
+		$this -> load -> view('template', $data);
 	}
 
-	public function getDrugsReceived($stock_type, $start_date = "", $end_date = "") {
+	public function getDrugsReceived_old($stock_type, $start_date = "", $end_date = "") {
 		
 		$data['from'] = $start_date;
 		$data['to'] = $end_date;
