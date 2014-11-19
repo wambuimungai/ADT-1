@@ -439,9 +439,12 @@
 		$("#reset").click(function (e){
                  e.preventDefault(); 
                  bootbox.confirm("<h4>Reset?</h4>\n\<hr/><center>Are you sure?</center>", function(res){
-                 if(res) 
+                 if(res){ 
                      clearForm("#stock_form");
                      reset_table_rows();
+                 }else{
+                     
+                 }
                  });
               });
               

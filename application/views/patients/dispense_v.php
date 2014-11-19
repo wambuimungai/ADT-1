@@ -1046,7 +1046,7 @@
                 bootbox.alert("<h4>Quantity-Stock Alert</h4>\n\<hr/><center>Quantity Cannot Be larger Than Stock at Hand</center>");
             }
             row.closest("tr").find(".qty_disp").css("background-color", "red");
-            row.closest("tr").find(".qty_disp").addClass("input_error");
+           // row.closest("tr").find(".qty_disp").addClass("input_error");
             alert_qty_check=false;
         }
         else {
@@ -1188,10 +1188,13 @@
     $("#reset").click(function (e){
     e.preventDefault();
     bootbox.confirm("<h4>Reset?</h4>\n\<hr/><center>Are you sure?</center>", function(res){
-        if(res)
+        if(res){
         reinitialize();
         clearForm("#dispense_form");
         resetRoutineDrugs();
+    }else{
+        
+    }
     });
        
     });
