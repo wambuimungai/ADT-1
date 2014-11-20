@@ -1046,7 +1046,7 @@
                 bootbox.alert("<h4>Quantity-Stock Alert</h4>\n\<hr/><center>Quantity Cannot Be larger Than Stock at Hand</center>");
             }
             row.closest("tr").find(".qty_disp").css("background-color", "red");
-           // row.closest("tr").find(".qty_disp").addClass("input_error");
+            row.closest("tr").find(".qty_disp").addClass("input_error");
             alert_qty_check=false;
         }
         else {
