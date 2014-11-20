@@ -1523,7 +1523,7 @@ class Patient_Management extends MY_Controller {
 			$regimens = Regimen::getItems();
 			$data['start_regimen'] = $regimens;
 			$data['current_regimen'] = $regimens;
-		    $data['who_stage'] = Who_Stage::getItems();
+		        $data['who_stage'] = Who_Stage::getItems();
             
             //Get facilities beacuse of UTF-8 encoding
 		    $this -> db-> select('facilitycode AS id, name AS Name');

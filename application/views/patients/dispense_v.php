@@ -248,7 +248,7 @@
                         <th>Duration</th>
                         <th style="width:5%">Qty. disp</th>
                         <th style="width:8%">Stock on Hand</th>
-                        <th>Brand Name</th>
+<!--                        <th>Brand Name</th>-->
                         <th>Indication</th>
                         <th>Comment</th>
                         <th>Missed Pills</th>
@@ -285,7 +285,7 @@
                             <input type="text" name="soh[]" class="soh input-small" readonly="readonly"/>
                         </td>
                         </td>
-                        <td><select name="brand[]" class="brand input-small"></select></td>
+<!--                        <td><select name="brand[]" class="brand input-small"></select></td>-->
 
                         <td>
                             <select name="indication[]" class="indication input-small " style="">
@@ -1046,7 +1046,7 @@
                 bootbox.alert("<h4>Quantity-Stock Alert</h4>\n\<hr/><center>Quantity Cannot Be larger Than Stock at Hand</center>");
             }
             row.closest("tr").find(".qty_disp").css("background-color", "red");
-            row.closest("tr").find(".qty_disp").addClass("input_error");
+           // row.closest("tr").find(".qty_disp").addClass("input_error");
             alert_qty_check=false;
         }
         else {
@@ -1186,10 +1186,17 @@
         }
     });
     $("#reset").click(function (e){
-        e.preventDefault();
+    e.preventDefault();
+    bootbox.confirm("<h4>Reset?</h4>\n\<hr/><center>Are you sure?</center>", function(res){
+        if(res){
         reinitialize();
         clearForm("#dispense_form");
         resetRoutineDrugs();
+    }else{
+        
+    }
+    });
+       
     });
 	
 	//-------------------------------- ADD, REMOVE, RESET END ----------------------------

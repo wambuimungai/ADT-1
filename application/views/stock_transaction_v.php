@@ -435,7 +435,19 @@
 				resetFields($(this));
 			}
 		});
-		
+               //reset fields
+		$("#reset").click(function (e){
+                 e.preventDefault(); 
+                 bootbox.confirm("<h4>Reset?</h4>\n\<hr/><center>Are you sure?</center>", function(res){
+                 if(res){ 
+                     clearForm("#stock_form");
+                     reset_table_rows();
+                 }else{
+                     
+                 }
+                 });
+              });
+              
 		//Add datepicker for the transaction date
 		$("#transaction_date").datepicker({
 			defaultDate : new Date(),
@@ -1039,7 +1051,26 @@
 		 bootbox.alert("<h4>Batch Details Alert</h4>\n\<hr/><center>Could not retrieve batch details : </center>" + textStatus );
 		});
 	}
+	//reset table rows
+        function reset_table_rows(){
+	  //remove all table tr's except first one
+	  $("#drugs_table tbody").find('tr').slice(1).remove();
+	  var row = $('#drugs_table tr:last');
+	  //default options
+	  row.find(".unit").val("");
+          row.find(".pack_size").val("");
+	  row.find(".batch option").remove();
+          row.find("#date_0").val("");
+	  row.find("#packs_1").val("");
+	  row.find("#quantity_1").val("");
+	  row.find("#available_quantity").val("");
+	  row.find("#unit_cost").val("");
+	  row.find("#total_amount").val("");
+	  row.find(".comment").val("");
+          $(".t_source").hide();
+          $(".t_destination").hide();
 	
+	}
 	function resetFields(row){
 		//row.closest("tr").find(".pack_size").val("");
 		row.closest("tr").find(".pack").val("");
@@ -1050,6 +1081,34 @@
 		row.closest("tr").find(".unit_cost").val("");
 		row.closest("tr").find("#total_amount").val("");
 	}
+        /*Beginning of clearForm function*/
+      function clearForm(form) {
+      // iterate over all of the inputs for the form
+      // element that was passed in
+      $(':input', form).each(function() {
+        var type = this.type;
+        var tag = this.tagName.toLowerCase(); // normalize case
+        // it's ok to reset the value attr of text inputs,
+        // password inputs, and textareas
+        if (type == 'text' || type == 'password' || tag == 'textarea')
+        if ( $(':input').is('[readonly]') ) { 
+        
+        }else{
+            this.value = "";
+        }
+        // checkboxes and radios need to have their checked state cleared
+        // but should *not* have their 'value' changed
+        else if (type == 'checkbox' || type == 'radio')
+          this.checked = false;
+        // select elements need to have their 'selectedIndex' property set to -1
+        // (this works for both single and multiple select elements)
+        else if (tag == 'select')
+            if($(this).attr('id')!='ccc_store_id'){
+                this.selectedIndex = -1;
+            } 
+      });
+    };
+    /*End of clearForm Function*/
 	function updateCommodityQuantity(pack_object) {
 		var trans_type=$("#select_transtype option:selected").text().toLowerCase().replace(/ /g,'');
 		var selected_source=$("#select_source option:selected").text().toLowerCase().replace(/ /g,'');
@@ -1217,7 +1276,7 @@
 			<span id="msg_server"></span>
 		</div>
 		<div class="full-content" id="stock_div" style="background:#9CF">
-		<form id="stock_form" method="post" action="<?php echo base_url().'inventory_management/save' ?>" >
+                    <form id="stock_form" name="stock_form" method="post" action="<?php echo base_url().'inventory_management/save' ?>" >
 			<textarea name="list_drugs_transacted" id="list_drugs_transacted" style="display: none"></textarea>
 			<textarea name="sql" id="sql" style="display: none"></textarea>
 			

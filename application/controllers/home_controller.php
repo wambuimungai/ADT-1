@@ -108,5 +108,24 @@ class Home_Controller extends MY_Controller {
 		echo json_encode($notice);
 
 	}
+        
+public function get_faq(){
+        $sql= $this -> db -> query("SELECT modules,questions,answers FROM faq WHERE active='1' GROUP BY modules");
+        
+       if($sql -> num_rows()>0){
+           foreach ($sql -> result()as $rows){
+               $header=$rows -> questions;
+               
+           }
+       }
+        
+        $data['title'] = "webADT | System Home";
+        $data['content_view'] = "faq_v";
+        $data['banner_text'] = "Frequently Asked Questions";
+        $data['hide_side_menu'] = 1;
+        $data['user'] = $this -> session -> userdata['full_name'];
+        $this -> load -> view("template", $data);
+}
+        
 
 }

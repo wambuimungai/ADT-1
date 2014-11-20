@@ -528,6 +528,7 @@ foreach ($results as $result) {
 
                 //Add listener to the 'days_to_next' field so that the date picker can reflect the correct number of days!
                 $("#days_to_next").change(function() {
+                
                     var days = $("#days_to_next").attr("value");
                     var base_date = new Date();
                     var appointment_date = $("#next_appointment_date");
