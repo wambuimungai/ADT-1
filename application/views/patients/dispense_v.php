@@ -661,7 +661,7 @@
 				is_pregnant	= data.Pregnant;
 				has_tb		= data.Tb;
 				var age = data.age;
-				var patient_ccc = data.Patient_Number_CCC;
+				patient_ccc = data.Patient_Number_CCC;
 				//CHeck if patient is pregnant
 				checkIfPregnant(is_pregnant,patient_ccc);
 				//Check if still has tb

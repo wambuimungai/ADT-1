@@ -407,6 +407,7 @@ if($table){
 				    	$.each(data, function(i, jsondata){
 				    		$("#satellite").append($("<option></option>").attr("value",jsondata.facilitycode).text(jsondata.name));
 				    	});
+				    	
 				    }
 				});
 		});
