@@ -192,7 +192,7 @@
 	    <div class="span4">
 	    	<fieldset>
 				<legend>
-					<h3>Program History</h3>
+					<h3>Patient History</h3>
 				</legend>
 				<div class="row-fluid partner_status">
 					<label>Partner Status</label>

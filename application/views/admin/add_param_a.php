@@ -289,6 +289,79 @@ if($table){
 			</form>
 			<?php echo form_close(); ?>
 		</div>
+<!--Dialog for FAQs-->
+<div id="dialog_faq" title="Add FAQ" class="modal hide fade cyan" tabindex="-1" role="dialog" aria-labelledby="AddFAQ" aria-hidden="true">
+	   <?php
+		$attributes = array('class' => 'input_form');
+		echo form_open('admin_management/save/'.$table, $attributes);
+		echo validation_errors('<p class="error">', '</p>');
+		?>
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+			×
+		</button>
+		<h3 id="NewDrug">Add Frequently Asked Questions</h3>
+	</div>
+	<div class="modal-body">
+            <div class="max-row">
+				<label>Module</label>
+				<input type="text" class="input-large" name="faq_module" required="required"/>
+		</div>
+		<div class="max-row">
+				<label>Question</label>
+				<input type="text" class="input-large" name="faq_question" required="required"/>
+		</div>
+                <div class="max-row">
+				<label>Answer</label>
+				<textarea cols="40" rows="6" name="faq_answer" id="faq_answers"></textarea>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">
+			Cancel
+		</button>
+		<input type="submit" value="Save" class="btn btn-primary " />
+	</div>
+	<?php echo form_close(); ?>
+</div>
+
+<div id="edit_faq" title="Edit FAQ" class="modal hide fade cyan" tabindex="-1" role="dialog" aria-labelledby="AddFAQ" aria-hidden="true">
+	   <?php
+		$attributes = array('class' => 'input_form');
+		echo form_open('admin_management/update/'.$table, $attributes);
+		echo validation_errors('<p class="error">', '</p>');
+		?>
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+			×
+		</button>
+		<h3 id="NewDrug">Edit Frequently Asked Questions</h3>
+	</div>
+	<div class="modal-body">
+            <div class="max-row">
+				<label>Module</label>
+                                <input type="hidden" class="input-large" name="faq_id"  id="faq_id" required="required"/>
+				<input type="text" class="input-large" name="faq_module" id="edit_faq_module" required="required"/>
+		</div>
+		<div class="max-row">
+				<label>Question</label>
+				<input type="text" class="input-large" name="faq_question" id="edit_faq_question" required="required"/>
+		</div>
+              <div class="max-row">
+				<label>Answer</label>
+				<textarea cols="40" rows="6" name="faq_answer" id="edit_faq_answer"></textarea>
+		</div>
+            
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">
+			Cancel
+		</button>
+		<input type="submit" value="Save" class="btn btn-primary " />
+	</div>
+	<?php echo form_close(); ?>
+</div>
+
 
 <!--Dialog For User Rights-->
 <div id="dialog_user_right" title="Add User Right" class="modal hide fade cyan" tabindex="-1" role="dialog" aria-labelledby="AddCounty" aria-hidden="true">
@@ -471,7 +544,12 @@ if($table){
 				$("#edit_menu_name").val($(this).attr("menu_name"));
 				$("#edit_menu_url").val($(this).attr("menu_url"));
 				$("#edit_menu_description").val($(this).attr("menu_desc"));
-			}else if(table=='user_right'){
+			}else if(table=='faq'){
+                                $("#faq_id").val($(this).attr("faq_id"));
+                                 $("#edit_faq_module").val($(this).attr("faq_module"));
+				$("#edit_faq_question").val($(this).attr("faq-question"));
+				$("#edit_faq_answer").val($(this).attr("faq_answer"));
+                        }else if(table=='user_right'){
 				        $("#edit_right_id").val($(this).attr("right_id"))
 						var access_id = $(this).attr("access_id");
 						var menu_id = $(this).attr("edit_menu_id");

@@ -77,7 +77,7 @@
 		padding:3px; 
 		position:fixed; 
 		z-index:10000; 
-		text-align: left 
+		text-align:left;
 	}
 	.ui-multiselect {
 		font-size:0.9em;
@@ -287,7 +287,9 @@
 			"positionClass" : "toast-bottom-right",
 		};
 		// select instructions
-        $('.multiselect').multiselect().multiselectfilter();
+        $('.multiselect').multiselect({
+        	minWidth:500
+        }).multiselectfilter();
         
         //function to check drugs for merging
         var arr = [];
