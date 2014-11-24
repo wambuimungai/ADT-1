@@ -808,7 +808,15 @@ class auto_management extends MY_Controller {
 										(11, 'PMTCT Child', '1', 2),
 										(12, 'PEP Adult', '1', 2),
 										(13, 'PEP Child', '', 2);";
-        foreach($tables as $table=>$statements){
+                            $tables['faq'] = "CREATE TABLE IF NOT EXISTS `faq` (
+                                                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                                                  `modules` varchar(100) NOT NULL,
+                                                  `questions` varchar(255) NOT NULL,
+                                                  `answers` varchar(255) NOT NULL,
+                                                  `active` int(5) NOT NULL DEFAULT '1',
+                                                  PRIMARY KEY (`id`)
+                                                ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;";
+            foreach($tables as $table=>$statements){
             if (!$this->db->table_exists($table)){
             	$statements=explode(";",$statements);
             	foreach($statements as $statement){

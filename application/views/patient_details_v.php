@@ -503,6 +503,9 @@ if(isset($results)){
 			$("#regimen").val("<?php echo $result['start_regimen'] ?>");
 			$("#current_regimen").val("<?php echo $result['current_regimen'] ?>");
 			$("#who_stage").val("<?php echo $result['who_stage'] ?>");
+                         
+                        
+                        
 			
 			//Attach date picker for date of status change
 			$("#status_started").datepicker({
