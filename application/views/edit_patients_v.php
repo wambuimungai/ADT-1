@@ -840,7 +840,7 @@ foreach($results as $result){
 		<hr size="1">
 	</div>
 	<h3>Edit Patient Details
-	<div style="float:right;margin:5px 40px 0 0;">
+	<div style="float:right;margin:5px 40px 0 0; width:350px;">
 		(Fields Marked with <b><span class='astericks'>*</span></b> Asterisks are required)
 	</div></h3>
 
