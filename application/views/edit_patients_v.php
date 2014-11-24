@@ -216,7 +216,6 @@ foreach($results as $result){
 			//On Select Drug Prophylaxis
 			$("#isoniazid_view").css("display","none");
 
-			
 			$("#drug_prophylaxis").on("multiselectclick", function(event, ui) { 
 				$("#isoniazid_view").css("display","none");
 				$("#iso_start_date").val("");
@@ -250,6 +249,7 @@ foreach($results as $result){
 					}
 				});
 			});
+			
 			//Isoniazid start and end dates
 			$("#iso_start_date").datepicker({
 					maxDate : "0D",
@@ -283,7 +283,12 @@ foreach($results as $result){
                        //show isoniazid dates if its selected
                        if($(this).attr("title").toLowerCase()=="isoniazid"){
                         $("#isoniazid_view").show();   
+                       }else if($(this).attr("title").toLowerCase()=="cotrimoxazole"){
+                           $("select#drug_prophylaxis").multiselect("widget").find("input[value='2']").attr("disabled",true);
+                       }else if($(this).attr("title").toLowerCase()=="dapsone"){
+                           $("select#drug_prophylaxis").multiselect("widget").find("input[value='1']").attr("disabled",true);
                        }
+                       
                     });
 				}
 			}
@@ -835,7 +840,7 @@ foreach($results as $result){
 		<hr size="1">
 	</div>
 	<h3>Edit Patient Details
-	<div style="float:right;margin:5px 40px 0 0;">
+	<div style="float:right;margin:5px 40px 0 0; width:350px;">
 		(Fields Marked with <b><span class='astericks'>*</span></b> Asterisks are required)
 	</div></h3>
 
