@@ -447,6 +447,7 @@
 		$("#expiry_date").datepicker({
 			defaultDate : new Date(),
 			dateFormat : $.datepicker.ATOM,
+			minDate : "0D",
 			changeYear : true,
 			changeMonth : true
 		});
@@ -1496,7 +1497,7 @@
 							</td>
 							<td style="text-align: center;font-size: 10px" >
 								<a href="#" class="add" >Add</a>
-								<span class="remove" style="display:none;"> |<a href="#" >Remove</a></span>
+								<span class="remove"> | <a href="#" >Remove</a></span>
 							</td>
 							
 						</tr>

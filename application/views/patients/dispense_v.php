@@ -298,7 +298,7 @@
                             <input type="text" name="missed_pills[]" class="missed_pills input-small" />
                         </td>
                         <td>
-                            <a class="add btn-small">Add</a>|<a style="display: none" class="remove btn-small">Remove</a>
+                            <a class="add btn-small">Add</a>|<a class="remove btn-small">Remove</a>
                         </td>
                     </tr>
                 </tbody>
@@ -332,7 +332,6 @@
 
 <script type="text/javascript">
 	$(document).ready(function(){
-		
 		/* -------------------------- Dispensing date, date picker settings and checks -------------------------*/
 		//Attach date picker for date of dispensing
 		$("#dispensing_date").datepicker({
