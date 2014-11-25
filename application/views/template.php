@@ -507,5 +507,4 @@ if (isset($styles)) {
 	</div>
 <!--end Search modal-->
 </body>
-
 </html>
