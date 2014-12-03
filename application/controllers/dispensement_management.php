@@ -155,8 +155,9 @@ class Dispensement_Management extends MY_Controller {
 					LEFT JOIN dose ds ON ds.Name=d.dose
 					LEFT JOIN regimen r ON r.id = pv.regimen
 					WHERE pv.patient_id =  '$patient_ccc'
-					AND pv.dispensing_date = (SELECT dispensing_date FROM patient_visit pv WHERE pv.patient_id =  '$patient_ccc' ORDER BY dispensing_date DESC LIMIT 1)
-		ORDER BY dispensing_date DESC";	
+					AND pv.active=1
+					AND pv.dispensing_date = (SELECT dispensing_date FROM patient_visit pv WHERE pv.patient_id =  '$patient_ccc' AND pv.active=1 ORDER BY dispensing_date DESC LIMIT 1)
+				ORDER BY dispensing_date DESC";	
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
 		echo json_encode($results);

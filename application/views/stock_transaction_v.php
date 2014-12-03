@@ -71,9 +71,9 @@
 		$("#btn_submit").attr("disabled","disabled");
 		$("#btn_print").attr("disabled","disabled");
 		var today = new Date();
-		var today_date = ("0" + today.getDate()).slice(-2)
-		var today_year = today.getFullYear();
-		var today_month = today.getMonth();
+		 today_date = ("0" + today.getDate()).slice(-2)
+                 today_year = today.getFullYear();
+		 today_month = today.getMonth();
 		
 		var month=new Array();
 		month[0]="Jan";
@@ -461,7 +461,23 @@
 			dateFormat : $.datepicker.ATOM,
 			minDate : "0D",
 			changeYear : true,
-			changeMonth : true
+			changeMonth : true,
+                        
+                        onSelect : function(){
+                            var date= new Date($(this).datepicker('getDate')); 
+                            var c_date=new Date(today_year,today_month,today_date);
+                            var diff = date.getTime() - c_date.getTime();
+                            var months = Math.ceil(diff/(1000 * 60 * 60 * 24*30));
+                            if(date<c_date){
+                                bootbox.alert("<h4>Expiry Notice</h4>\n\<hr/><center>An expired date being updated! </center>" );
+                                $("#btn_submit").attr("disabled","disabled");
+                            }else if(months<=6){
+                                bootbox.alert("<h4>Expiry Notice</h4>\n\<hr/><center>The expiry date updated is within 6 months! </center>" );
+                                $("#btn_submit").removeAttr('disabled');
+                            }else{
+                               $("#btn_submit").removeAttr('disabled');
+                            }
+                           }
 		});
 		//Check if number of packs has changed and automatically calculate the total
 		$(".pack").keyup(function() {
@@ -1045,7 +1061,21 @@
 	    	$.each(data,function(key,value){
 	    		row.closest("tr").find(".expiry").val(value.expiry_date);
 	    		row.closest("tr").find(".quantity_available ").val(value.balance);
-	    		
+                        var month=today_month+1;
+                        var t_date=new Date(today_year,month,today_date);
+                        var e_date=new Date(value.expiry_date);
+                        var diff = e_date.getTime() - t_date.getTime();
+                        var months = Math.ceil(diff/(1000 * 60 * 60 * 24*30));
+                        
+                        if(e_date<t_date){
+                           bootbox.alert("<h4>Expiry Notice</h4>\n\<hr/><center>The drug being transacted has expired! </center>" );
+                           $("#btn_submit").attr("disabled","disabled");
+                        }else if(months<=6){
+                           bootbox.alert("<h4>Expiry Notice</h4>\n\<hr/><center>The drug being transacted expires within 6 months! </center>" );
+                           $("#btn_submit").removeAttr('disabled');
+                        }else{
+                            $("#btn_submit").removeAttr('disabled');
+                        }
 	    	});
 	    });
 	    request.fail(function(jqXHR, textStatus) {

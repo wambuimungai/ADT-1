@@ -1891,26 +1891,28 @@ class Patient_Management extends MY_Controller {
         		if ($key == "active") 
         		{   
         			$id = $patient['id'];
-        			$link = '| <a href="' . base_url() . 'patient_management/enable/' . $id . '" class="green actual">Enable</a>';
+        			$link = "";
                     //Active Patient
-	        		if($value == 1)
+	        		if($access_level == "facility_administrator")
 	        		{   
-	        			if ($access_level == "facility_administrator") 
+	        			if ($value==1) 
 	        			{
-                            $link = '| <a href="' . base_url() . 'patient_management/disable/' . $id . '" class="red actual">Disable</a>';
-	        			}
-				        //$link = '<a href="' . base_url() . 'patient_management/viewDetails/' . $id . '">Detail</a> | <a href="' . base_url() . 'patient_management/edit/' . $id . '">Edit</a> ' . $link;
-	        			$link = '<a href="' . base_url() . 'patient_management/load_view/details/' . $id . '">Detail</a> | <a href="' . base_url() . 'patient_management/edit/' . $id . '">Edit</a> ' . $link;
-	        		}
-	        		else
-	        		{
-                        if ($access_level == "facility_administrator") 
-	        			{
-					        $link = '| <a href="' . base_url() . 'patient_management/enable/' . $id . '" class="green actual">Enable</a>';
-	        			}
-						$link = str_replace("|", "", $link);
-						$link .= '| <a href="' . base_url() . 'patient_management/delete/' . $id . '" class="red actual">Delete</a>';	
-					} 
+                                            $link = '| <a href="' . base_url() . 'patient_management/disable/' . $id . '" class="red actual">Disable</a>';
+                                        }else
+                                        {
+                                          $link = '| <a href="' . base_url() . 'patient_management/enable/' . $id . '" class="green actual">Enable</a>';  
+                                        }            
+                                }
+	        		
+	        		
+                                     if ($value==1) 
+                                       {
+                                         $link = '<a href="' . base_url() . 'patient_management/load_view/details/' . $id . '">Detail</a> | <a href="' . base_url() . 'patient_management/edit/' . $id . '">Edit</a> ' . $link;
+                                       }else{
+                                           $link = str_replace("|", "", $link);
+                                           $link .= '| <a href="' . base_url() . 'patient_management/delete/' . $id . '" class="red actual">Delete</a>';
+                                       }                                        
+				
 					$value = $link; 
 					unset($patient['id']);      		
         		}
