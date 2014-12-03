@@ -3837,6 +3837,10 @@ class Order extends MY_Controller {
 			}
 		}
 
+		if($row['physical_stock'] <0){
+			$row['physical_stock'] = 0;
+		}
+
 		echo json_encode($row);
 	}
 

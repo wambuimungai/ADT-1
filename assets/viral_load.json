@@ -305,6 +305,10 @@
         {
             "date_tested": "2013-01-28",
             "result": "10866"
+        },
+        {
+            "date_tested": "2014-10-30",
+            "result": "978 "
         }
     ],
     "690": [
@@ -1191,6 +1195,10 @@
         {
             "date_tested": "2013-05-30",
             "result": "60505"
+        },
+        {
+            "date_tested": "2014-09-02",
+            "result": "158"
         }
     ],
     "5803": [
@@ -1424,6 +1432,10 @@
     "3500": [
         {
             "date_tested": "2013-05-15",
+            "result": "< LDL copies\/ml"
+        },
+        {
+            "date_tested": "2014-08-28",
             "result": "< LDL copies\/ml"
         }
     ],
@@ -4119,6 +4131,10 @@
         {
             "date_tested": "2014-04-10",
             "result": "5932"
+        },
+        {
+            "date_tested": "2014-08-28",
+            "result": "8670"
         }
     ],
     "1383": [
@@ -6951,6 +6967,10 @@
         {
             "date_tested": "2014-05-26",
             "result": "16651"
+        },
+        {
+            "date_tested": "2014-08-28",
+            "result": "75091"
         }
     ],
     "4038": [
@@ -7313,6 +7333,10 @@
         {
             "date_tested": "2014-05-14",
             "result": "31980"
+        },
+        {
+            "date_tested": "2014-09-02",
+            "result": "20965"
         }
     ],
     "4443": [
@@ -7487,6 +7511,10 @@
         {
             "date_tested": "2014-05-20",
             "result": "116425"
+        },
+        {
+            "date_tested": "2014-09-02",
+            "result": "< 150 Copies \/ mL"
         }
     ],
     "2129": [
@@ -12677,6 +12705,10 @@
         {
             "date_tested": "0000-00-00",
             "result": ""
+        },
+        {
+            "date_tested": "2014-09-03",
+            "result": "< LDL copies\/ml"
         }
     ],
     "2870": [
@@ -13563,6 +13595,10 @@
         {
             "date_tested": "2014-08-24",
             "result": "434047"
+        },
+        {
+            "date_tested": "2014-11-10",
+            "result": "6079"
         }
     ],
     "5515": [
@@ -15323,6 +15359,10 @@
         {
             "date_tested": "2014-10-14",
             "result": "Collect New Sample"
+        },
+        {
+            "date_tested": "2014-10-30",
+            "result": "< LDL copies\/ml"
         }
     ],
     "3628": [
@@ -17016,6 +17056,618 @@
     "20668": [
         {
             "date_tested": "2014-11-03",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "5574": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "1995": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "6240"
+        }
+    ],
+    "4198": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "5874": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "6371": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "1184": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "2996": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "< 150 Copies \/ mL"
+        }
+    ],
+    "2291": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "3638": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "350": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "1141": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "3956": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "336": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "511"
+        }
+    ],
+    "1367": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "6159": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "12639"
+        }
+    ],
+    "6560": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "5976": [
+        {
+            "date_tested": "2014-08-28",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "1814": [
+        {
+            "date_tested": "2014-09-02",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "4623": [
+        {
+            "date_tested": "2014-09-02",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "5856": [
+        {
+            "date_tested": "2014-09-02",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "1750": [
+        {
+            "date_tested": "2014-09-02",
+            "result": "< 150 Copies \/ mL"
+        }
+    ],
+    "6218": [
+        {
+            "date_tested": "2014-09-02",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "4596": [
+        {
+            "date_tested": "2014-09-02",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "3679": [
+        {
+            "date_tested": "2014-09-02",
+            "result": "42742"
+        }
+    ],
+    "3961": [
+        {
+            "date_tested": "2014-09-02",
+            "result": "131958"
+        }
+    ],
+    "2142": [
+        {
+            "date_tested": "2014-09-02",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "2065": [
+        {
+            "date_tested": "2014-09-02",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "1061": [
+        {
+            "date_tested": "2014-09-02",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "5816": [
+        {
+            "date_tested": "2014-09-02",
+            "result": "< 150 Copies \/ mL"
+        }
+    ],
+    "3490": [
+        {
+            "date_tested": "2014-11-13",
+            "result": "Collect New Sample"
+        }
+    ],
+    "4746": [
+        {
+            "date_tested": "2014-11-13",
+            "result": "Collect New Sample"
+        }
+    ],
+    "3238": [
+        {
+            "date_tested": "2014-10-30",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "367": [
+        {
+            "date_tested": "2014-10-30",
+            "result": "< 400 "
+        }
+    ],
+    "2981": [
+        {
+            "date_tested": "2014-10-30",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "6208": [
+        {
+            "date_tested": "2014-10-30",
+            "result": "847 "
+        }
+    ],
+    "1169": [
+        {
+            "date_tested": "2014-10-30",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "2067": [
+        {
+            "date_tested": "2014-10-30",
+            "result": "460 "
+        }
+    ],
+    "5543": [
+        {
+            "date_tested": "2014-10-30",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "3763": [
+        {
+            "date_tested": "2014-10-30",
+            "result": "< 400 "
+        }
+    ],
+    "5618": [
+        {
+            "date_tested": "2014-10-31",
+            "result": "706 "
+        }
+    ],
+    "5619": [
+        {
+            "date_tested": "2014-10-31",
+            "result": "< 400 "
+        }
+    ],
+    "5620": [
+        {
+            "date_tested": "2014-10-31",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "681": [
+        {
+            "date_tested": "2014-10-31",
+            "result": "937 "
+        }
+    ],
+    "2299": [
+        {
+            "date_tested": "2014-10-31",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "410": [
+        {
+            "date_tested": "2014-11-10",
+            "result": "Collect New Sample"
+        }
+    ],
+    "201": [
+        {
+            "date_tested": "2014-11-10",
+            "result": "Collect New Sample"
+        }
+    ],
+    "1555": [
+        {
+            "date_tested": "2014-11-10",
+            "result": "Collect New Sample"
+        }
+    ],
+    "2950": [
+        {
+            "date_tested": "2014-11-10",
+            "result": "Collect New Sample"
+        }
+    ],
+    "2942": [
+        {
+            "date_tested": "2014-11-10",
+            "result": "Collect New Sample"
+        }
+    ],
+    "953": [
+        {
+            "date_tested": "2014-11-10",
+            "result": "Collect New Sample"
+        }
+    ],
+    "4279": [
+        {
+            "date_tested": "2014-11-10",
+            "result": "Collect New Sample"
+        }
+    ],
+    "1406": [
+        {
+            "date_tested": "0000-00-00",
+            "result": "Collect New Sample"
+        }
+    ],
+    "1655": [
+        {
+            "date_tested": "0000-00-00",
+            "result": "Collect New Sample"
+        }
+    ],
+    "750": [
+        {
+            "date_tested": "0000-00-00",
+            "result": "Collect New Sample"
+        }
+    ],
+    "5962": [
+        {
+            "date_tested": "0000-00-00",
+            "result": "Collect New Sample"
+        }
+    ],
+    "5461": [
+        {
+            "date_tested": "0000-00-00",
+            "result": "Collect New Sample"
+        }
+    ],
+    "2321": [
+        {
+            "date_tested": "0000-00-00",
+            "result": "Collect New Sample"
+        }
+    ],
+    "3387": [
+        {
+            "date_tested": "0000-00-00",
+            "result": "Collect New Sample"
+        }
+    ],
+    "KABEDE KASAYE.\/2191": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "PAMELA KIBUNJA\/3414": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "JOHN MWANGI\/4364": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< 2.00E+1 "
+        }
+    ],
+    "NICHOLAS NGARAMA\/4641": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "45.4"
+        }
+    ],
+    "YVONNE ACHIENG\/5733": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "14040"
+        }
+    ],
+    "BEN OMAGA\/3649": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "102800"
+        }
+    ],
+    "SELA JENGO\/5571": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< 2.00E+1 "
+        }
+    ],
+    "DAMARIS NDON": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "FAUZA SULEIMAN\/4805": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "GLADYS WAITHERA\/4810": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "JACOB JUMA\/518": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< 2.00E+1 "
+        }
+    ],
+    "CAROLINE AMOLLO\/4644": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "JACKLINE AWUOR\/1706": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "4460"
+        }
+    ],
+    "ELIZABETH KALUNGU\/6679": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "1624"
+        }
+    ],
+    "MARY WANGARI\/2004": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "3800"
+        }
+    ],
+    "GRACE SAMWEL\/6298": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "LOISE OWEK\/3190": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "PRONICAH LIANI\/2153": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "TOM THUO": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "738"
+        }
+    ],
+    "IRENE KISALI\/4051": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "NANCY MUGURE\/1719": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "MARY KIMANI\/4957": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "FELIX USERO\/5050": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "194"
+        }
+    ],
+    "ESTHER WAMUCIA\/595": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "STELLA MUTUKU\/6067": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "RICHARD TIRIMBA\/43": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "SUSAN MUTUA\/6473": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "LINET EZRA\/5812": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "CURTIS ERICK\/3761": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "NELSON MWAMBA\/504": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "14820"
+        }
+    ],
+    "SUSAN NJERI\/5761": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "CHARLES OTIENO\/3237": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "67.2"
+        }
+    ],
+    "JANE OLUOCH\/1008": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "HERINMANJI\/6355": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "MARY WANJIKU\/4620": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "EDWIN ONYANGO\/2104": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "16206"
+        }
+    ],
+    "JOHNSTONE OCHIENG\/6027": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "734"
+        }
+    ],
+    "RACHAEL MBUGUA\/2054": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "7172"
+        }
+    ],
+    "GRETA OMARE\/6007": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "KIM ANYANGO\/5126": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "MOSES OWINO\/4468": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "JOSEPHINE NANJA\/1211": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "48264"
+        }
+    ],
+    "PETER KITANYA\/1212": [
+        {
+            "date_tested": "2014-11-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "JOSHUA KOBUYA\/6382": [
+        {
+            "date_tested": "2014-11-26",
             "result": "< LDL copies\/ml"
         }
     ]
