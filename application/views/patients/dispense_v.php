@@ -695,7 +695,7 @@
 	$("#purpose").change(function() {
 		if($("#ccc_store_id").val()==""){//If dispensing point not selected, prompt user to select it first
 			bootbox.alert("<h4>Dispensing point</h4>\n\<hr/>\n\<center>Please select a dispensing point first! </center>" );
-			$("#reset").trigger("click");
+			//$("#reset").trigger("click");
 			$("#ccc_store_id").css('border','solid 3px red');
 			return;
 		}
@@ -1444,6 +1444,7 @@
 			if (last_visit_date == dispensing_date) {
 				//if equal ask for alert
 				bootbox.alert("<h4>Notice!</h4>\n\<center>You have dispensed drugs to this patient!</center>");
+                                
 			}
 		}
 	}

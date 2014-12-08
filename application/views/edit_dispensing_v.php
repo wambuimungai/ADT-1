@@ -348,7 +348,7 @@ foreach ($expiries as $expiry) {
 	<body>
 <div class="full-content" style="background:#FFCC99">
 	<div id="sub_title" >
-		<a href="<?php  echo base_url().'patient_management ' ?>">Patient Listing </a> <i class=" icon-chevron-right"></i><a href="<?php  echo base_url().'patient_management/viewDetails/'.$result['p_id'] ?>"><?php echo strtoupper($result['first_name'].' '.$result['other_name'].' '.$result['last_name']) ?></a> <i class=" icon-chevron-right"></i><strong>Edit dispensing details</strong>
+		<a href="<?php  echo base_url().'patient_management ' ?>">Patient Listing </a> <i class=" icon-chevron-right"></i><a href="<?php  echo base_url().'patient_management/load_view/details/'.$result['p_id'] ?>"><?php echo strtoupper($result['first_name'].' '.$result['other_name'].' '.$result['last_name']) ?></a> <i class=" icon-chevron-right"></i><strong>Edit dispensing details</strong>
 		<hr size="1">
 	</div>
 	<h3>Dispensing History Editing</h3>
