@@ -107,14 +107,14 @@ function getPatientData(url){
 	return  $.getJSON( url ,function( resp ) {
 			    $.each( resp , function( index , value ) {
 			        //Append JSON elements to DOM
-			        if(jQuery.inArray(index,checkbox) == 1){
+			        if(jQuery.inArray(index,checkbox) != 1){
 					    //Select checkbox
                         addToCheckbox(value);
+
 			        }else if(jQuery.inArray(index,multiselect) != -1){
 						//MultiSelectBox
                         addToMultiSelect( index , value);
                         
-                      
 			        }else{
 			            $( "#"+index ).val( value );
 			        }
