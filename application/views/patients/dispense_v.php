@@ -1417,9 +1417,7 @@
 	
 	function checkIfHasTb(tb_status,patient_ccc){
 		if(tb_status=='1'){
-			bootbox.confirm("<h4>Pregnancy confirmation</h4>\n\<hr/><center>Is patient still pregnant?</center>","No", "Yes",
-			function(res){
-				if(res===false){
+
 					bootbox.confirm("<h4>TB confirmation</h4>\n\<hr/><center>Is patient still having TB?</center>","No", "Yes",
                     function(res){
                         if(res===false){//If answer is no, update tbstatus
@@ -1433,8 +1431,7 @@
                             });
                         }
                     });
-				}
-			});
+
 		}
 	}
 	
