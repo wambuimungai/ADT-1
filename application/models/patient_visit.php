@@ -74,5 +74,11 @@ class Patient_Visit extends Doctrine_Record {
 		$patient_visits = $query -> execute(array(), Doctrine::HYDRATE_ARRAY);
 		return $patient_visits;
 	}
+	public function getNon_adherence_reason(){
+        $sql=("");
+	    $query = $this -> db -> query($sql);
+		$patient_visit = $query -> result_array();
+		return $patient_visit;
+	}
 
 }

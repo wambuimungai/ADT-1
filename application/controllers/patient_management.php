@@ -1627,7 +1627,7 @@ class Patient_Management extends MY_Controller {
                         d.drug, 
                         pv.quantity, 
                         pv.current_weight, 
-                        r1.regimen_desc, 
+                        r.regimen_desc, 
                         pv.batch_number, 
                         pv.pill_count, 
                         pv.adherence, 

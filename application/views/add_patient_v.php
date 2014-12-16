@@ -128,7 +128,7 @@
 					var selected_value = $(this).attr("value");
                                         
 					//if female, display the prengancy selector
-					if(selected_value == 2) {
+					if(selected_value == 2 && $('age_in_years').val()>=8) {
 						//If female show pregnant container
 						$('#pregnant_view').slideDown('slow', function() {
 
