@@ -110,9 +110,11 @@ function getPatientData(url){
 			        if(jQuery.inArray(index,checkbox) != 1){
 					    //Select checkbox
                         addToCheckbox(value);
-			        }else if(jQuery.inArray(index,multiselect) != 1){
+
+			        }else if(jQuery.inArray(index,multiselect) != -1){
 						//MultiSelectBox
                         addToMultiSelect( index , value);
+                        
 			        }else{
 			            $( "#"+index ).val( value );
 			        }
@@ -127,6 +129,7 @@ function addToCheckbox(div){
 function addToMultiSelect(div,data){
 	var values = data.split(",");
 	$("#"+div).val(values);	
+       
 }
 
 
@@ -148,7 +151,60 @@ function sanitizeForm(){
 	$("#viral_load").attr("disabled", false);
 	$("#dispensing_history_filter input").attr("disabled", false);
 	$("#dispensing_history_length select").attr("disabled", false);
-
+        //hide isoniazid view
+         $(".isoniazid").css("display","none");
+         $("#drug_prophylaxis > option").each(function(){
+            var drug_prophylaxis=$("#drug_prophylaxis").val();
+            if(drug_prophylaxis != null || drug_prophylaxis != " ") {
+		for(var i = 0; i < drug_prophylaxis.length; i++) {
+	              var selected_obj=$('input[name="drug_prophylaxis"][type="checkbox"][value="' + drug_prophylaxis[i] + '"]');
+                  	selected_obj.attr('checked', true);
+                  	if(drug_prophylaxis[i]==3){
+                  	   $(".isoniazid").show(); 
+                  	}
+				}
+			}
+           });
+         //show/hide pep reason depending on the patient type of service
+         $(".pep_reason").css("display","none");
+         $("#service > option").each(function() {
+                  if(this.text==="PEP"){
+                      $(".pep_reason").show();
+                      $(".who_stage").hide();
+                      $(".drug_prophylaxis").hide();
+                      
+                  }
+                   });  
+        
+         //hide tb category and phase
+          $(".tb_category_phase").css("display","none");
+          $(".tb_period").css("display","none");
+          if($("#tb").val()==1){
+            $(".tb_category_phase").show();  
+            $(".tb_period").show();
+          }
+         
+          //hide match spouse
+//           $(".secondary_spouse").css("display","none");
+           $("#partner_status > option").each(function(){
+               if(this.text==="No Partner"){
+                 $(".secondary_spouse").hide();  
+               }
+           });
+           //family planning hide
+          if($("#fplan").val()=="" || $("#fplan").val()==null){
+              $("#fplan").hide();
+          }
+           //hide chronic diseases div
+            if($("#other_illnesses").val()=="" || $("#other_illnesses").val()==null){
+              $("#other_illnesses").hide();
+          }
+           //hide other chronic diseases div
+            if($("#other_chronic").val()=="" || $("#other_chronic").val()==null){
+              $("#other_chronic").hide();
+          }
+     
+        
 }
 
 function getViralLoad(){

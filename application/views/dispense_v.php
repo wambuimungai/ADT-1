@@ -57,6 +57,9 @@ foreach ($results as $result) {
 
         <script type="text/javascript">
             $(document).ready(function() {
+                $('#removebtn').css('display: inline');
+                showFirstRemove();
+                show_remove_button();
                 patient_ccc ='<?php echo $result['patient_number_ccc']; ?>';
                 //Ask if patient is still pregnant
                 var pregnant_status = '<?php echo $result['pregnant']; ?>';
@@ -1306,9 +1309,12 @@ foreach ($results as $result) {
             function showFirstRemove(){
               $("#drugs_table tbody > tr:first").find(".remove").show();
             }
-
+            function show_remove_button()
+            {
+                $('#drug_table tbody > tr: first').find("#removebtn").show();
+            }
             function hideFirstRemove(){
-              $("#drugs_table tbody > tr:first").find(".remove").hide();
+              //$("#drugs_table tbody > tr:first").find(".remove").hide();
             }
 
             function storeSession(ccc_id){
@@ -1589,7 +1595,7 @@ foreach ($results as $result) {
                                     <input type="text" name="missed_pills[]" class="missed_pills input-small" />
                                 </td>
                                 <td>
-                                    <a class="add btn-small">Add</a>|<a style="display: none" class="remove btn-small">Remove</a>
+                                    <a class="add btn-small">Add</a>|<a id="removebtn" class="remove btn-small">Remove</a>
                                 </td>
                             </tr>
                         </tbody>

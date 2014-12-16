@@ -182,4 +182,202 @@ class Patient extends Doctrine_Record {
 		return $patients[0];
 	}
 
+// Started on ART
+public function start_on_ART(){
+		$sql=("SELECT DATE_FORMAT(p.start_regimen_date,'%M-%Y') as period ,
+		                 COUNT( p.patient_number_ccc) AS totalart 
+                         FROM patient p 
+                         LEFT JOIN regimen_service_type rst ON rst.id=p.service 
+                         LEFT JOIN regimen r ON r.id=p.start_regimen 
+                         LEFT JOIN patient_source ps ON ps.id = p.source
+                         WHERE rst.name LIKE '%art%' 
+                        AND ps.name NOT LIKE '%transfer%'
+                         AND p.start_regimen !=''
+                         AND p.start_regimen_date >= '2011-01-01'
+                        GROUP BY YEAR(p.start_regimen_date),MONTH(p.start_regimen_date)
+                        ORDER BY p.start_regimen_date DESC
+                        
+                       ");
+		 $query = $this -> db -> query($sql);
+		$patients = $query -> result_array();
+         foreach($patients as $patient)
+		{
+			$data[$patient['period']][]=array('art_patients'=>(int)$patient['totalart']);
+
+		}
+
+		return $data;
+	}
+// Started on firstline regimen
+public function start_on_firstline(){
+		$sql=("SELECT DATE_FORMAT(p.start_regimen_date,'%M-%Y') as period ,
+			         COUNT( p.patient_number_ccc) AS First 
+                     FROM patient p 
+                     LEFT JOIN regimen_service_type rst ON rst.id=p.service 
+                     LEFT JOIN regimen r ON r.id = p.start_regimen 
+                     LEFT JOIN patient_source ps ON ps.id = p.source 
+                     WHERE r.line=1 
+                     AND rst.name LIKE '%art%' 
+                     AND ps.name NOT LIKE '%transfer%'
+                     AND p.start_regimen !=''
+                     AND p.start_regimen_date >= '2011-01-01'
+                     GROUP BY YEAR(p.start_regimen_date),MONTH(p.start_regimen_date)
+                     ORDER BY p.start_regimen_date DESC");
+		
+		$query = $this -> db -> query($sql);
+		$patients = $query -> result_array();
+
+
+		 foreach($patients as $patient)
+		{
+			$data[$patient['period']][]=array('firstline_patients'=>(int)$patient['First']);
+
+		}
+
+		return $data;
+
+	}
+
+	//Still in Firstline
+	public function still_in_firstline(){
+
+	$sql=("SELECT DATE_FORMAT(p.start_regimen_date,'%M-%Y') as period ,COUNT( * ) AS patients_still_firstline
+                        FROM patient p
+                        LEFT JOIN regimen_service_type rst ON rst.id=p.service
+                        LEFT JOIN regimen r ON r.id=p.start_regimen
+                        LEFT JOIN regimen r1 ON r1.id = p.current_regimen
+                        LEFT JOIN patient_source ps ON ps.id = p.source
+                        LEFT JOIN patient_status pt ON pt.id = p.current_status
+                        WHERE rst.name LIKE '%art%'
+                        AND ps.name NOT LIKE '%transfer%'
+                        AND r.line=1
+                        AND r1.line ='1'
+                        AND p.start_regimen_date !=''
+                        AND pt.Name LIKE '%active%'
+                        GROUP BY YEAR(p.start_regimen_date),MONTH(p.start_regimen_date)
+                        ORDER BY p.start_regimen_date DESC");	
+         
+         
+         $query = $this -> db -> query($sql);
+		 
+		 $patients = $query -> result_array();
+
+		foreach($patients as $patient)
+		{
+			$data[$patient['period']][]=array('Still_in_Firstline'=>(int)$patient['patients_still_firstline']);
+
+		}
+
+		return $data;
+	}
+
+	// Started ART 12 months ago
+	public function started_art_12months(){
+		$to_date = date('Y-m-d', strtotime($start_date. " -1 year"));
+		$future_date = date('Y-m-d', strtotime($end_date . " -1 year"));
+                
+                $sql = "SELECT COUNT( * ) AS Total_Patients "
+                        . " FROM patient p "
+                        . " LEFT JOIN regimen_service_type rst ON rst.id=p.service "
+                        . " LEFT JOIN regimen r ON r.id=p.start_regimen "
+                        . " LEFT JOIN patient_source ps ON ps.id = p.source"
+                        . " WHERE p.start_regimen_date"
+                        . " BETWEEN '" . $to_date . "'"
+                        . " AND '" . $future_date . "'"
+                        . " AND rst.name LIKE  '%art%' "
+                        . " AND ps.name NOT LIKE '%transfer%'"
+                        . " AND p.start_regimen !=''";
+		$patient_from_period_sql = $this -> db -> query($sql);
+		$total_from_period_array = $patient_from_period_sql -> result_array();
+		$total_from_period = 0;
+		foreach ($total_from_period_array as $value) {
+			$total_from_period = $value['Total_Patients'];
+		}
+
+	}
+
+	public function get_lost_to_followup(){
+		//Get total number of patients lost to follow up 
+		$sql=("SELECT COUNT( p.patient_number_ccc ) AS total_patients_lost_to_follow, rst.name as service_type,
+		 DATE_FORMAT(p.status_change_date,'%M-%Y') as period 
+                        FROM patient p 
+                        LEFT JOIN regimen_service_type rst ON rst.id=p.service 
+                        LEFT JOIN regimen r ON r.id=p.start_regimen 
+                        LEFT JOIN patient_source ps ON ps.id = p.source 
+                        LEFT JOIN patient_status pt ON pt.id = p.current_status
+                        WHERE rst.name LIKE '%art%' 
+                        AND ps.name NOT LIKE '%transfer%' 
+                        AND pt.Name LIKE '%lost%'
+                        AND p.status_change_date >= '2011-01-01'
+                        AND p.status_change_date!=''
+                        GROUP BY YEAR(p.status_change_date),MONTH(p.status_change_date)
+                        ORDER BY p.status_change_date DESC");
+		$query = $this -> db -> query($sql);
+		$patients = $query -> result_array();
+
+		foreach($patients as $patient)
+		{
+			$data[$patient['period']][]=array('lost_to_followup'=>(int)$patient['total_patients_lost_to_follow']);
+
+		}
+
+		return $data;
+		
+
+	}
+
+	public function adherence_reports(){
+
+		$ontime=0;
+		$missed=0;
+		$defaulter = 0;
+		$lost_to_followup = 0;
+		$overview_total = 0;
+
+		$adherence=array(
+							'ontime'=> 0,
+							'missed'=>0,
+							'defaulter'=>0,
+							'lost_to_followup'=>0);
+		$sql=("SELECT 
+                    pa.appointment as appointment,
+                    pa.patient,
+                    IF(UPPER(rst.Name) ='ART','art','non_art') as service,
+        		    IF(UPPER(g.name) ='MALE','male','female') as gender,
+        		    IF(FLOOR(DATEDIFF(CURDATE(),p.dob)/365)<15,'<15', IF(FLOOR(DATEDIFF(CURDATE(),p.dob)/365) >= 15 AND FLOOR(DATEDIFF(CURDATE(),p.dob)/365) <= 24,'15_24','>24')) as age
+                FROM patient_appointment pa
+                LEFT JOIN patient p ON p.patient_number_ccc = pa.patient
+                LEFT JOIN regimen_service_type rst ON rst.id = p.service
+                LEFT JOIN gender g ON g.id = p.gender 
+                WHERE pa.appointment >'2011-01-01'
+                GROUP BY pa.patient,pa.appointment
+                ORDER BY pa.appointment");
+		$query = $this -> db -> query($sql);
+		$patients = $query -> result_array();
+		
+		#return $patients;
+
+		if ($patients) {
+			foreach ($patients as $patient) {
+				$appointment=$patient['appointment'];
+				$patient=$patient['patient'];
+				$sql=("SELECT 
+        		            DATEDIFF('$appointment',pv.dispensing_date) as no_of_days
+	                    FROM v_patient_visits pv
+	                    WHERE pv.patient_id='$patient'
+	                    AND pv.dispensing_date >= '$appointment'
+	                    GROUP BY pv.patient_id,pv.dispensing_date
+	                    ORDER BY pv.dispensing_date ASC
+	                    LIMIT 1");	
+	                    $query=$this-> db ->query($sql);
+	                    $results=$query -> result_array();	
+	            	
+	                                        }						
+	       					            
+		                } return $appointment; 
+
+	                 						}
+
+	
+
 }

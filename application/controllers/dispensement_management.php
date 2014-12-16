@@ -11,7 +11,7 @@ class Dispensement_Management extends MY_Controller {
 
 	public function dispense($record_no) {
 		
-		/*
+		
 		$facility_code = $this -> session -> userdata('facility');
                 
 		$dispensing_date = "";
@@ -126,7 +126,7 @@ class Dispensement_Management extends MY_Controller {
 		$data['non_adherence_reasons'] = Non_Adherence_Reasons::getAllHydrated();
 		$data['regimen_changes'] = Regimen_Change_Purpose::getAllHydrated();
 		$data['purposes'] = Visit_Purpose::getAll();
-		 */
+		 
 		$data = array();
 		$data['patient_id'] = $record_no; 
 		$data['purposes'] = Visit_Purpose::getAll();
@@ -568,7 +568,7 @@ class Dispensement_Management extends MY_Controller {
 		$results = $query -> result_array();
 		$record_no = $results[0]['id'];
 		$this -> session -> set_userdata('msg_save_transaction', 'success');
-		redirect("patient_management/viewDetails/$record_no");
+		redirect("patient_management/load_view/details/$record_no");
 	}
 
 	public function drugAllergies() {
