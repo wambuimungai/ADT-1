@@ -836,7 +836,7 @@ foreach($results as $result){
 	<body>
 <div class="full-content" style="background:#FF9">
 	<div id="sub_title" >
-		<a href="<?php  echo base_url().'patient_management ' ?>">Patient Listing </a> <i class=" icon-chevron-right"></i><a href="<?php  echo base_url().'patient_management/viewDetails/'.$result['id'] ?>"><?php echo strtoupper($result['first_name'].' '.$result['other_name'].' '.$result['last_name']) ?></a> <i class=" icon-chevron-right"></i><strong>Edit details</strong>
+		<a href="<?php  echo base_url().'patient_management ' ?>">Patient Listing </a> <i class=" icon-chevron-right"></i><a href="<?php  echo base_url().'patient_management/load_view/details/'.$result['id'] ?>"><?php echo strtoupper($result['first_name'].' '.$result['other_name'].' '.$result['last_name']) ?></a> <i class=" icon-chevron-right"></i><strong>Edit details</strong>
 		<hr size="1">
 	</div>
 	<h3>Edit Patient Details

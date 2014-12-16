@@ -568,7 +568,7 @@ class Dispensement_Management extends MY_Controller {
 		$results = $query -> result_array();
 		$record_no = $results[0]['id'];
 		$this -> session -> set_userdata('msg_save_transaction', 'success');
-		redirect("patient_management/viewDetails/$record_no");
+		redirect("patient_management/load_view/details/$record_no");
 	}
 
 	public function drugAllergies() {

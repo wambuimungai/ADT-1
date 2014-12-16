@@ -472,7 +472,7 @@
                                 bootbox.alert("<h4>Expiry Notice</h4>\n\<hr/><center>An expired date being updated! </center>" );
                                 $("#btn_submit").attr("disabled","disabled");
                             }else if(months<=6){
-                                bootbox.alert("<h4>Expiry Notice</h4>\n\<hr/><center>The expiry date updated is within 6 months! </center>" );
+                               bootbox.alert("<h4>Expiry Notice</h4>\n\<hr/><center>The expiry date updated is within 6 months! </center>" );
                                 $("#btn_submit").removeAttr('disabled');
                             }else{
                                $("#btn_submit").removeAttr('disabled');
@@ -1065,7 +1065,7 @@
                         var t_date=new Date(today_year,month,today_date);
                         var e_date=new Date(value.expiry_date);
                         var diff = e_date.getTime() - t_date.getTime();
-                        var months = Math.ceil(diff/(1000 * 60 * 60 * 24*30));
+                        var months = Math.floor(diff/(1000 * 60 * 60 * 24*30));
                         
                         if(e_date<t_date){
                            bootbox.alert("<h4>Expiry Notice</h4>\n\<hr/><center>The drug being transacted has expired! </center>" );
