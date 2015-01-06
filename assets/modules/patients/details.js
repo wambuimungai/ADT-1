@@ -107,7 +107,7 @@ function getPatientData(url){
 	return  $.getJSON( url ,function( resp ) {
 			    $.each( resp , function( index , value ) {
 			        //Append JSON elements to DOM
-			        if(jQuery.inArray(index,checkbox) != 1){
+			        if(jQuery.inArray(index,checkbox) != -1){
 					    //Select checkbox
                         addToCheckbox(value);
 
