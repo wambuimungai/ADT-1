@@ -1,3 +1,338 @@
-[
-
-]
+{
+    "DANSON OPUKA 1532439": [
+        {
+            "date_tested": "2012-06-09",
+            "result": "4019254"
+        }
+    ],
+    "FELISTER ADALA": [
+        {
+            "date_tested": "2012-10-01",
+            "result": "1673 "
+        }
+    ],
+    "dorothy awuor\/13023": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "786"
+        }
+    ],
+    "Loise Wanjiku\/5939": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "44042"
+        }
+    ],
+    "John Irungu\/8137": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "George Luguli\/2602": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "Angela Muhasa\/0033": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "Juliana Njambi\/8576": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "83340"
+        }
+    ],
+    "Zipporah Mwikali\/5058": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "Phillip Onyancha\/7072": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "Jennipher Akinyi\/9545": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "Bernard Mulima\/5908": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "29732"
+        }
+    ],
+    "John Njuguna\/2184": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "Juma Omondi\/6217": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "66"
+        }
+    ],
+    "Lillian Anyango\/4854": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "Erastus Kinyua": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "Erastus Kinyua\/3437": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "Martin Mungai\/4861": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "Llyod kabuga\/9552": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "149320"
+        }
+    ],
+    "thomas omwenga\/3648": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "charles kwanyoto\/5627": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "charles onayo\/5933": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "gladys nakel\/8815": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "ruth chabari\/1831": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "8964"
+        }
+    ],
+    "joan opondo\/9560": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "emma mueni\/0184": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "1630"
+        }
+    ],
+    "ednah malangu\/9743": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "agatha kirigo\/7616": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "beatrice mwihaki\/47": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "cecilia wacu\/8242": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "alice waithera\/5322": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "juliet mungai\/36": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "cecilia wangari\/0821": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "261080"
+        }
+    ],
+    "philomena chebet\/4774": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "3126"
+        }
+    ],
+    "hanna warira\/9255": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "elizabeth kasynza\/3098": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "john chege\/1412": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "fredrick ongweno\/3907": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "624"
+        }
+    ],
+    "elizabeth wambui\/9099": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "890596"
+        }
+    ],
+    "peter khabelwa": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "joyce oloo": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "604"
+        }
+    ],
+    "millicent obonyo\/2937": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "david mburu\/8752": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "64802"
+        }
+    ],
+    "stephen ndendera\/8333": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "lucy wanjiru\/5868": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "26794"
+        }
+    ],
+    "irene wanjiru\/4506": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "3090"
+        }
+    ],
+    "charles muatha\/0764": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "julius maibei\/1011": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "ambundo nita\/2153": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "50360"
+        }
+    ],
+    "gedige nyawade\/8750": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "fatuma baricho\/9232": [
+        {
+            "date_tested": "2014-02-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "JAMES MACHARIA": [
+        {
+            "date_tested": "2014-05-20",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "PETER MATHENGE(1874000242)": [
+        {
+            "date_tested": "2014-05-26",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "patrick oduor (18794\/01\/00254": [
+        {
+            "date_tested": "2014-06-09",
+            "result": "Collect New Sample"
+        }
+    ],
+    "1670363": [
+        {
+            "date_tested": "2014-07-10",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "18794000198": [
+        {
+            "date_tested": "0000-00-00",
+            "result": ""
+        }
+    ]
+}
