@@ -917,7 +917,7 @@
 				resetFields(row);
 			}
 			if($(".remove").is(":visible")){
-				row.closest("tr").find(".remove").remove();
+				//row.closest("tr").find(".remove").remove();
 			}
 			
 			$(".t_picking_list").css("display","none");
