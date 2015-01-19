@@ -12,8 +12,9 @@ class auto_management extends MY_Controller {
 
 	    $dir = realpath($_SERVER['DOCUMENT_ROOT']);
 	    $link = $dir . "\\ADT\\assets\\nascop.txt";
-		$this -> nascop_url = file_get_contents($link);
+		$this -> nascop_url = trim(file_get_contents($link));
 		$this -> eid_url="http://nascop.org/eid/";
+                $this->ftp_url='192.168.133.10';
 	}
 
 	public function index($manual=FALSE){
@@ -252,7 +253,7 @@ class auto_management extends MY_Controller {
 		$message="";
 		$adult_age = 3;
 		$facility_code = $this -> session -> userdata("facility");
-		$url = $this -> nascop_url . "sync/eid/" . $facility_code;
+		$url = trim($this -> nascop_url). "sync/eid/" . $facility_code;
 		$sql = "SELECT patient_number_ccc as patient_no,
 		               facility_code,
 		               g.name as gender,
@@ -857,11 +858,11 @@ class auto_management extends MY_Controller {
         public function get_guidelines(){
          $this->load->library('ftp');
 
-        $config['hostname'] = '41.89.6.210';
+        $config['hostname'] = $this->ftp_url;
         $config['username'] = 'demo';
         $config['password'] = 'demo';
         $config['port']     = 21;
-        $config['passive']  = FALSE;
+        $config['passive']  = TRUE;
         $config['debug']    = TRUE;
 
         $this->ftp->connect($config);
