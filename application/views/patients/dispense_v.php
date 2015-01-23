@@ -1541,7 +1541,12 @@
 								 
 				//Formula
 				day_percentage = ((days_to_next_appointment - days_missed_appointment) / days_to_next_appointment) * 100;
-				day_percentage = day_percentage.toFixed(2) + "%";
+				if(day_percentage > 100){
+					day_percentage = 100;
+					day_percentage = day_percentage.toFixed(2) + "%";
+				}else{
+					day_percentage = day_percentage.toFixed(2) + "%";
+				}
 				
 				$("#adherence").attr("value", day_percentage);
 				$("#adherence").attr("readonly", "readonly");

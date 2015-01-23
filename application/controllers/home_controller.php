@@ -112,11 +112,13 @@ class Home_Controller extends MY_Controller {
 public function get_faq(){
         $sql= $this -> db -> query("SELECT modules,questions,answers FROM faq WHERE active='1' GROUP BY modules");
         
+
        if($sql -> num_rows()>0){
            foreach ($sql -> result()as $rows){
                $header=$rows -> questions;
-               
+              
            }
+          // print_r($header);die;
        }
         
         $data['title'] = "webADT | System Home";
