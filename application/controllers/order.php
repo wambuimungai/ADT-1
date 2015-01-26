@@ -132,7 +132,7 @@ class Order extends MY_Controller {
 
 	public function api_sync() {
 		/*Get Drugs,facilities and Regimens from NASCOP or eSCM
-		 *Update Drugs,facilities and Regimens into webADT
+		 *Update Drugs,facilities and Regimens into weADT
 		 */
 		$facility_code = $this -> session -> userdata('facility');
 		$facility = Facilities::getSupplier($facility_code);
@@ -3827,7 +3827,7 @@ class Order extends MY_Controller {
         	$row['resupply'] = ($row['dispensed_to_patients'] * 3) - $row['physical_stock'];
         }
 
-       if($code == "F-CDRR_packs"){
+        if($code == "F-CDRR_packs"){
             foreach ($row as $i => $v) {
 				if ($i != "expiry_month" && $i != "dispensed_to_patients" && $i !="beginning_balance") {
 					$row[$i] = round(@$v / @$pack_size);
@@ -3838,12 +3838,7 @@ class Order extends MY_Controller {
 			   $row['dispensed_packs']=round(@$row['dispensed_to_patients'] / @$pack_size);
 			}
 		}
-        $row['physical_stock'] = $row['beginning_balance'] + $row['received_from'] - $row['dispensed_packs'] - $row['losses'] + $row['adjustments'];
 
-		if($row['physical_stock'] <0){
-			$row['physical_stock'] = 0;
-		}
-		$row['resupply'] = ($row['dispensed_packs'] * 3) - $row['physical_stock'];
 		echo json_encode($row);
 	}
 
