@@ -127,9 +127,11 @@
 					<select id="satellite_facility" name="satellite_facility" style="width:250px;height:35px;">
 						<option value="0">--Select Facility--</option>
 						<?php
+						$options = array();
                          foreach($facilities as $facility){
+                        // 	$options[$facility['facilitycode']]=$facility['name'];
 						?>
-						<option value="<?php echo $facility['facilitycode'];?>"><?php echo $facility['name'];?></option>
+						<option value="<?php echo $facility['facilitycode'];?>"><?php echo 'MFL CODE:'.$facility['facilitycode'].' '.$facility['name'];?></option>
 						<?php 
 						 }?>
 					</select></td>

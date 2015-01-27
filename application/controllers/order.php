@@ -1355,6 +1355,8 @@ class Order extends MY_Controller {
 			$cdrr_array = $query -> result_array();
 			$data['cdrr_array'] = $cdrr_array;
 			$data['options'] = "view";
+
+			//echo "<pre>"; print_r($cdrr_array); die;
 			if ($cdrr_array[0]['code'] == "D-CDRR") {
 				$code = 0;
 			} else if ($cdrr_array[0]['code'] == "F-CDRR_units") {
@@ -3091,7 +3093,7 @@ class Order extends MY_Controller {
 			return 0;
 		}
 	}
-
+    
 	public function base_params($data) {
 		$data['title'] = "Order Reporting";
 		$data['link'] = "order_management";
@@ -3182,12 +3184,15 @@ class Order extends MY_Controller {
 		        AND sf.name NOT LIKE '%dispensing%'
 		        GROUP BY sf.id";
 		$query = $this -> db -> query($sql);
+
 		$satellites = $query -> result_array();
+		
 
 		$notification .= "<table class='dataTables table table-bordered table-hover'>";
 		$notification .= "<thead><tr><th>Name</th><th>Code</th><th>Status</th></tr></thead><tbody>";
 		if ($satellites) {
 			foreach ($satellites as $satellite) {
+			//echo "<pre>";print_r($satellite);die;
 				if ($satellite['status'] == "reported") {
 					$satellite['status'] = "<div class='alert-success'>" . $satellite['status'] . "</div>";
 				} else {
@@ -3730,7 +3735,7 @@ class Order extends MY_Controller {
 
 		$row['beginning_balance']=$this->getBeginningBalance($param);
 	    $row=$this->getOtherTransactions($param,$row);
-
+	    
 	    if($row['stock_out']==null){
 			$row['stock_out']=0;
 		}

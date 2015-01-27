@@ -110,6 +110,7 @@ class Home_Controller extends MY_Controller {
 	}
         
 public function get_faq(){
+
         $sql= $this -> db -> query("SELECT modules,questions,answers FROM faq WHERE active='1' GROUP BY modules",array());
         $header=array();
 		$resu=array();

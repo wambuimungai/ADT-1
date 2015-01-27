@@ -98,11 +98,13 @@ o		<a href='<?php echo site_url("order/download_order/cdrr/".$cdrr_id);?>'><?php
 						<td><b>County: &nbsp;</b><?php echo $facility_object -> County -> county;?></td>
 						<td><b>District: &nbsp;</b><?php echo $facility_object -> Parent_District -> Name;?></td>
 					</tr>
+					
 					<tr>
 						<td colspan='2'><b>Programme Sponsor: &nbsp;</b><?php echo $facility_object -> support -> Name;?>
 							<input type="hidden" name="sponsor" value="<?php echo $facility_object -> support -> Name; ?>"/>
 						</td>
 					</tr>
+					
 					<tr>
 						<td><b>Type of Service provided at the Facility: &nbsp; </b><?php
 						$type_of_service = array();
