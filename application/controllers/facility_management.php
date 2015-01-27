@@ -44,6 +44,7 @@ class Facility_Management extends MY_Controller {
 
 	public function getFacilityList() {
 		$facilities = Facilities::getAll();
+		//echo "<pre>";print_r($facilities);die;
 		echo json_encode($facilities);
 	}
 
