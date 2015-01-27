@@ -17,6 +17,9 @@
     });
  
 });
+//receiving data
+
+
 </script>
 <style>
 /*FAQS*/
@@ -42,13 +45,18 @@
        <div class="span10 offset1">
            <div class="faq_container">
    <div class="faq">
-       <div class="faq_header">
-           <h3>Module</h3>
+       
+
+ <?php
+ foreach ($info as $key) { ?>
+    <div class="faq_header">
+       <h3><?php echo $key['module']; ?></h3>
        </div>
-      <div class="faq_question">Question goes here</div>
+      <div class="faq_question"><?php echo $key['question']; ?></div>
            <div class="faq_answer_container">
-              <div class="faq_answer">Answer goes here</div>
-           </div>        
+              <div class="faq_answer"><?php echo $key['answer'] ; ?></div>
+           </div>   
+           <?php }?>     
     </div>
       
  </div>
