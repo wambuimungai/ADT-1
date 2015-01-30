@@ -109,6 +109,10 @@
         {
             "date_tested": "2012-09-09",
             "result": "< LDL copies\/ml"
+        },
+        {
+            "date_tested": "2015-01-22",
+            "result": "< LDL copies\/ml"
         }
     ],
     "40400104777": [
@@ -756,6 +760,47 @@
             "date_tested": "2015-01-13",
             "result": "< LDL copies\/ml"
         }
+    ],
+    "40705000184": [
+        {
+            "date_tested": "2015-01-22",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "40705000577": [
+        {
+            "date_tested": "2015-01-22",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "12508000944": [
+        {
+            "date_tested": "2015-01-22",
+            "result": "800"
+        }
+    ],
+    "40705000199": [
+        {
+            "date_tested": "2015-01-22",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "12074000017": [
+        {
+            "date_tested": "2015-01-22",
+            "result": "< LDL copies\/ml"
+        }
+    ],
+    "1250800896": [
+        {
+            "date_tested": "0000-00-00",
+            "result": ""
+        }
+    ],
+    "40705000677": [
+        {
+            "date_tested": "0000-00-00",
+            "result": ""
+        }
     ]
 }
-
