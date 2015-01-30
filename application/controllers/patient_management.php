@@ -373,7 +373,7 @@ class Patient_Management extends MY_Controller {
 	}
 
 	public function edit($record_no) {
-		$sql = "SELECT p.*,
+		 $sql = "SELECT p.*,
 		               rst.Name as service_name,
 		               dp.child,
 		               s.secondary_spouse 

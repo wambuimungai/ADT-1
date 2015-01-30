@@ -218,7 +218,7 @@ class Dispensement_Management extends MY_Controller {
 	public function edit($record_no) {
 		$facility_code = $this -> session -> userdata('facility');
 		$ccc_id ='2';
-		$sql = "select pv.*,p.first_name,p.other_name,p.last_name,p.id as p_id "
+		 $sql = "select pv.*,p.first_name,p.other_name,p.last_name,p.id as p_id "
                         . "from patient_visit pv,"
                         . "patient p "
                         . "where pv.id='$record_no' "
@@ -226,6 +226,7 @@ class Dispensement_Management extends MY_Controller {
                         . "and facility='$facility_code'";
 		$query = $this -> db -> query($sql);
 		$results = $query -> result_array();
+                //print_r($results);
 		if ($results) {
 			$data['results'] = $results;
 			//Get expriry date the batch
@@ -233,8 +234,7 @@ class Dispensement_Management extends MY_Controller {
 				$batch_number = $value['batch_number'];
 				$drug_ig = $value['drug_id'];
 				$ccc_id = $value['ccc_store_sp'];
-				//echo $ccc_id;die();
-				$sql = "select expiry_date FROM drug_stock_balance WHERE batch_number='$batch_number' AND drug_id='$drug_ig' AND stock_type='$ccc_id' AND facility_code='$facility_code' LIMIT 1";
+				$sql = "select expiry_date FROM drug_stock_balance WHERE batch_number='$batch_number' AND drug_id='$drug_ig' AND stock_type='$ccc_id' AND facility_code='$facility_code' LIMIT 1"; 
 				$expiry_sql = $this -> db -> query($sql);
 
 				$expiry_array = $expiry_sql -> result_array();
@@ -242,11 +242,13 @@ class Dispensement_Management extends MY_Controller {
 				$data['expiries'] = $expiry_array;
 				foreach ($expiry_array as $row) {
 					$expiry_date = $row['expiry_date'];
+                                        //print_r($expiry_date);
 					$data['original_expiry_date'] = $expiry_date;
 				}
 			}
 
-		} else {
+		} 
+		else {
 			$data['results'] = "";
 		}
 		$data['purposes'] = Visit_Purpose::getAll();

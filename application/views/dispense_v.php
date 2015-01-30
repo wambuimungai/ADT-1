@@ -848,10 +848,10 @@ foreach ($results as $result) {
                     var stock_validity = stock_at_hand - selected_value;
                     
                     if (stock_validity < 0) {
-                        if(alert_qty_check===true){//Check to only show the error message once
+                        if(alert_qty_check==true){//Check to only show the error message once
                             bootbox.alert("<h4>Quantity-Stock Alert</h4>\n\<hr/><center>Quantity Cannot Be larger Than Stock at Hand</center>");
                         }
-                        row.closest("tr").find(".qty_disp").css("background-color", "red");
+                        row.closest("tr").find(".qty_disp").css("background-color","red");
                         row.closest("tr").find(".qty_disp").addClass("input_error");
                         alert_qty_check=false;
                     }
