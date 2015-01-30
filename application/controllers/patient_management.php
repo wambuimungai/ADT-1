@@ -1018,8 +1018,7 @@ class Patient_Management extends MY_Controller {
 				$average_adherence = (( doubleval($result['pill_adh']) + doubleval($result['missed_adh']) + $adherence) / 3);
 				$dyn_table .= "<td>" . $adherence . "%</td>";
 				$dyn_table .= "<td>" . number_format($average_adherence,2) . "%</td>";
-				$dyn_table .= "</tr></tbody>";
-			}
+				$dyn_table .= "</tr></tbody>";			}
 		}
 		echo $dyn_table;
 	}

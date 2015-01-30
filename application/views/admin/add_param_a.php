@@ -350,8 +350,7 @@ if($table){
               <div class="max-row">
 				<label>Answer</label>
 				<textarea cols="40" rows="6" name="faq_answer" id="edit_faq_answer"></textarea>
-		</div>
-            
+		</div>          
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true">
@@ -478,6 +477,7 @@ if($table){
 				    	$("#satellite").empty();
 				    	$("#satellite").append($("<option></option>").attr("value",'').text('--Select One--'));
 				    	$.each(data, function(i, jsondata){
+				    		//$("#satellite").append($("<option></option>").attr("value",jsondata.facilitycode).text(jsondata.facilitycode));
 				    		$("#satellite").append($("<option></option>").attr("value",jsondata.facilitycode).text(jsondata.name));
 				    	});
 				    	
