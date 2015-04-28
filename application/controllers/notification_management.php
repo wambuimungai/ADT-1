@@ -554,7 +554,7 @@ class notification_management extends MY_Controller {
 		//loop  through patients adding the rows
         foreach($patients as $patient){
         	$detail_link="<a href='".base_url()."patient_management/viewDetails/".$patient['id']."'>Detail</a>";
-        	$edit_link="<a href='".base_url()."/patient_management/edit/".$patient['id']."'>Edit</a>";
+        	$edit_link="<a href='".base_url()."patient_management/edit/".$patient['id']."'>Edit</a>";
         	$disable_link="<a href='".base_url()."patient_management/disable/".$patient['id']."' class='red'>Disable</a>";
             $patient['links']=$detail_link." |  ".$edit_link." | ".$disable_link;
         	unset($patient['id']);
